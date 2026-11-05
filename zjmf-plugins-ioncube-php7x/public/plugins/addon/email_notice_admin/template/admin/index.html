@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="/plugins/addon/email_notice_admin/template/admin/css/email_notice_admin.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="email_notice_admin" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <h3>{{lang.email_notice_admin}}</h3>
+      <p class="des">{{lang.email_notice_tip}}</p>
+      <t-table row-key="id" :data="data" :columns="columns" :loading="loading">
+        <template #email_name="{row, rowIndex}">
+          <div :id="`email_name${rowIndex}`">
+            <!-- :popup-props="{ attach: `#email_name${rowIndex}` }" -->
+            <t-select v-model="formData[row.name].email_name" clearable>
+              <t-option v-for="item in emailList" :value="item.name" :label="item.title" :key="item.id">
+              </t-option>
+            </t-select>
+          </div>
+        </template>
+        <template #email_template="{row, rowIndex}">
+          <div :id="`email_template${rowIndex}`"
+            :class="{required: formData[row.name].email_name && !formData[row.name].email_template }">
+            <!-- :popup-props="{ attach: `#email_template${rowIndex}` }" -->
+            <t-select v-model="formData[row.name].email_template" clearable :disabled="!row.email_name">
+              <t-option v-for="item in emailTemplateList" :value="item.id" :label="item.name" :key="item.id">
+              </t-option>
+            </t-select>
+          </div>
+        </template>
+        <template #notify_personnel="{row}">
+          <t-tree-select v-model="formData[row.name].admin" :data="adminList" multiple :min-collapsed-num="2" clearable
+            :placeholder="lang.notify_personnel" :tree-props="treeProps">
+          </t-tree-select>
+        </template>
+        <template #email_enable="{row}">
+          <t-switch size="large" v-model="formData[row.name].email_enable" :custom-value="[1,0]"></t-switch>
+        </template>
+      </t-table>
+      <t-button @click="save" class="add" :loading="submitLoading" v-permission="'auth_email_notice_admin_save_configuration'">{{lang.hold}}</t-button>
+    </t-card>
+  </com-config>
+
+</div>
+
+<script src="/plugins/addon/email_notice_admin/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/email_notice_admin/template/admin/api/email_notice_admin.js"></script>
+<script src="/plugins/addon/email_notice_admin/template/admin/js/email_notice_admin.js"></script>

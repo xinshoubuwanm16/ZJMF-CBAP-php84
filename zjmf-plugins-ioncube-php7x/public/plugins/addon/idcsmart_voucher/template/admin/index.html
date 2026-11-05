@@ -1,0 +1,198 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_voucher/template/admin/css/voucher.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="voucher" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <t-button @click="addPromo" class="add" v-permission="'auth_idcsmart_voucher_create_voucher'">
+          {{lang.promo_order_new}}
+        </t-button>
+        <div class="client-search">
+          <t-input v-model="params.code" @keypress.enter.native="seacrh" :placeholder="`${lang.voucher_code}`"
+            :on-clear="clearKey" clearable>
+          </t-input>
+          <t-select v-model="params.status" :placeholder="lang.order_current_status" clearable>
+            <t-option v-for="item in statusList" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+          <t-button @click="seacrh">{{lang.promo_query}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+        :hide-sort-tips="true" @row-click="goDetail">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #price="{row}">
+          <template>{{currency_prefix}}{{row.price}}</template>
+        </template>
+        <template #type="{row}">
+          {{lang[`${row.type}`]}}
+        </template>
+        <template #start_time="{row}">
+          {{row.start_time ? moment(row.start_time * 1000).format('YYYY/MM/DD HH:mm') : '--'}}
+        </template>
+        <template #end_time="{row}">
+          {{row.end_time ? moment(row.end_time * 1000).format('YYYY/MM/DD HH:mm') : '--'}}
+        </template>
+        <template #use="{row}">
+          <span @click="getRecord(row)" class="stop">{{row.use}}/{{row.total}}</span>
+        </template>
+        <template #notes="{row}">
+          <span>{{row.notes || '--'}}</span>
+        </template>
+        <template #status="{row}">
+          <t-tag theme="success" class="com-status" v-if="row.status === 'enable'" variant="light">
+            {{lang.promo_active}}
+          </t-tag>
+          <t-tag theme="danger" class="com-status" v-if="row.status === 'wait_effect'" variant="light">
+            {{lang.promo_pending}}
+          </t-tag>
+          <t-tag theme="default" class="com-status invalid" v-if="row.status === 'expired'" variant="light">
+            {{lang.promo_expiration}}
+          </t-tag>
+          <t-tag theme="default" class="com-status" v-if="row.status === 'disable'" variant="light">
+            {{lang.stop_using_the}}
+          </t-tag>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.promo_grant" :show-arrow="false" theme="light" v-if="row.status === 'enable'">
+            <a class="common-look grant" @click="grantVoucher(row)" v-permission="'auth_idcsmart_voucher_send_voucher'">
+              <svg class="common-look">
+                <use xlink:href="/plugins/addon/idcsmart_voucher/template/admin/img/icons.svg#cus-grant">
+                </use>
+              </svg>
+            </a>
+          </t-tooltip>
+          <t-tooltip :content="lang.promo_enable" :show-arrow="false" theme="light" v-if="row.status === 'disable'">
+            <t-icon name="play-circle-stroke" class="common-look stop" @click="changeStatus(row)"
+              v-permission="'auth_idcsmart_voucher_deactivate_enable_voucher'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.promo_deactivate" :show-arrow="false" theme="light" v-if="row.status === 'enable'">
+            <t-icon name="stop-circle" class="common-look stop" @click="changeStatus(row)" style="color: #FF0000"
+              v-permission="'auth_idcsmart_voucher_deactivate_enable_voucher'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.promo_edit" :show-arrow="false" theme="light">
+            <t-icon name="edit" class="common-look" @click="jump(row)"
+              v-permission="'auth_idcsmart_voucher_update_voucher'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" @change="changePage" />
+    </t-card>
+    <!-- 启用/停用 -->
+    <t-dialog theme="warning" :header="statusTip" :visible.sync="statusVisble">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureChange" :loading="submitLoading">{{lang.promo_sure}}</t-button>
+        <t-button theme="default" @click="statusVisble = false">{{lang.promo_cancel}}</t-button>
+      </template>
+    </t-dialog>
+    <!-- 使用记录 -->
+    <t-dialog :header="recordTit" :visible.sync="recordDialog" :footer="false" width="800px" @close="closeRecord">
+      <div class="record-form" id="record-form" v-if="recordDialog">
+        <div id="load">
+          <com-choose-user :pre-placeholder="`${lang.promo_select}${lang.promo_user}`"
+            @changeuser="changeUser"></com-choose-user>
+        </div>
+        <t-select v-model="recordParams.use" :popup-props="popupProps"
+          :placeholder="`${lang.promo_select}${lang.promo_use_status}`" clearable filterable>
+          <t-option v-for="item in typeList" :value="item.value" :label="item.label" :key="item.value"></t-option>
+        </t-select>
+        <t-button @click="seacrhRecord">{{lang.promo_query}}</t-button>
+      </div>
+      <t-table row-key="id" :data="recordList" size="medium" :columns="recordColumns" :hover="hover"
+        :loading="recordLoading" :table-layout="tableLayout ? 'auto' : 'fixed'">
+        <template #username="{row}">
+          <a class="jump" @click="jumpUser(row)">{{row.username}}</a>
+        </template>
+        <template #status="{row}">
+          {{useStatus[row.status]}}
+        </template>
+        <template #order_id="{row}">
+          <template v-if="row.order_id">
+            <a class="jump" @click="jumpOrder(row)">{{row.order_id}}</a>
+          </template>
+          <template v-else>--</template>
+        </template>
+        <template #use_time="{row}">
+          {{row.use_time ? moment(row.use_time * 1000).format('YYYY/MM/DD HH:mm') : '--'}}
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light"  v-if="$checkPermission('auth_idcsmart_voucher_delete_voucher_get_record') && row.status === 'normal'">
+            <t-icon name="delete" size="18px" @click="deleteHandler(row)" class="common-look">
+            </t-icon>
+          </t-tooltip>
+          <span v-else>--</span>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="recordTotal" v-if="recordTotal" :page-size="recordParams.limit"
+        :current="recordParams.page" :page-size-options="recordPage" @change="changeRecord" />
+    </t-dialog>
+    <!-- 发放 -->
+    <t-dialog :close-btn="false" :visible.sync="sourceModal" class="sourceModal" :footer="false" placement="center">
+      <div class="box" v-if="sourceModal">
+        <div class="item">
+          <p class="tit">{{lang.add_grant_user}}</p>
+          <div class="top-search">
+            <t-select v-model="clientParams.type" class="type" @change="changeType">
+              <t-option v-for="item in typeOption" :value="item.value" :label="item.label" :key="item.value"></t-option>
+            </t-select>
+            <t-input v-model="clientParams.keywords" class="search-input" :placeholder="`${lang.promo_input}`"
+              @keypress.enter.native="seacrhPlugin" :on-clear="clearPluginKey" clearable>
+            </t-input>
+            <t-button @click="seacrhPlugin">{{lang.promo_query}}</t-button>
+          </div>
+          <t-table row-key="id" :columns="originColumns" :data="grantClient" lazy-load
+            :scroll="{ type: 'virtual', rowHeight: 69, bufferSize: 10 }" @select-change="rehandleSelectChange"
+            :selected-row-keys="checkId" :max-height="480">
+          </t-table>
+          <t-pagination :total="userTotal" :page-size="clientParams.limit" :current="clientParams.page"
+            :total-content="false" :page-size-options="pageSizeOptions" @change="changeUserPage" v-if="userTotal"
+            :folded-max-page-btn="3">
+          </t-pagination>
+          <div class="f-box">
+            <t-checkbox v-model="checkAll" :class="{active: checkAll}"
+              @change="changeAll">{{lang.choose_all_users}}</t-checkbox>
+            <div v-show="checkAll">
+              <p>{{lang.promo_tip11}}</p>
+              <p>{{lang.promo_tip12}}</p>
+            </div>
+          </div>
+        </div>
+        <p class="arrow">
+          <t-icon name="chevron-right"></t-icon>
+        </p>
+        <div class="item">
+          <p class="tit">{{lang.promo_selected}}</p>
+          <t-table row-key="id" :columns="checkColumns" :data="checkList" :max-height="480"
+            :scroll="{ type: 'virtual', rowHeight: 69, bufferSize: 10 }">
+            <template #op="{row}">
+              <t-icon name="minus-rectangle" class="del-icon" @click="delItem(row)"></t-icon>
+            </template>
+          </t-table>
+          <div class="com-f-btn">
+            <t-button theme="primary" @click="sureSubmit" :loading="submitLoading">{{lang.promo_sure}}</t-button>
+            <t-button theme="default" @click="sourceModal=false">{{lang.promo_close}}</t-button>
+          </div>
+        </div>
+      </div>
+    </t-dialog>
+    <!-- 删除弹窗 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel" :loading="submitLoading">{{lang.promo_sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.promo_cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/api/voucher.js"></script>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/js/voucher.js"></script>

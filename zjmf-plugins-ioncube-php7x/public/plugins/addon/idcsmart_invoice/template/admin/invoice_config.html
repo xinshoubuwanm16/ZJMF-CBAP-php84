@@ -1,0 +1,183 @@
+<!-- 独有 -->
+<link rel="stylesheet" href="/plugins/addon/idcsmart_invoice/template/admin/css/invoice_config.css">
+<!-- 内容开始 -->
+<div id="content" class="invoice-config" v-cloak>
+  <com-config>
+    <t-card class="list-card-container table">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_invoice_management'">
+          <a href="index.htm">{{lang.invoice_tab1}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_title'">
+          <a href="invoice_title.htm">{{lang.invoice_tab2}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_address'">
+          <a href="invoice_address.htm">{{lang.invoice_tab3}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_invoice_configuration'">
+          <a href="javascript:;">{{lang.invoice_tab4}}</a>
+        </li>
+      </ul>
+      <!-- 基础设置开始 -->
+      <div class="title-line">
+        <div class="title">{{lang.invoice_title14}}</div>
+        <div class="line"></div>
+      </div>
+      <div class="base-main">
+        <div class="base-row">
+          <span class="label">{{lang.invoice_label23}}</span>
+          <div class="value">
+            <t-switch size="medium" v-model="configData.invoice_manage" :custom-value="customValue"></t-switch>
+            <span class="description" v-show="configData.invoice_manage == '1'">{{lang.invoice_tips4}}</span>
+            <span class="description" v-show="configData.invoice_manage == '0'">{{lang.invoice_tips3}}</span>
+          </div>
+        </div>
+        <div class="base-row">
+          <span class="label">{{lang.invoice_btn12}}</span>
+          <div class="value">
+            <t-switch size="medium" v-model="configData.across_year_invoice" :custom-value="customValue"></t-switch>
+            <span class="description" v-show="configData.across_year_invoice == '0'">{{lang.invoice_btn13}}</span>
+            <span class="description" v-show="configData.across_year_invoice == '1'">{{lang.invoice_btn14}}</span>
+          </div>
+        </div>
+        <div class="base-row">
+          <span class="label">{{lang.invoice_label24}}</span>
+          <div class="value">
+            <t-switch size="medium" v-model="configData.pre_invoice" :custom-value="customValue"></t-switch>
+            <span class="description" v-show="configData.pre_invoice == '0'">{{lang.invoice_tips5}}</span>
+            <span class="description" v-show="configData.pre_invoice == '1'">{{lang.invoice_tips6}}</span>
+          </div>
+        </div>
+      </div>
+      <!-- 基础设置结束 -->
+
+      <!-- 发票项目 -->
+      <div class="title-line">
+        <div class="title parcel-title">{{lang.invoice_btn9}}</div>
+        <div class="line"></div>
+      </div>
+      <div class="project-table parcel-table">
+        <div class="project-top">
+          <t-button @click="addProject">{{lang.invoice_btn6}}</t-button>
+        </div>
+        <t-table :data="projectData" :columns="projectColumns" :bordered="true" row-key="id" :loading="projectLoading">
+          <template #special_tax_rate="{row}">
+            {{row.special_tax_switch ? row.special_tax_rate : lang.manual_text28}}
+          </template>
+          <template #special_tax_price="{row}">
+            {{row.special_tax_switch ? row.special_tax_price : lang.manual_text28}}
+          </template>
+          <template #operation="{row}">
+            <t-popup :content="lang.invoice_text19" destroy-on-close>
+              <t-icon class="operation-icon" name="edit-1" @click="editPorject(row)"></t-icon>
+            </t-popup>
+            <t-popup :content="lang.invoice_text17" destroy-on-close>
+              <t-icon class="operation-icon" name="delete" @click="delProject(row)"></t-icon>
+            </t-popup>
+          </template>
+        </t-table>
+      </div>
+      <!-- 发票项目 end -->
+
+      <!-- 快递设置开始 -->
+      <div class="title-line">
+        <div class="title parcel-title">{{lang.invoice_title9}}</div>
+        <div class="line"></div>
+      </div>
+      <div class="parcel-table">
+        <t-table :data="configData.parcel" :columns="columns" :bordered="true" row-key="id">
+          <template #name="{row}">
+            <span v-show="!row.isEdit">{{row.name}}</span>
+            <t-input v-model="row.newName" v-show="row.isEdit"></t-input>
+          </template>
+          <template #price="{row}">
+            <span v-show="!row.isEdit">{{currency_prefix}}{{row.price}}</span>
+            <!-- <t-input v-model="row.newPrice" v-show="row.isEdit"></t-input> -->
+            <t-input-number :min="0" v-model="row.newPrice" theme="normal" :decimal-places="2"
+              v-show="row.isEdit"></t-input-number>
+          </template>
+          <template #operation="{row}">
+            <!-- 编辑 -->
+            <t-popup :content="lang.invoice_text19" destroy-on-close>
+              <t-icon v-show="!row.isEdit" class="operation-icon" name="edit-1" @click="edit(row)"></t-icon>
+            </t-popup>
+
+            <!-- 保存 -->
+            <!-- <t-popup :content="lang.invoice_text20" destroy-on-close>
+                          <t-icon v-show="row.isEdit" class="operation-icon" name="save" @click="save(row)"></t-icon>
+                      </t-popup> -->
+            <!-- 取消 -->
+            <t-popup :content="lang.invoice_text21" destroy-on-close>
+              <t-icon v-show="row.isEdit && row.name && row.price" class="operation-icon" name="close-circle"
+                @click="row.isEdit=false;"></t-icon>
+            </t-popup>
+            <!-- 删除 -->
+            <t-popup :content="lang.invoice_text17" destroy-on-close>
+              <t-icon class="operation-icon" name="delete" @click="del(row)"></t-icon>
+            </t-popup>
+          </template>
+        </t-table>
+        <div class="add">
+          <div class="add-btn" @click="addParcel">{{lang.invoice_btn6}}
+            <t-icon class="add-icon" name="add" />
+          </div>
+        </div>
+      </div>
+      <t-button class="submit-btn" @click="submit" :loading="saveLoading" v-permission="'auth_idcsmart_invoice_configuration_save_configuration'">{{lang.invoice_btn5}}</t-button>
+      <!-- 快递设置结束 -->
+
+      <!-- 发票项目弹窗 -->
+      <t-dialog :header="lang.invoice_btn9" :visible.sync="projectDialog" :footer="false" class="project-dialog">
+        <t-form :data="projectForm" ref="projectForm" :rules="rules" @submit="projectSubmit">
+          <t-form-item :label="lang.invoice_btn9" name="name">
+            <t-input :placeholder="lang.invoice_btn9" v-model="projectForm.name" />
+          </t-form-item>
+          <div class="title-line">
+            <div class="title parcel-title">{{lang.invoice_text12}}</div>
+            <div class="line"></div>
+          </div>
+          <t-form-item :label="lang.invoice_text18" name="normal_tax_rate" class="percent-item">
+            <t-input-number :placeholder="lang.invoice_text18" theme="normal" :decimal-places="2" :min="0"
+              v-model="projectForm.normal_tax_rate" />
+          </t-form-item>
+          <t-form-item :label="lang.invoice_label29" name="normal_tax_price" class="percent-item">
+            <t-input-number :placeholder="lang.invoice_label29" theme="normal" :decimal-places="2" :min="0"
+              v-model="projectForm.normal_tax_price" />
+          </t-form-item>
+          <div class="title-line">
+            <div class="title parcel-title">{{lang.invoice_text11}}</div>
+            <t-switch size="small" v-model="projectForm.special_tax_switch" :custom-value="[1, 0]"></t-switch>
+            <div class="line"></div>
+          </div>
+          <template v-if="projectForm.special_tax_switch">
+            <t-form-item :label="lang.invoice_text18" name="special_tax_rate" class="percent-item">
+              <t-input-number :placeholder="lang.invoice_text18" theme="normal" :decimal-places="2" :min="0"
+                v-model="projectForm.special_tax_rate" />
+            </t-form-item>
+            <t-form-item :label="lang.invoice_label29" name="special_tax_price" class="percent-item">
+              <t-input-number :placeholder="lang.invoice_label29" theme="normal" :decimal-places="2" :min="0"
+                v-model="projectForm.special_tax_price" />
+            </t-form-item>
+          </template>
+          <div class="com-f-btn">
+            <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.invoice_btn1}}</t-button>
+            <t-button theme="default" variant="base" @click="projectDialog = false">{{lang.cancel}}</t-button>
+          </div>
+        </t-form>
+      </t-dialog>
+      <!-- 删除弹窗 -->
+      <t-dialog theme="warning" :header="lang.sureDelete" :visible.sync="delVisible">
+        <template slot="footer">
+          <t-button theme="primary" @click="sureDel" :loading="submitLoading">{{lang.sure}}</t-button>
+          <t-button theme="default" @click="delVisible = false">{{lang.cancel}}</t-button>
+        </template>
+      </t-dialog>
+    </t-card>
+  </com-config>
+</div>
+<!-- 内容结束 -->
+<!-- 独有 -->
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_invoice/template/admin/api/invoice.js"></script>
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/invoice_config.js"></script>

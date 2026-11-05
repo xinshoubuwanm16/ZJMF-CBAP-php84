@@ -1,0 +1,95 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/admin/css/e_contract.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template contract_config" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_e_contract_list_view'">
+          <a href="index.htm">{{lang.contract_list}}</a>
+        </li>
+        <li v-permission="'auth_e_contract_template_view'">
+          <a href="contract_template.htm">{{lang.template_manage}}</a>
+        </li>
+        <li class="active" v-permission="'auth_e_contract_configuration_view'">
+          <a href="javascript:;">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <p class="com-tit">{{lang.basic_setting}}</p>
+        <t-form :data="infoParams" @submit="submitSystemGroup" :rules="typeRules" class="info-form" label-align="top">
+          <div class="item">
+            <t-form-item :label="lang.fun_switch" name="switch">
+              <t-switch size="medium" :custom-value="['1','0']" v-model="infoParams.switch">
+              </t-switch>
+              <span class="s-tip">{{lang.contract_tip}}</span>
+            </t-form-item>
+          </div>
+          <div class="item">
+            <t-form-item :label="lang.day_limit" name="day_limit">
+              <t-input v-model="infoParams.day_limit" :placeholder="`${lang.limit_day}`"></t-input>
+              <span class="day">{{lang.day}}</span>
+            </t-form-item>
+            <t-form-item :label="lang.my_unit" name="my_unit">
+              <t-input v-model="infoParams.my_unit" :placeholder="`${lang.my_unit}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.social_credit_code" name="social_credit_code">
+              <t-input v-model="infoParams.social_credit_code" :placeholder="`${lang.social_credit_code}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.contact_user" name="contact">
+              <t-input v-model="infoParams.contact" :placeholder="`${lang.contact_user}`"></t-input>
+            </t-form-item>
+          </div>
+          <div class="item">
+            <t-form-item :label="lang.contact_phone" name="contact_phone">
+              <t-input v-model="infoParams.contact_phone" :placeholder="`${lang.contact_phone}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.contact_email" name="contact_email">
+              <t-input v-model="infoParams.contact_email" :placeholder="`${lang.contact_email}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.contact_address" name="contact_address">
+              <t-input v-model="infoParams.contact_address" :placeholder="`${lang.contact_address}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.postcode" name="postcode">
+              <t-input v-model="infoParams.postcode" :placeholder="`${lang.postcode}`"></t-input>
+            </t-form-item>
+          </div>
+          <p class="com-tit" style="margin: 40px 0 30px;">{{lang.contract_setting}}</p>
+          <div class="item">
+            <t-form-item :label="lang.contract_number_prefix" name="contract_number_prefix">
+              <t-input v-model="infoParams.contract_number_prefix"
+                :placeholder="`${lang.contract_number_prefix}`"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.contract_number_start" name="contract_number_start">
+              <t-input v-model="infoParams.contract_number_start" :maxlength="20"
+                :placeholder="`${lang.contract_tip1}`"></t-input>
+            </t-form-item>
+          </div>
+          <div class="item">
+            <t-form-item name="logo">
+              <template slot="label">{{lang.contract_logo}}<span class="s-tit">（{{lang.contract_tip2}}）</span>
+              </template>
+              <t-upload :action="uploadUrl" :headers="uploadHeaders" v-model="infoParams.logo" theme="image"
+                :placeholder="lang.upload_tip" theme="image-flow" accept="image/*" :auto-upload="true"
+                :format-response="formatResponse"></t-upload>
+            </t-form-item>
+          </div>
+          <div class="item">
+            <t-form-item name="company_chop">
+              <template slot="label">{{lang.company_chop}}<span class="s-tit">（{{lang.contract_tip2}}）</span>
+              </template>
+              <t-upload :action="uploadUrl" :headers="uploadHeaders" v-model="infoParams.company_chop" theme="image"
+                :placeholder="lang.upload_tip" theme="image-flow" accept="image/*" :auto-upload="true"
+                :format-response="formatResponse"></t-upload>
+            </t-form-item>
+          </div>
+          <t-button theme="primary" type="submit" class="info-btn" :loading="submitLoading"
+            v-permission="'auth_e_contract_configuration_save_configuration'">{{lang.hold}}
+          </t-button>
+        </t-form>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+<script src="/plugins/addon/e_contract/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/api/e_contract.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/js/contract_config.js"></script>

@@ -1,0 +1,394 @@
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/addon/idcsmart_domain/template/clientarea/css/domain.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template" id="domain">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <div class="top-back"></div>
+        <el-main>
+          <div class="main-card">
+            <div class="main-card-title">{{lang.domain_manage}}</div>
+            <div class="content-box">
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <!-- 域名列表 -->
+                <el-tab-pane :label="lang.domain_list" name="list">
+                  <div class="list-top">
+                    <div class="left">
+                      <el-button class="default-btn" @click="acceptDomain"
+                        v-if="transferDomain.length > 0">{{lang.receive_transfer_domain}}</el-button>
+                    </div>
+                    <div class="right">
+                      <el-input class="keywords" v-model="listParams.keywords" clearable @clear="searchDomain"
+                        :placeholder="`${lang.domain}、${lang.common_cloud_label14}、${lang.account_label3}、${lang.registrant}`">
+                      </el-input>
+                      <el-date-picker v-model="listParams.time" type="daterange" range-separator="-" class="date-range"
+                        :start-placeholder="lang.start_time" :end-placeholder="lang.end_time">
+                      </el-date-picker>
+                      <el-button class="default-btn search" @click="searchDomain">{{lang.search}}</el-button>
+                    </div>
+                  </div>
+                  <div class="tabledata">
+                    <el-table v-loading="listLoading" :data="domainList" style="width: 100%;margin-bottom: .2rem;"
+                      :show-overflow-tooltip="true">
+                      <el-table-column prop="id" label="ID" width="100"></el-table-column>
+                      <el-table-column prop="domain" :label="lang.domain" width="180">
+                        <template slot-scope="{row}">
+                          <a style="color: #0058ff;" :href="`/productdetail.htm?id=${row.id}`"
+                            class="aHover">{{row.domain}}</a>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="domain_status" :label="lang.domain_status" width="150">
+                        <template slot-scope="{row}">
+                          {{calcStatus(row.status)}}
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="zh_owner" :label="lang.domain_owner" width="150">
+                      </el-table-column>
+                      <el-table-column prop="create_time" :label="lang.regist_time" width="180">
+                        <template slot-scope="{row}">
+                          <span>{{row.create_time | formateTime}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="expiredate" :label="lang.cloud_table_head_4" width="280">
+                        <template slot-scope="{row}">
+                          <span>{{row.expiredate |
+                    formateTime}}（{{lang.distance}}{{row.expireday}}{{lang.domain_day}}）</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="lock_state" :label="lang.lock_state" width="130">
+                        <template slot-scope="{row}">
+                          {{row.lock_status === 1 ? lang.domain_lock : lang.domain_unlock}}
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="module_name" :label="lang.registrant">
+                      </el-table-column>
+                      <el-table-column prop="type" :label="lang.security_label3" width="120">
+                        <template slot-scope="{row}">
+                          <el-popover placement="top-start" trigger="hover">
+                            <div class="operation">
+                              <div class="operation-item" @click="goDetails(row)">{{lang.domain_look}}</div>
+                              <div class="operation-item" @click="renewItem(row)">{{lang.template_text100}}</div>
+                            </div>
+                            <span class="more-operation" slot="reference">
+                              <div class="dot"></div>
+                              <div class="dot"></div>
+                              <div class="dot"></div>
+                            </span>
+                          </el-popover>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                    <pagination :page-data="listParams" v-if="listParams.total" @sizechange="sizeChange"
+                      @currentchange="currentChange">
+                    </pagination>
+                  </div>
+                </el-tab-pane>
+                <!-- 模板管理 -->
+                <el-tab-pane :label="lang.info_temp_manage" name="template">
+                  <div class="list-top">
+                    <div class="left">
+                      <el-button class="default-btn" @click="createTemplate">{{lang.create_template}}</el-button>
+                    </div>
+                    <div class="right">
+                      <el-input class="keywords" v-model="infoParams.keywords" clearable
+                        :placeholder="`${lang.domain_owner}`">
+                      </el-input>
+                      <el-button class="default-btn search" @click="searchTemplate">{{lang.search}}</el-button>
+                    </div>
+                  </div>
+                  <div class="tabledata">
+                    <el-table v-loading="listLoading" :data="templateList" style="width: 100%;margin-bottom: .2rem;">
+                      <el-table-column prop="id" label="ID" width="150"></el-table-column>
+                      <el-table-column prop="zh_owner" :label="lang.domain_owner">
+                      </el-table-column>
+                      <el-table-column prop="lock_state" :label="lang.finance_label11">
+                        <template slot-scope="{row}">
+                          {{row.type === 'personal' ? lang.personal : lang.business}}
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="domain_status" :label="lang.certific_status" width="200">
+                        <template slot-scope="{row}">
+                          <span class="status success" v-if="row.status === 1">{{lang.certified}}</span>
+                          <span class="status" v-if="row.status === 2">{{lang.identification}}</span>
+                          <span class="status danger" v-if="row.status === 0">{{lang.not_certified}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="type" :label="lang.security_label3" width="120">
+                        <template slot-scope="{row}">
+                          <el-popover placement="top-start" trigger="hover">
+                            <div class="operation">
+                              <div class="operation-item" @click="lookItem(row)">{{lang.domain_look}}</div>
+                              <div class="operation-item" @click="delItem(row)" v-if="row.used === 0">
+                                {{lang.template_text157}}
+                              </div>
+                              <div class="operation-item" @click="handlerReal(row)" v-if="row.status === 0">
+                                {{lang.real_name_auth}}
+                              </div>
+                            </div>
+                            <span class="more-operation" slot="reference">
+                              <div class="dot"></div>
+                              <div class="dot"></div>
+                              <div class="dot"></div>
+                            </span>
+                          </el-popover>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                    <pagination :page-data="infoParams" v-if="infoParams.total" @sizechange="sizeChange"
+                      @currentchange="currentChange">
+                    </pagination>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+    <!-- 弹窗 start -->
+    <!-- 域名续费 -->
+    <div class="renew-dialog">
+      <el-dialog width="6.8rem" :visible.sync="isShowRenew" :show-close=false @close="renewClose">
+        <div class="dialog-title">
+          {{lang.domain}}{{lang.template_text100}}
+        </div>
+        <el-form :model="formRenew" label-position="top" ref="formRenew">
+          <el-form-item :label="`${lang.template_text100}${lang.domain}`">
+            <el-input v-model="formRenew.domain" :placeholder="`${lang.template_text100}${lang.domain}`"
+              disabled></el-input>
+          </el-form-item>
+          <el-form-item :label="lang.renew_duration" prop="duration"
+            :rules="[ { required: true, message: `${lang.placeholder_pre2}${lang.renew_duration}`, trigger: 'change' }]">
+            <el-select v-model="formRenew.duration" :placeholder="lang.renew_duration">
+              <el-option :label="item.label" :value="item.value" v-for="(item, index) in durationArr" :key="index"
+                :disabled="item.disabled">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <div class="dialog-footer">
+              <div class="btn-ok mr-10" @click="handlerRenew" v-loading="submitLoading">{{lang.security_btn5}}
+              </div>
+              <div class="btn-no" @click="renewClose">{{lang.security_btn6}}</div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+    <!-- 接受转移域名 -->
+    <div class="tansfer-dialog">
+      <el-dialog width="6.8rem" :visible.sync="isShowTransfer" :show-close=false @close="delClose">
+        <div class="del-dialog-title">
+          {{lang.receive_transfer_domain}}（{{curIndex}}/{{domain_total}}）
+        </div>
+        <el-form :model="transferForm" ref="transferForm" label-position="left" label-width="96px"
+          :hide-required-asterisk="true">
+          <el-carousel arrow="never" :autoplay="false" indicator-position="none" ref="transferCarousel">
+            <el-carousel-item v-for="item in transferDomain" :key="item.id">
+              <el-form-item :label="lang.transfer_domain">
+                <span>{{item.domain}}</span>
+              </el-form-item>
+              <el-form-item :label="lang.source_user">
+                <span>{{item.username}}</span>
+              </el-form-item>
+              <el-form-item :label="lang.transfer_password" class="password" prop="password"
+                :rules="[{ required: true, message: `${lang.placeholder_pre1}${lang.transfer_password}`, trigger: 'blur' }]">
+                <el-input :placeholder="`${lang.placeholder_pre1}${lang.transfer_password}`"
+                  v-model="transferForm.password" type="password" show-password></el-input>
+              </el-form-item>
+            </el-carousel-item>
+          </el-carousel>
+          <template v-if="domain_total > 1">
+            <div class="btn prev" @click="handlerPrev">
+              <i class="el-icon-arrow-left"></i>
+            </div>
+            <div class="btn next" @click="handlerNext">
+              <i class="el-icon-arrow-right"></i>
+            </div>
+          </template>
+          <div class="dialog-footer">
+            <div class="btn-ok mr-10" @click="handlerAccept" v-loading="submitLoading">{{lang.security_btn5}}
+            </div>
+            <div class="btn-no" @click="isShowTransfer = false">{{lang.security_btn6}}</div>
+          </div>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+    <!-- 信息模板详情 -->
+    <div class="temp-dialog">
+      <el-dialog width="9rem" :visible.sync="isShowTemp" :show-close=false @close="delClose">
+        <h3 class="tit">{{lang.info_template}}</h3>
+        <div class="details">
+          <table width="100%">
+            <tr>
+              <td>{{lang.owner_zh_name}}：</td>
+              <td>{{infoDetails.zh_owner}}</td>
+              <td>{{lang.owner_en_name}}：</td>
+              <td>{{infoDetails.en_owner}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.concat_zh_name}}：</td>
+              <td>{{infoDetails.zh_last_name}}{{infoDetails.zh_first_name}}</td>
+              <td>{{lang.concat_en_name}}：</td>
+              <td>{{infoDetails.en_last_name}}{{infoDetails.en_first_name}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.concat_type}}：</td>
+              <td>
+                <span v-if="infoDetails.type === 'personal'">{{lang.personal}}</span>
+                <span v-if="infoDetails.type === 'enterprise'">{{lang.business}}</span>
+              </td>
+              <td>{{lang.certificate_status}}：</td>
+              <td>
+                <span class="status success" v-if="infoDetails.status === 1">{{lang.certified}}</span>
+                <span class="status" v-if="infoDetails.status === 2">{{lang.identification}}</span>
+                <span class="status danger" v-if="infoDetails.status === 0">{{lang.not_certified}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>{{lang.login_phone}}：</td>
+              <td>{{infoDetails.phone}}</td>
+              <td>{{lang.belong_area}}：</td>
+              <td>{{calcCountry(infoDetails.country)}}/{{infoDetails.zh_province}}/{{infoDetails.zh_city}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.address_zh}}：</td>
+              <td>{{infoDetails.zh_address}}</td>
+              <td>{{lang.email_address}}：</td>
+              <td>{{infoDetails.email}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.address_en}}：</td>
+              <td>{{infoDetails.en_address}}</td>
+            </tr>
+          </table>
+        </div>
+        <button class="close-dia" @click="isShowTemp = false">{{lang.ticket_btn5}}</button>
+      </el-dialog>
+    </div>
+    <!-- 实名认证 -->
+    <div class="temp-dialog real-dialog">
+      <el-dialog :width="calcRealWidth" :visible.sync="isShowReal" :show-close=false @close="delClose">
+        <h3 class="tit">{{lang.owner_auth}}</h3>
+        <div class="details">
+          <table width="100%">
+            <tr>
+              <td>{{lang.owner_zh_name}}：</td>
+              <td>{{infoDetails.zh_owner}}</td>
+              <td>{{lang.owner_en_name}}：</td>
+              <td>{{infoDetails.en_owner}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.owner_id_type}}：</td>
+              <td>{{calcIDtype(formReal.idtype)}}</td>
+              <td>{{lang.owner_id_num}}：</td>
+              <td>{{formReal.idnum}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.concat_zh_name}}：</td>
+              <td>{{infoDetails.zh_last_name}}{{infoDetails.zh_first_name}}</td>
+              <td>{{lang.concat_en_name}}：</td>
+              <td>{{infoDetails.en_last_name}}&nbsp;{{infoDetails.en_first_name}}</td>
+            </tr>
+            <tr>
+              <td>{{lang.concat_type}}：</td>
+              <td>
+                <span v-if="infoDetails.type === 'personal'">{{lang.personal}}</span>
+                <span v-if="infoDetails.type === 'enterprise'">{{lang.business}}</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <el-form :model="formReal" label-position="top" ref="formReal" :hide-required-asterisk="true">
+          <el-form-item prop="idtype2" :label="lang.concat_id_type"
+            :rules="[{ required: true, message: `${lang.placeholder_pre2}${lang.concat_id_type}`, trigger: 'change' }]"
+            v-if="infoDetails.type === 'enterprise'">
+            <el-select v-model="formReal.idtype2" :placeholder="lang.concat_id_type">
+              <el-option v-for="item in selectIdTypeOption" :label="item.label" :value="item.value"
+                :key="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item prop="idnum2" :label="lang.concat_id_num"
+            :rules="[{ required: true, message: `${lang.placeholder_pre1}${lang.concat_id_num}`, trigger: 'change' }]"
+            v-if="infoDetails.type === 'enterprise'">
+            <el-input :placeholder="lang.concat_id_num" v-model="formReal.idnum2"></el-input>
+          </el-form-item>
+          <el-form-item :label="lang.font_of_id">
+            <div class="upload-box">
+              <div class="upload-item">
+                <el-form-item prop="img"
+                  :rules="[{ required: true, message: `${lang.please_upload}${lang.font_of_id}`, trigger: 'blur' }]">
+                  <el-upload class="avatar-uploader" :headers="{Authorization: jwt}" action="/console/v1/upload"
+                    :show-file-list="false" :on-success="handleCardSuccess" accept="image/*">
+                    <div class="upload">
+                      <img :src="formReal.img" alt="" v-if="formReal.img">
+                      <img src="/plugins/addon/idcsmart_domain/template/clientarea/domain/card.png" alt="" v-else>
+                    </div>
+                    <div class="el-upload__tip" slot="tip">{{lang.img_id_tip}}</div>
+                  </el-upload>
+                </el-form-item>
+              </div>
+              <div class="upload-item" v-if="infoDetails.type === 'enterprise'">
+                <el-form-item prop="img2"
+                  :rules="[{ required: true, message: `${lang.please_upload}${lang.font_of_id}`, trigger: 'blur' }]">
+                  <el-upload class="avatar-uploader" :headers="{Authorization: jwt}" action="/console/v1/upload"
+                    :show-file-list="false" :on-success="handleCardSuccess2" accept="image/*">
+                    <div class="upload">
+                      <img :src="formReal.img2" alt="" v-if="formReal.img2">
+                      <img src="/plugins/addon/idcsmart_domain/template/clientarea/domain/card.png" alt="" v-else>
+                    </div>
+                    <div class="el-upload__tip" style="text-align: center;" slot="tip">{{lang.img2_id_tip}}</div>
+                  </el-upload>
+                </el-form-item>
+              </div>
+            </div>
+          </el-form-item>
+          <el-form-item class="f-btn">
+            <div class="dialog-footer">
+              <div class="btn-ok mr-10" @click="submitReal" v-loading="submitLoading">{{lang.template_text135}}
+              </div>
+              <div class="btn-no" @click="isShowReal = false">{{lang.security_btn6}}</div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+    </div>
+    <!-- 删除模板/手机邮箱弹窗 -->
+    <div class="delete-dialog">
+      <el-dialog width="6.8rem" :visible.sync="isShowDel" :show-close=false @close="delClose">
+        <div class="del-dialog-title">
+          <i class="el-icon-warning-outline del-icon"></i>
+          {{calcDelTit}}
+        </div>
+        <div class="del-dialog-main">
+          {{delName}}
+        </div>
+        <div class="del-dialog-footer">
+          <div class="btn-ok" @click="delSub" v-loading="submitLoading">{{lang.security_btn9}}</div>
+          <div class="btn-no" @click="delClose">{{lang.security_btn6}}</div>
+        </div>
+      </el-dialog>
+    </div>
+    <!-- 支付 -->
+    <pay-dialog ref="topPayDialog" @payok="paySuccess" @paycancel="payCancel"></pay-dialog>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/idcsmart_domain/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/idcsmart_domain/template/clientarea/api/domain_manage.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/pagination/pagination.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/countDownButton/countDownButton.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/payDialog/payDialog.js"></script>
+  <script src="/plugins/addon/idcsmart_domain/template/clientarea/js/domain.js"></script>

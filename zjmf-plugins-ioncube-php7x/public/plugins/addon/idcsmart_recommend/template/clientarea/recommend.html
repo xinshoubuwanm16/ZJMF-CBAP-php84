@@ -1,0 +1,323 @@
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/addon/idcsmart_recommend/template/clientarea/css/referral.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template referral">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <el-main>
+          <!-- 自己的东西 -->
+          <div class="main-card" v-show="!isPlan">
+            <div class="main-card-title">
+              <span>{{lang.referral_title1}}</span>
+              <i v-show="activeIndex==2" class="el-icon-s-management plan-icon" @click="showPlan"></i>
+              <span v-show="activeIndex==2" class="plan" @click="showPlan">{{lang.referral_text12}}</span>
+            </div>
+            <el-tabs v-if="isOpen" v-model="activeIndex" @tab-click="handleClick">
+              <el-tab-pane :label="lang.referral_tabs1" name="1">
+                <div class="top-statistic">
+                  <div class="top-item">
+                    <div class="item-top">
+                      <div class="top-money top-money-tx">
+                        <span>{{commonData.currency_prefix}}{{promoterData.withdrawable_amount}}</span>
+                        <span class="tx-btn" @click="shwoWithdrawal">{{lang.finance_text11}}</span>
+                      </div>
+                      <div class="top-text">{{lang.referral_title2}}</div>
+                    </div>
+                    <img class="top-img"
+                      src="/plugins/addon/idcsmart_recommend/template/clientarea/img/referral/top1.png" />
+                  </div>
+                  <div class="top-item">
+                    <div class="item-top">
+                      <div class="top-money">{{commonData.currency_prefix}}{{promoterData.withdrawn_amount}}</div>
+                      <div class="top-text">{{lang.referral_title3}}</div>
+                    </div>
+                    <img class="top-img"
+                      src="/plugins/addon/idcsmart_recommend/template/clientarea/img/referral/top2.png" />
+                  </div>
+                  <div class="top-item">
+                    <div class="item-top">
+                      <div class="top-money">{{commonData.currency_prefix}}{{promoterData.pending_amount}}
+                        <!-- <div class="icon-help" :title="`${lang.referral_text7}：${commonData.currency_prefix}${promoterData.frozen_amount}`">?</div> -->
+                      </div>
+                      <div class="top-text">{{lang.referral_title4}}</div>
+                    </div>
+                    <img class="top-img"
+                      src="/plugins/addon/idcsmart_recommend/template/clientarea/img/referral/top3.png" />
+                  </div>
+                  <div class="top-item">
+                    <div class="item-top">
+                      <div class="top-money">{{commonData.currency_prefix}}{{promoterData.active_amount}}
+                        <div class="icon-help"
+                          :title="`${lang.referral_text7}：${commonData.currency_prefix}${promoterData.frozen_amount}`">?
+                        </div>
+                      </div>
+                      <div class="top-text">{{lang.referral_title5}}</div>
+                    </div>
+                    <img class="top-img"
+                      src="/plugins/addon/idcsmart_recommend/template/clientarea/img/referral/top4.png" />
+                  </div>
+                </div>
+                <div class="block-url">
+                  <div class="title">{{lang.referral_title6}}</div>
+                  <div class="content">
+                    <div class="step">
+                      <div class="step-num">1</div>
+                      <div class="step-main">
+                        <p class="step-text-1">
+                          {{lang.referral_text8}}
+                        </p>
+                        <p class="step-text-2">
+                          {{lang.referral_text9}}
+                        </p>
+                        <div class="url">
+                          <div class="url-text" :title="promoterData.url">{{promoterData.url}}</div>
+                          <div class="copy-btn" @click="copyUrl(promoterData.url)">{{lang.referral_btn2}}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="step step-2">
+                      <div class="step-num">2</div>
+                      <div class="step-main">
+                        <div class="step-text-1">
+                          <p> {{lang.referral_text10}}<span
+                              class="yellow">{{descriptionData.max_ratio}}%</span>{{lang.referral_text11}}</p>
+                          <div class="plan-text" @click="showPlan">{{lang.referral_text12}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="block-url block-customer-url">
+                  <div class="title">{{lang.referral_status12}}</div>
+                  <div class="customer-main">
+                    <el-table v-loading="recProLoading" :data="recommendProducts"
+                      style="width: 60%;margin-bottom: .2rem;">
+                      <el-table-column prop="name" :label="lang.referral_label2" min-width="400" align="left">
+                      </el-table-column>
+                      <el-table-column prop="ratio" :label="lang.referral_label9" min-width="200" align="left">
+                        <template slot-scope="scope">
+                          {{scope.row.ratio}}%
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="url" width="180" align="left" :label="lang.ticket_label5">
+                        <template slot-scope="scope">
+                          <div v-loading="scope.row.copyLoading" style="cursor: pointer; color: #0058FF;"
+                            @click="handelCopyUrl(scope.row)">
+                            {{lang.referral_btn2}}
+                          </div>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </div>
+
+              </el-tab-pane>
+              <el-tab-pane :label="lang.referral_tabs2" name="2">
+                <div class="recommend">
+                  <div class="top-search">
+                    <el-select class="status-select" clearable v-model="params1.status"
+                      :placeholder="lang.referral_tips5">
+                      <el-option v-for="item in recommendStatus" :key="item.id" :label="item.label" :value="item.value">
+                      </el-option>
+                    </el-select>
+                    <el-button class="search-btn" @click="search1">{{lang.referral_btn5}}</el-button>
+                  </div>
+                  <div class="main-table">
+                    <el-table v-loading="loading1" :data="recommendData" style="width: 100%;margin-bottom: .2rem;">
+                      <el-table-column prop="username" :label="lang.referral_label1" width="150" align="left"
+                        :show-overflow-tooltip="true">
+                      </el-table-column>
+                      <el-table-column prop="product_name" :label="lang.referral_label2" min-width="300" align="left"
+                        :show-overflow-tooltip="true">
+                      </el-table-column>
+                      <el-table-column prop="type" :label="lang.referral_status13" width="200" align="left"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                          <span>{{scope.row.type === 'new' ? lang.referral_status14 : lang.referral_status15 }}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="awards_amount" :label="lang.referral_label3" width="250" align="left"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                          <span>{{commonData.currency_prefix}} {{scope.row.awards_amount}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="surplus_time" :label="lang.referral_label4" width="200" align="left"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                          <span>{{scope.row.surplus_time | formateDms}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="status" :label="lang.referral_label5" width="150" align="left">
+                        <template slot-scope="scope">
+                          <div class="status-column">
+                            <span class="status Pending"
+                              v-if="scope.row.status == 'Pending'">{{lang.referral_status5}}</span>
+                            <span class="status Active"
+                              v-if="scope.row.status == 'Active'">{{lang.referral_status6}}</span>
+                            <span class="status Invalid"
+                              v-if="scope.row.status == 'Invalid'">{{lang.referral_status7}}</span>
+                            <span class="status Frozen"
+                              v-if="scope.row.status == 'Frozen'">{{lang.referral_status8}}</span>
+                            <div v-if="scope.row.status == 'Invalid'" class="help" :title="scope.row.invalid_reason">?
+                            </div>
+                          </div>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                    <pagination :page-data="params1" @sizechange="sizeChange1" @currentchange="currentChange1">
+                    </pagination>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane :label="lang.referral_tabs3" name="3">
+                <div class="with-draw">
+                  <div class="top-search">
+                    <el-select class="status-select" clearable v-model="params2.status"
+                      :placeholder="lang.referral_tips5">
+                      <el-option v-for="item in withdrawStatus" :key="item.id" :label="item.label" :value="item.value">
+                      </el-option>
+                    </el-select>
+                    <el-button class="search-btn" @click="search2">{{lang.referral_btn5}}</el-button>
+                  </div>
+                  <div class="main-table">
+                    <el-table v-loading="loading2" :data="withdrawData" style="width: 100%;margin-bottom: .2rem;">
+                      <el-table-column prop="create_time" :label="lang.referral_label6" width="430" align="left"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                          <span>{{scope.row.create_time | formateTime}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="amount" :label="lang.referral_label7" min-width="530" align="left"
+                        :show-overflow-tooltip="true">
+                        <template slot-scope="scope">
+                          <span>{{commonData.currency_prefix}} {{scope.row.amount}}</span>
+                        </template>
+                      </el-table-column>
+                      <el-table-column prop="method" :label="lang.referral_label8" width="320" align="left"
+                        :show-overflow-tooltip="true">
+                      </el-table-column>
+                      <el-table-column prop="status" :label="lang.referral_label5" width="150" align="left">
+                        <template slot-scope="scope">
+                          <span class="status-0 status" v-if="scope.row.status == 0">{{lang.referral_status1}}</span>
+                          <span class="status-1 status" v-if="scope.row.status == 1">{{lang.referral_status2}}</span>
+                          <el-tooltip class="item" effect="light" :content="scope.row.reason" placement="top">
+                            <span class="status-2 status" v-if="scope.row.status == 2">{{lang.referral_status3}}</span>
+                          </el-tooltip>
+                          <span class="status-3 status" v-if="scope.row.status == 3">{{lang.referral_status4}}</span>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                    <pagination :page-data="params2" @sizechange="sizeChange2" @currentchange="currentChange2">
+                    </pagination>
+                  </div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+            <!-- 未开启推介计划 -->
+            <div v-else>
+              <div class="un-referral">
+                <img class="back-img"
+                  src="/plugins/addon/idcsmart_recommend/template/clientarea/img/referral/back.png" />
+                <div class="title-text">{{lang.referral_text1}}</div>
+                <p>{{lang.referral_text2}}</p>
+                <p>{{lang.referral_text3}}<span class="red">{{descriptionData.max_ratio}}%</span>{{lang.referral_text4}}
+                </p>
+                <p v-if="descriptionData.awards && descriptionData.awards>0">{{lang.referral_text5}}<span
+                    class="red">{{commonData.currency_prefix}}{{descriptionData.awards}}</span>{{lang.referral_text6}}
+                </p>
+                <el-button class="open-btn" @click="openVisible=true">{{lang.referral_btn1}}</el-button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 完整推介计划 -->
+          <div class="main-card config" v-show="isPlan">
+            <div class="top">
+              <div class="top-l"> <img @click="isPlan=false"
+                  src="/plugins/addon/idcsmart_recommend/template/clientarea/img/finance/back.png"
+                  class="top-img">{{lang.referral_title1}}</div>
+            </div>
+            <div class="top-line"></div>
+            <div class="main_table">
+              <el-table v-loading="loading3" :data="dataList3" style="width: 100%;" row-key="id">
+                <el-table-column prop="name" :label="lang.referral_label2" min-width="300" align="left">
+                </el-table-column>
+                <el-table-column prop="ratio" :label="lang.referral_label9" min-width="150" align="left">
+                  <template slot-scope="scope">
+                    {{scope.row.ratio}}%
+                  </template>
+                </el-table-column>
+                <el-table-column prop="amount" width="180" align="left">
+                  <template slot="header" slot-scope="scope">
+                    <div class="amount-column">
+                      <span>{{lang.referral_text13}}</span>
+                      <div class="help" :title="lang.referral_tips6">?</div>
+                    </div>
+                  </template>
+                  <template slot-scope="scope">
+                    {{commonData.currency_prefix}}{{scope.row.amount}}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="renew_ratio" :label="lang.referral_label10" min-width="150" align="left">
+                  <template slot-scope="scope">
+                    {{scope.row.renew_ratio}}%
+                  </template>
+                </el-table-column>
+                <el-table-column prop="renew_amount" :label="lang.referral_label11" width="180" align="left">
+                  <template slot-scope="scope">
+                    {{commonData.currency_prefix}}{{scope.row.renew_amount}}
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
+          <!-- 确认开启弹窗 -->
+          <el-dialog :title="lang.referral_title8" :visible.sync="openVisible" width="6.8rem"
+            custom-class="open-dialog">
+            <span>{{lang.referral_tips7}}</span>
+            <span slot="footer" class="dialog-footer">
+              <el-button class="btn-ok" type="primary" @click="openReferral">{{lang.referral_btn6}}</el-button>
+              <el-button class="btn-no" @click="openVisible = false">{{lang.referral_btn7}}</el-button>
+            </span>
+          </el-dialog>
+          <!-- 删除确认弹窗 -->
+          <el-dialog width="6.8rem" :visible.sync="delVisible" :show-close=false @close="delVisible = false"
+            custom-class="del-dialog">
+            <div class="del-dialog-title">
+              <i class="el-icon-warning-outline del-icon"></i>{{lang.referral_title9}}
+            </div>
+            <div class="del-dialog-main">
+              {{lang.referral_tips8}}
+            </div>
+            <div class="del-dialog-footer">
+              <div class="btn-ok" @click="delCustomer">{{lang.referral_btn8}}</div>
+              <div class="btn-no" @click="delVisible = false">{{lang.referral_btn7}}</div>
+            </div>
+          </el-dialog>
+
+          <!-- 提现弹窗 -->
+          <withdraw-dialog ref="withdrawDialog" @dowithdraw="dowithdraw"></withdraw-dialog>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/idcsmart_recommend/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/idcsmart_recommend/template/clientarea/api/referral.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/pagination/pagination.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/withdrawDialog/withdrawDialog.js"></script>
+  <script src="/plugins/addon/idcsmart_recommend/template/clientarea/js/referral.js"></script>

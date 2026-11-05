@@ -1,0 +1,483 @@
+<!-- 独有 -->
+<link rel="stylesheet" href="/plugins/addon/idcsmart_invoice/template/admin/css/invoice_system.css" />
+<!-- 内容开始 -->
+<div id="content" class="invoice-system" v-cloak>
+  <com-config>
+    <t-card class="list-card-container table">
+      <ul class="common-tab">
+        <li class="active" v-permission="'auth_idcsmart_invoice_management'">
+          <a href="javascript:;">{{lang.invoice_tab1}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_title'">
+          <a href="invoice_title.htm">{{lang.invoice_tab2}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_address'">
+          <a href="invoice_address.htm">{{lang.invoice_tab3}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_configuration'">
+          <a href="invoice_config.htm">{{lang.invoice_tab4}}</a>
+        </li>
+      </ul>
+      <div class="manage">
+        <t-button @click="handleAdd"
+          v-if="$checkPermission('auth_idcsmart_invoice_management_apply_invoice')">{{lang.invoice_btn20}}</t-button>
+        <div v-else></div>
+        <div class="top-search">
+          <t-input class="key-input" v-model="params.keywords" @keyup.enter.native="seacrh" :on-clear="clearKey"
+            :placeholder="lang.invoice_text1" clearable>
+          </t-input>
+          <t-select class="type-select" v-model="params.type" :placeholder="lang.invoice_text2" clearable>
+            <t-option v-for="item in invoiceType" :value="item.value" :label="item.label" :key="item.id">
+            </t-option>
+          </t-select>
+          <t-select class="status-select" v-model="params.status" :placeholder="lang.invoice_text3" clearable>
+            <t-option v-for="item in invoiceStatus" :value="item.value" :label="item.label" :key="item.id">
+            </t-option>
+          </t-select>
+          <t-button @click="seacrh">{{lang.query}}</t-button>
+        </div>
+      </div>
+
+      <t-table :data="invoiceList" display-type="fixed-width" :hide-sort-tips="true" :loading="loading"
+        :columns="columns" row-key="id">
+        <template #username="{row}">
+          <div class="username-company" style="cursor: pointer">
+            <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">{{row.username}}</a>
+            <span class="company" v-if="row.company">({{row.company}})</span>
+            <!-- <div class="type" v-if="row.type && (row.type == 'after')">{{lang.invoice_type1}}</div> -->
+            <!-- <div class="type" v-if="row.type && (row.type == 'prev')">{{lang.invoice_type2}}</div> -->
+          </div>
+        </template>
+        <template #price="{row}">
+          <span>{{currency_prefix}}{{row.price}}</span>
+        </template>
+        <template #invoice_format="{row}">
+          {{row.invoice_format || '--'}}
+        </template>
+        <template #invoice_project="{row}">
+          {{row.invoice_project || '--'}}
+        </template>
+        <template #create_time="{row}">
+          <span>{{row.create_time ===0 ? '-' : moment(row.create_time *
+            1000).format('YYYY/MM/DD HH:mm')}}</span>
+        </template>
+        <template #type="{row}">
+          <t-tag>{{ row.type === 'prev' ? lang.invoice_label24 :
+            lang.invoice_type1}}</t-tag>
+        </template>
+        <template #status="{row}">
+          <!-- 已驳回 -->
+          <t-popup :content="row.reject_reason" destroy-on-close>
+            <div class="status" :class="row.status" v-if="row.status == 'reject'">
+              {{statusText[row.status]}}
+            </div>
+          </t-popup>
+          <!-- 其它状态 -->
+          <t-popup :content="row.review_notes" destroy-on-close v-if="row.review_notes">
+            <div class="status" :class="row.status" v-if="row.status != 'reject'">
+              {{statusText[row.status]}}
+            </div>
+          </t-popup>
+          <div v-else>
+            <div class="status" :class="row.status" v-if="row.status != 'reject'">
+              {{statusText[row.status]}}
+            </div>
+          </div>
+        </template>
+        <template #operation="{row}">
+          <!-- 通过 -->
+          <t-popup :content="lang.invoice_text4" destroy-on-close>
+            <t-icon class="operation-icon" name="check-circle" @click="confirm(row)"
+              v-if="row.status == 'pending' && $checkPermission('auth_idcsmart_invoice_management_approve_invoice')">
+            </t-icon>
+          </t-popup>
+          <!-- 驳回 -->
+          <t-popup :content="lang.invoice_text5" destroy-on-close>
+            <t-icon class="operation-icon" name="file-excel" @click="reject(row)"
+              v-if="row.status == 'pending' && $checkPermission('auth_idcsmart_invoice_management_reject_invoice')"></t-icon>
+          </t-popup>
+          <!-- 发出 -->
+          <t-popup :content="lang.invoice_text6" destroy-on-close>
+            <t-icon class="operation-icon" name="jump" @click="send(row)"
+              v-if="row.status == 'wait_send' && $checkPermission('auth_idcsmart_invoice_management_send_invoice')"></t-icon>
+          </t-popup>
+          <!-- 详情 -->
+          <t-popup :content="lang.invoice_text7" destroy-on-close>
+            <t-icon class="operation-icon" name="view-module" @click="detail(row)"
+              v-if="$checkPermission('auth_idcsmart_invoice_management_check_invoice')"></t-icon>
+          </t-popup>
+
+          <template v-if="row.status == 'wait_send' || row.status == 'sent'">
+            <!-- 冲红 -->
+            <t-popup :content="lang.invoice_btn7" destroy-on-close>
+              <a href="javascript:;" class="common-look" @click="handleBlush(row)"
+                v-if="$checkPermission('auth_idcsmart_invoice_management_flush_invoice')">
+                <svg class="common-look">
+                  <use xlink:href="/plugins/addon/idcsmart_invoice/template/admin/img/icons.svg#cus-blush">
+                  </use>
+                </svg>
+              </a>
+            </t-popup>
+            <!-- 上传 -->
+            <t-upload ref="uploadRef" :action="uploadUrl" class="upload-box" v-model="uploadForm.files"
+              :auto-upload="true" @fail="handleFail" theme="custom" @success="onSuccess" :headers="uploadHeaders"
+              accept=".PDF,.OFD,.XML,.Zip" :format-response="formatImgResponse" v-if="!row.invoice_filename">
+              <t-popup :content="lang.attachment" destroy-on-close>
+                <t-icon class="operation-icon" name="upload" @click="handleUpload(row)"
+                  v-if="$checkPermission('auth_idcsmart_invoice_management_upload_invoice')"></t-icon>
+              </t-popup>
+            </t-upload>
+            <!-- <t-popup :content="lang.download" destroy-on-close v-if="row.invoice_filename">
+              <t-icon class="operation-icon" name="download" @click="handleDown(row)"></t-icon>
+            </t-popup> -->
+            <!-- 查看发票： 已经上传过发票时显示 -->
+            <t-popup :content="lang.invoice_btn19" destroy-on-close v-if="row.invoice_filename">
+              <a href="javascript:;" class="common-look" @click="handleProject(row)">
+                <svg class="common-look">
+                  <use xlink:href="/plugins/addon/idcsmart_invoice/template/admin/img/icons.svg#cus-look">
+                  </use>
+                </svg>
+              </a>
+            </t-popup>
+          </template>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" :page-size="params.limit" :page-size-options="pageSizeOptions"
+        :on-change="changePage" :current="params.page" />
+    </t-card>
+
+    <!-- 确认通过弹窗 -->
+    <t-dialog :header="lang.invoice_title2" :visible.sync="passVisible" :footer="false">
+      <t-form :data="passData" ref="passForm" @submit="passSubmit">
+        <t-form-item :label="lang.invoice_text24" name="review_notes">
+          <t-textarea v-model="passData.review_notes" :placeholder="lang.invoice_text25"
+            :autosize="{ minRows: 3, maxRows: 5 }" />
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit">{{lang.invoice_btn1}}</t-button>
+          <t-button theme="default" variant="base" @click="passVisible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 确认驳回弹窗 -->
+    <t-dialog :header="lang.invoice_title1" :visible.sync="rejectVisible" :footer="false">
+      <t-form :data="rejectData" ref="rejectForm" @submit="rejectSubmit" :rules="rejectRules">
+        <t-form-item :label="lang.invoice_label1" name="reject_reason">
+          <t-textarea v-model="rejectData.reject_reason" :placeholder="lang.invoice_text8"
+            :autosize="{ minRows: 3, maxRows: 5 }" />
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="rejectClose">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 发票详情 -->
+    <t-dialog :header="lang.invoice_title3" :visible.sync="detailVisible" :footer="false" width="1083px">
+      <div class="detail-main">
+        <div class="detail-top">
+          <div class="top-item">
+            <div class="label">{{lang.invoice_label2}}</div>
+            <div class="value" v-if="detailData.invoice_type == 'special'">
+              {{lang.invoice_text11}}
+            </div>
+            <div class="value" v-if="detailData.invoice_type == 'normal'">
+              {{lang.invoice_text12}}
+            </div>
+          </div>
+          <div class="top-item">
+            <div class="label">{{lang.invoice_label3}}</div>
+            <div class="value" v-if="detailData.title_type=='company'">
+              {{lang.invoice_text13}}
+            </div>
+            <div class="value" v-if="detailData.title_type=='person'">
+              {{lang.invoice_text14}}
+            </div>
+          </div>
+          <div class="top-item">
+            <div class="label">{{lang.invoice_label4}}</div>
+            <div class="value">{{detailData.title}}</div>
+          </div>
+        </div>
+        <div class="detail-content">
+          <div class="detail-row">
+            <div class="row-title">{{lang.invoice_title4}}</div>
+            <div class="row-content first-content">
+              <div class="item">
+                <div class="label">{{lang.invoice_label10}}</div>
+                <div class="value">
+                  {{detailData.username}}
+                  <span v-if="detailData.company">({{detailData.company}})</span>
+                </div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label11}}</div>
+                <div class="value">{{detailData.company_address}}</div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label12}}</div>
+                <div class="value">{{detailData.tax}}</div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label13}}</div>
+                <div class="value">{{detailData.bank}}</div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label14}}</div>
+                <div class="value">{{detailData.bank_user}}</div>
+              </div>
+            </div>
+            <div class="row-title">{{lang.invoice_title12}}</div>
+            <div class="row-content">
+              <div class="item">
+                <div class="label">{{lang.invoice_label5}}</div>
+                <div class="value" v-if="detailData.rec_type == 'paper'">
+                  {{lang.invoice_text15}}
+                </div>
+                <div class="value" v-if="detailData.rec_type == 'email'">
+                  {{lang.invoice_text16}}
+                </div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label6}}</div>
+                <div class="value">{{detailData.address}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="detail-row">
+            <div class="row-title">{{lang.invoice_title5}}</div>
+            <div class="row-content first-content">
+              <span v-for="(item,index) in detailData.order" :key="index">
+                <span>{{lang.order}}ID({{item.id}})-{{lang.order_date}}({{moment(item.create_time*
+                  1000).format('YYYY/MM/DDHH:mm')}})-{{lang.money}}({{currency_prefix}}{{item.amount}})</span>
+                <br />
+              </span>
+            </div>
+            <div class="row-title">{{lang.invoice_title6}}</div>
+            <div class="row-content">{{currency_prefix}}{{detailData.price}}</div>
+            <div class="row-title">{{lang.invoice_title7}}</div>
+            <div class="row-content">{{detailData.tax_show}}</div>
+            <div class="row-title">{{lang.invoice_title8}}</div>
+            <div class="row-content">
+              {{currency_prefix}}{{detailData.tax_price}}
+            </div>
+          </div>
+          <div class="detail-row">
+            <div class="row-title">{{lang.invoice_title9}}</div>
+            <div class="row-content first-content">
+              <div class="item">
+                <div class="label">{{lang.invoice_label7}}</div>
+                <div class="value">{{detailData.parcel}}</div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label8}}</div>
+                <div class="value">{{detailData.parcel_number}}</div>
+              </div>
+              <div class="item">
+                <div class="label">{{lang.invoice_label9}}</div>
+                <div class="value">
+                  {{currency_prefix}}{{detailData.parcel_price}}
+                </div>
+              </div>
+            </div>
+            <div class="row-title">{{lang.invoice_title10}}</div>
+            <div class="row-content">{{currency_prefix}}{{detailData.total}}</div>
+          </div>
+        </div>
+        <div class="detail-footer">
+          <t-button theme="default" @click="detailVisible=false">{{lang.invoice_btn2}}</t-button>
+        </div>
+      </div>
+    </t-dialog>
+
+    <!-- 发出发票 -->
+    <t-dialog :header="lang.invoice_title11" :visible.sync="sendVisible" :footer="false" width="597px">
+      <div class="send-main">
+        <div class="send-top">
+          <div class="item">
+            <div class="label">{{lang.invoice_label15}}</div>
+            <div class="value">
+              {{detailData.username}}
+              <span v-if="detailData.company">({{detailData.company}})</span>
+            </div>
+          </div>
+          <div class="item">
+            <div class="label">{{lang.invoice_label16}}</div>
+            <div class="value">
+              {{currency_prefix}}{{detailData.invoice_price}}
+            </div>
+          </div>
+          <div class="item" v-if="detailData.rec_type == 'email'">
+            <div class="label">{{lang.invoice_label17}}</div>
+            <div class="value">{{detailData.email}}</div>
+          </div>
+          <!-- <div class="item" v-if="detailData.rec_type == 'email'">
+                      <div class="label">{{lang.invoice_label18}}</div>
+                      <div class="value">{{detailData.rec_url}}</div>
+                  </div> -->
+        </div>
+        <div class="line" v-if="detailData.rec_type == 'paper'"></div>
+        <div class="send-form" v-if="detailData.rec_type == 'paper'">
+          <t-form :data="sendData" ref="sendForm" @submit="sendSubmit" :rules="sendRules">
+            <t-form-item :label="lang.invoice_label19" name="parcel_id">
+              <t-select v-model="sendData.parcel_id">
+                <t-option v-for="item in parcel" :key="item.id" :value="item.id" :label="item.name"></t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item :label="lang.invoice_label20" name="parcel_number">
+              <t-input v-model="sendData.parcel_number"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.invoice_label21" name="filename">
+              <!-- 快递单图片上传 -->
+              <t-upload v-model="fileList" :headers="uploadHeaders" :action="uploadUrl" accept="image/*"
+                :size-limit="sizeLimit" :on-success="handleSuccess" :file-list="fileList"
+                :placeholder="lang.invoice_tips1" @fail="handleFail">
+              </t-upload>
+            </t-form-item>
+            <div class="com-f-btn">
+              <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.invoice_btn3}}</t-button>
+              <t-button theme="default" variant="base" @click="sendVisible=false">{{lang.cancel}}</t-button>
+            </div>
+          </t-form>
+        </div>
+        <div class="com-f-btn" v-if="detailData.rec_type == 'email'">
+          <t-button theme="primary" @click="sendSubmit1" :loading="submitLoading">{{lang.invoice_btn3}}</t-button>
+          <t-button theme="default" variant="base" @click="sendVisible=false">{{lang.cancel}}</t-button>
+        </div>
+      </div>
+    </t-dialog>
+
+    <!-- 冲红 -->
+    <t-dialog theme="warning" :header="lang.invoice_btn11" :visible.sync="blushVisible" :footer="false">
+      <div class="com-f-btn">
+        <t-button theme="primary" @click="submitBlush" :loading="submitLoading">{{lang.invoice_btn1}}</t-button>
+        <t-button theme="default" variant="base" @click="blushVisible = false">{{lang.cancel}}</t-button>
+      </div>
+    </t-dialog>
+
+    <!-- 查看发票 -->
+    <t-dialog :header="lang.invoice_btn19" :visible.sync="lookProject" :footer="false" class="look-project" width="500">
+      <div class="con">
+        <p class="name">{{tempObj.invoice_filename}}</p>
+        <p class="tip" v-show="isComfirm">{{lang.sureDelete}}</p>
+        <div class="bot-btn" :class="{'no-down': !$checkPermission('auth_idcsmart_invoice_management_upload_invoice')}">
+          <t-button theme="primary" @click="handleDown(tempObj)">{{lang.download}}</t-button>
+          <t-upload ref="uploadRef" :action="uploadUrl" class="upload-box" v-model="uploadForm.files"
+            :auto-upload="true" @fail="handleFail" theme="custom" @success="onSuccess" :headers="uploadHeaders"
+            accept=".PDF,.OFD,.XML,.Zip" :format-response="formatImgResponse"
+            v-if="$checkPermission('auth_idcsmart_invoice_management_upload_invoice')">
+            <t-button theme="primary" @click="handleUpload(tempObj)">{{lang.invoice_btn24}}</t-button>
+          </t-upload>
+          <t-button theme="danger" @click="delProject" :loading="submitLoading">{{lang.delete}}</t-button>
+        </div>
+      </div>
+    </t-dialog>
+
+    <!-- 申请开票 -->
+    <t-dialog :visible.sync="openInvoiceVisible" :header="lang.invoice_btn20" width="600" @close="closeDialog"
+      :footer="false">
+      <t-form label-align="top" label-width="80px" :data="openInvoiceForm" ref="openInvoiceFormRef"
+        :rules="InvoiceRules" @submit="handlePay" v-if="openInvoiceVisible">
+        <!-- 用户 -->
+        <t-form-item :label="lang.user" name="client_id">
+          <com-choose-user :pre-placeholder="lang.user" @changeuser="changeUser"></com-choose-user>
+        </t-form-item>
+        <t-form-item :label="lang.invoice_text2" name="status">
+          <t-select v-model="openInvoiceForm.status" style="width: 100%;" @change="changeType">
+            <t-option key="Paid" :label="lang.invoice_type1" value="Paid"></t-option>
+            <!-- v-if="isShowPre == '1'" -->
+            <t-option key="Unpaid" :label="lang.invoice_type2" value="Unpaid"></t-option>
+          </t-select>
+        </t-form-item>
+        <!-- 订单 -->
+        <t-form-item :label="lang.invoice_btn21" name="order_id">
+          <t-select v-model="openInvoiceForm.order_id" multiple clearable :placeholder="lang.invoice_btn21"
+            style="width: 100%;" @change="changeTitle" :min-collapsed-num="1" filterable>
+            <t-option v-for="item in orderList" :key="item.id" :label="calcLable(item)" :value="item.id">
+              {{item.id}}-{{calcLable(item)}}-{{currency_prefix}}{{item.amount}}
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <!-- 抬头 -->
+        <t-form-item :label="lang.invoice_btn22" name="invoice_title_id">
+          <t-select v-model="openInvoiceForm.invoice_title_id" :placeholder="lang.invoice_btn22" style="width: 100%;"
+            @change="changeTitle">
+            <t-option v-for="item in invoicTitleList" :key="item.id" :label="item.title" :value="item.id">
+            </t-option>
+          </t-select>
+        </t-form-item>
+
+        <!-- 发票项目 -->
+        <t-form-item :label="lang.invoice_btn9" name="invoice_project_id">
+          <t-select v-model="openInvoiceForm.invoice_project_id" :placeholder="lang.invoice_btn9" style="width: 100%;"
+            @change="getPrice">
+            <t-option v-for="item in filterProject" :key="item.id" :label="item.name" :value="item.id">
+            </t-option>
+          </t-select>
+        </t-form-item>
+
+        <!-- 发票样式 -->
+        <t-form-item :label="lang.invoice_btn23" name="invoice_format">
+          <t-radio-group v-model="openInvoiceForm.invoice_format" @change="changeFormat">
+            <t-radio value="pdf">PDF</t-radio>
+            <t-radio value="ofd">OFD</t-radio>
+            <t-radio value="xml">XML</t-radio>
+          </t-radio-group>
+        </t-form-item>
+        <!-- 收件类型 -->
+        <t-form-item :label="lang.invoice_label5" name="rec_type">
+          <t-radio-group v-model="openInvoiceForm.rec_type">
+            <t-radio value="paper"
+              :disabled="openInvoiceForm.invoice_format === 'ofd' || openInvoiceForm.invoice_format === 'xml'">
+              {{lang.invoice_text15}}
+            </t-radio>
+            <t-radio value="email">
+              {{lang.invoice_text16}}
+            </t-radio>
+          </t-radio-group>
+        </t-form-item>
+
+        <!-- 快递 -->
+        <t-form-item :label="lang.invoice_title9" v-if="openInvoiceForm.rec_type === 'paper' " name="parcel_id">
+          <t-select v-model="openInvoiceForm.parcel_id" :placeholder="lang.invoice_text113" @change="getPrice"
+            style="width: 100%;">
+            <t-option v-for="item in parcel" :key="item.id" :label="item.name" :value="item.id">
+            </t-option>
+          </t-select>
+        </t-form-item>
+
+        <t-form-item :label="lang.invoice_title12" name="invoice_address_id">
+          <t-select v-model="openInvoiceForm.invoice_address_id" :placeholder="lang.invoice_text114"
+            style="width: 100%;">
+            <t-option v-for="item in invoicAddressList" :key="item.id" :label="item.str" :value="item.id">
+              <span>{{item.str}}</span>
+              <span v-if="item.notes != ''">({{item.notes}})</span>
+            </t-option>
+          </t-select>
+        </t-form-item>
+
+        <t-form-item :label="lang.box_title8">
+          <t-table style="width:100%" :data="priceArr" row-key="id" :columns="infoColumns">
+          </t-table>
+        </t-form-item>
+        <t-form-item label="" class="empty-item">
+          <p class="total-box">{{lang.total_price}}:
+            {{currency_prefix}}{{priceArr.length && (priceArr[0].total || '0.00') }}
+            <span>({{lang.invoice_title9}}{{currency_prefix}}{{priceArr.length && (priceArr[0].parcel_price || '0.00')
+              }})</span>
+          </p>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.sure}}</t-button>
+          <t-button theme="default" @click="openInvoiceVisible=false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- 内容结束 -->
+<!-- 独有 -->
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/idcsmart_invoice/template/admin/api/invoice.js"></script>
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/invoice_system.js"></script>

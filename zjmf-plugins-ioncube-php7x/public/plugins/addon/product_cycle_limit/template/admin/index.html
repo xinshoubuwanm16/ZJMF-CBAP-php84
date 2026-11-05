@@ -1,0 +1,82 @@
+<link rel="stylesheet" href="/plugins/addon/product_cycle_limit/template/admin/css/index.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="stock" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="material-box">
+        <div class="material-top">
+          <div class="left-title">
+            <h3>{{lang.single_product_text16}}</h3>
+            <div>{{lang.single_product_text17}}</div>
+          </div>
+          <div class="right-btn">
+            <t-button @click="handADDmaterial" v-permission="'auth_product_cycle_limit_create_product'">{{lang.single_product_text3}}</t-button>
+          </div>
+        </div>
+        <t-table hover row-key="index" :loading="loading" :data="list" :columns="columns">
+          <template #status="{row}">
+            <t-switch size="large" :custom-value="[1,0]" v-model="row.status" @change="onChange(row)" :disabled="!$checkPermission('auth_product_cycle_limit_on_off')"></t-switch>
+          </template>
+          <template #cycle="{row}">
+            <span>{{row.cycle == 0 ? lang.single_product_text18 : (row.cycle + lang.single_product_text19)}}</span>
+          </template>
+          <template #op="slotProps">
+            <t-icon name="edit-1" style="margin-right: 10px;" @click="edit(slotProps.row)"
+              class="common-look" v-permission="'auth_product_cycle_limit_update_product'">
+            </t-icon>
+            <t-icon name="delete" class="common-look" @click="deletes(slotProps.row.id)" v-permission="'auth_product_cycle_limit_delete_product'"></t-icon>
+          </template>
+        </t-table>
+        <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+          :page-size-options="pageSizeOptions" @change="changePage" />
+      </div>
+    </t-card>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.single_product_text20" :close-btn="false" :visible.sync="delVisible"
+      class="delDialog">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelUser" :loading="submitLoading">{{lang.single_product_text31}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.single_product_text13}}</t-button>
+      </template>
+    </t-dialog>
+
+    <!-- 创建字段弹窗 -->
+    <t-dialog :header="editId ? lang.single_product_text21 : lang.single_product_text22" :visible.sync="materialVisble"
+      :footer="false" width="650" @closed="materialDiaClose">
+      <t-form :rules="rules" ref="userDialog" :data="formData" @submit="onSubmit" :label-width="120"
+        reset-type="initial" v-if="materialVisble">
+        <t-form-item :label="lang.single_product_text10" name="product_id">
+          <com-tree-select @choosepro="choosePro" :value="formData.product_id" :disabled="editId !== null"></com-tree-select>
+        </t-form-item>
+        <t-form-item :label="lang.single_product_text23" name="num">
+          <t-input-number style="width: 100%;" v-model="formData.num" :placeholder="lang.single_product_text23"
+            theme="normal" :min="1" :step="1" :decimal-places="0"></t-input-number>
+        </t-form-item>
+        <t-form-item :label="lang.single_product_text24" name="cycle">
+          <div style="width: 100%; position: relative;">
+            <t-input-number style="width: 100%;" v-model="formData.cycle" :placeholder="lang.single_product_text25"
+              theme="normal" :min="0" :step="1" :decimal-places="0"></t-input-number>
+            <span style="position: absolute; top: 5px; right: 15px; z-index:2;">{{lang.single_product_text19}}</span>
+            <div style="margin-top: 8px;">
+              <span style="color: #e34d59;">*</span>
+              <span v-if="editId">{{lang.single_product_text26}}</span>
+              <span v-else>{{lang.single_product_text27}}</span>
+            </div>
+          </div>
+        </t-form-item>
+
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.single_product_text12}}</t-button>
+          <t-button theme="default" variant="base"
+            @click="materialVisble=false">{{lang.single_product_text13}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/product_cycle_limit/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/plugins/addon/product_cycle_limit/template/admin/api/index.js"></script>
+<script src="/plugins/addon/product_cycle_limit/template/admin/js/index.js"></script>

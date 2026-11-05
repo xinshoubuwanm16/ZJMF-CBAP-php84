@@ -1,0 +1,156 @@
+#content .com-config {
+  background: none;
+}
+#content .t-card {
+  flex: none;
+}
+.top-search {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.top-search .left-department {
+  font-size: 24px;
+  color: #000000;
+}
+.top-search .right-search {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+.top-search .right-search .t-date-range-picker {
+  width: 360px;
+}
+.mid-start {
+  margin-top: 60px;
+  display: flex;
+  align-items: center;
+  column-gap: 120px;
+  padding-bottom: 100px;
+}
+.mid-start .left-total .total-num {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+  font-size: 40px;
+  font-weight: 600;
+}
+.mid-start .left-total .total-score {
+  margin-top: 20px;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+.mid-start .left-total .total-score .t-space-item {
+  display: flex;
+  align-items: center;
+}
+.mid-start .left-total .total-score .t-space-item .t-divider--vertical {
+  height: 100%;
+  margin: 0 10px;
+}
+.mid-start .order-num .t-space-item {
+  display: flex;
+  align-items: center;
+}
+.mid-start .order-num .t-space-item .t-divider--vertical {
+  height: 60%;
+  margin: 0 40px;
+}
+.mid-start .order-num .order-item {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+.mid-start .order-num .order-item .order-type {
+  color: rgba(0, 0, 0, 0.9);
+  font-size: 16px;
+}
+.mid-start .order-num .order-item .order-time {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+}
+.mid-start .order-num .order-item .order-score {
+  color: #0052d9;
+  font-size: 22px;
+}
+.mid-start .t-space {
+  column-gap: 0 !important;
+}
+.bottom-table {
+  margin-top: 20px;
+  display: flex;
+  column-gap: 20px;
+}
+.bottom-table .table-star,
+.bottom-table .table-time {
+  flex: 1 0 0;
+  padding: 30px;
+  border-radius: var(--td-radius-medium);
+  border: 1px solid var(--td-component-border);
+  background-color: #ffffff;
+  border: 1px solid #e7e7e7;
+}
+.bottom-table .table-title {
+  color: #1d2129;
+  font-size: 20px;
+}
+.bottom-table .table-content {
+  margin-top: 40px;
+}
+.bottom-table .table-content .table-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-bottom: 1px solid #e7e7e7;
+}
+.bottom-table .table-content .table-item:last-child {
+  border-bottom: none;
+}
+.bottom-table .table-content .table-item .table-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.bottom-table .table-content .table-item .table-left .table-type {
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  min-width: 120px;
+}
+.bottom-table .table-content .table-item .table-left .star-box {
+  margin-left: 10px;
+}
+.bottom-table .table-content .table-item .table-left .table-num {
+  margin-left: 10px;
+  color: rgba(0, 0, 0, 0.9);
+}
+.bottom-table .table-content .table-item .table-score {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 12px;
+}
+.bottom-table .table-content .table-item .table-score .t-space {
+  column-gap: 0 !important;
+}
+.bottom-table .table-content .table-item .table-score .t-space-item {
+  display: flex;
+  align-items: center;
+}
+.bottom-table .table-content .table-item .table-score .t-space-item .t-divider--vertical {
+  margin: 0 10px;
+}
+.bottom-table .table-content .table-item .table-min {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.bottom-table .table-content .table-item .table-min .table-long {
+  width: 0;
+  height: 15px;
+  background: #165dff;
+}
+.bottom-table .table-content .table-item .table-min .time-text {
+  flex-shrink: 0;
+  margin-left: 10px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+}

@@ -1,0 +1,31 @@
+const plugin_lang = {
+  /* Cash back */
+  product_cashback: "Cash back",
+  cashback: "Cashback",
+  cashback_type: "Cashback type",
+  cashback_money: "Cash back amount",
+  fixed_money: "Fixed amount",
+  period: "Cashback period",
+  after_purchase: "After purchase",
+  within_days: "Within days",
+  permanent: "Permanent",
+  order_new: "Add",
+  edit: "Edit",
+  delete: "Delete",
+  sure: "Sure",
+  cancel: "Cancel",
+  product: "Product",
+  status: "Status",
+  hold: "Save",
+  add: "Add",
+  input: "Please enter",
+  select: "Please select",
+  operation: "Operation",
+  product_name: "Product name",
+  sureDelete: "Confirm to delete?" ,
+  product_cashback_tip: "Set the items that can be purchased in the system and the amount will be returned to the account balance",
+  product_cashback_tip1: "0 is considered permanent",
+  product_cashback_tip2: "If the cashback amount exceeds the purchase amount, the purchase amount will be paid back",
+  };
+
+  window.plugin_lang = plugin_lang;

@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="/plugins/addon/event_promotion/template/admin/css/voucher.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="voucher-detail" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <p class="com-h-tit">{{optTit}}</p>
+      <div class="box">
+        <t-form :data="formData" :rules="rules" :label-width="80" label-align="top" ref="formValidatorStatus"
+          @submit="onSubmit">
+          <t-form-item name="name" :label="lang.event_promotion_text4">
+            <t-input v-model="formData.name" :placeholder="lang.event_promotion_text4">
+            </t-input>
+          </t-form-item>
+          <!-- 时间选择 -->
+          <t-form-item name="start_time" :label="lang.event_promotion_text54">
+            <div class="s-item">
+              <t-date-picker enable-time-picker allow-input :value="formData.start_time"
+                :disable-date="{ before: moment().subtract(1, 'day').format() }" @change="changeStart"
+                :placeholder="`${lang.select}${lang.event_promotion_text52}`">
+              </t-date-picker>
+              <t-select v-model="curTime" :placeholder="lang.event_promotion_text59" @change="fastClick" clearable>
+                <t-option v-for="item in timeOpt" :value="item.value" :label="item.label" :key="item.value">
+                </t-option>
+              </t-select>
+            </div>
+          </t-form-item>
+          <t-form-item name="end_time" :label="lang.event_promotion_text55">
+            <div class="s-item">
+              <t-date-picker enable-time-picker allow-input clearable :value="formData.end_time" @change="changeEnd"
+                :disable-date="{ before: moment().subtract(1, 'day').format() }"
+                :placeholder="`${lang.select}${lang.event_promotion_text52}`">
+              </t-date-picker>
+              <span v-if="formData.end_time && time_diff" class="time-diff">{{lang.event_promotion_text65}}：{{time_diff}}</span>
+            </div>
+          </t-form-item>
+          <t-form-item name="type" :label="lang.event_promotion_text15">
+            <t-radio-group v-model="formData.type">
+              <t-radio value="percent">{{lang.event_promotion_text16}}</t-radio>
+              <t-radio value="reduce">{{lang.event_promotion_text17}}</t-radio>
+            </t-radio-group>
+          </t-form-item>
+          <t-form-item name="value" :label="lang.event_promotion_text19" v-if="formData.type === 'percent'">
+            <t-input-number :decimal-places="2" v-model="formData.value" theme="normal" :max="100" :min="0"
+              :format="value => `${value}%`">
+            </t-input-number>
+          </t-form-item>
+          <t-form-item :label="lang.event_promotion_text20" v-if="formData.type === 'reduce'">
+            <div class="s-item">
+              <t-form-item name="full" :label="lang.event_promotion_text21" style="width: 320px;">
+                <t-input-number :decimal-places="2" v-model="formData.full" theme="normal" :min="0">
+                </t-input-number>
+              </t-form-item>
+              <t-form-item name="value" :label="lang.event_promotion_text22" style="width: 320px;">
+                <t-input-number :decimal-places="2" v-model="formData.value" theme="normal" :min="0">
+                </t-input-number>
+              </t-form-item>
+            </div>
+          </t-form-item>
+
+          <!-- 产品选择 -->
+          <t-form-item name="products" :label="lang.event_promotion_text23" style="width: 320px;">
+            <com-tree-select @choosepro="choosePro" :multiple="true" :value="formData.products"></com-tree-select>
+          </t-form-item>
+          <!-- 适用用户 -->
+          <t-form-item name="user_type" :label="lang.event_promotion_text24">
+            <com-choose-user @changeuser="changeUser" :multiple="true"
+            :check-id="formData.clients"
+            :pre-placeholder="lang.event_promotion_text25">
+            </com-choose-user>
+          </t-form-item>
+          <!-- 功能开关 -->
+          <div class="switch">
+            <t-form-item name="new_user" :label="lang.event_promotion_text26" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.new_user">
+              </t-switch>
+              <t-tooltip :content="lang.event_promotion_text27" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+            <t-form-item name="old_user" :label="lang.event_promotion_text28" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.old_user">
+              </t-switch>
+              <t-tooltip :content="lang.event_promotion_text29" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+            <t-form-item name="single_user_once" :label="lang.event_promotion_text30" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.single_user_once">
+              </t-switch>
+              <t-tooltip :content="lang.event_promotion_text31" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+            <t-form-item name="cycle_limit" :label="lang.event_promotion_text32" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.cycle_limit">
+              </t-switch>
+              <t-tooltip :content="lang.event_promotion_text33" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+          </div>
+          <t-form-item name="cycle" label-align="left" style="margin-top: 24px;" v-if="formData.cycle_limit === 1"
+            :rules=" formData.cycle_limit ? rules.cycle : [{required: false}]">
+            <t-checkbox-group v-model="formData.cycle" :options="cycleOpt" @change="chooseCycle">
+            </t-checkbox-group>
+          </t-form-item>
+          <t-form-item name="notes" :label="lang.event_promotion_text66" style="margin-top: 24px;">
+            <t-textarea :placeholder="lang.event_promotion_text66" v-model="formData.notes" />
+          </t-form-item>
+          <div class="f-btn">
+            <t-button theme="primary" type="submit" :loading="loading" style="margin-right: 15px;">{{lang.event_promotion_text63}}
+            </t-button>
+            <t-button theme="default" variant="base" @click="back">{{lang.event_promotion_text64}}</t-button>
+          </div>
+        </t-form>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/event_promotion/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/event_promotion/template/admin/api/index.js"></script>
+<script src="/plugins/addon/event_promotion/template/admin/js/event_detail.js"></script>

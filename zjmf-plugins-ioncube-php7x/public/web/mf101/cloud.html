@@ -1,0 +1,317 @@
+{include file="header"}
+
+
+</head>
+
+<body class="dcim-page">
+    <header>{include file="conf/header"}</header>
+    <!-- banner -->
+    <section class="section banner-section ">
+        <div class="banner-content">
+            <div class="banner-title">
+                <h1>云服务器</h1>
+                <p>只需几分钟，便可轻松云端获取和启用，实现您的计算需求。可弹性扩展资源用量的同时，还能为您节约计算成本，简化IT运维工作，让您更专注于核心业务的创新。</p>
+                <a href="/cloud-buy.html" class="btn btn-pri">立即选购</a>
+            </div>
+            <div class="banner-partners">
+                {if ( isset($data.partner) ) }
+                <div class="parteners-title">合作伙伴</div>
+                <div class="parteners-box">
+                    {foreach $data.partner as $key=>$value}
+                    <a href="{$value.url}" class="partener-item">
+                        <img src="{$value.img}" alt="">
+                    </a>
+                    {/foreach}
+                </div>
+                {else /}
+                <img class="default-img" src="/web/mf101/assets/img/banner-conpeny.svg" alt="">
+                {/if}
+            </div>
+        </div>
+        <div class="banner-img" data-aos="fade-up">
+            <img src="/web/mf101/assets/img/cloud-banner-right.svg" class="img-fluid" alt="">
+        </div>
+    </section>
+
+
+    <!-- 产品优势 -->
+    <section class="section introduce-section">
+        <h3 class="section-title">产品优势</h3>
+        <p class="section-des">为您精挑细选了热门产品和特别折扣产品，超划算！</p>
+        <div class="section-main ">
+            <div class="product-introduce">
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon1.svg" alt="热迁移服务">
+                    <h4 class="product-introduce-title">热迁移服务</h4>
+                    <p class="product-introduce-content">
+                        打破地域限制，轻松应对时间空间带来的运营困扰，仅需5分钟，即可将数据从一机房迁移至另一机房
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon2.svg" alt="三层存储技术">
+                    <h4 class="product-introduce-title">三层存储技术</h4>
+                    <p class="product-introduce-content">
+                        存储、沉淀、备份层，三层分别对数据进行处理、缓存与灾备，三层间实时同步，数据安全性达到99.999%
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon3.svg" alt="性能可靠">
+                    <h4 class="product-introduce-title">性能可靠</h4>
+                    <p class="product-introduce-content">
+                        采用高性能服务器进行部署，同时采用集中的管理与监控，确保业务稳定可靠
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon4.svg" alt="灵活部署">
+                    <h4 class="product-introduce-title">灵活部署</h4>
+                    <p class="product-introduce-content">
+                        针对不同行业、领域的企业级用户，以专业成熟的一站式行业云解决方案，帮助用户快速应用云计算
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon5.svg" alt="纯SSD架构">
+                    <h4 class="product-introduce-title">纯SSD架构</h4>
+                    <p class="product-introduce-content">
+                        搭建纯SSD架构的高性能企业级云服务器，高速Sas3 SSD闪存作为底层硬件配置，分钟级响应速度
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/cloud-pro-icon6.svg" alt="高速BGP带宽">
+                    <h4 class="product-introduce-title">高速BGP带宽</h4>
+                    <p class="product-introduce-content">
+                        使用BGP线路，解决了南北互联互通的问题。同时自身具有容灾性，保障线路安全稳定
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品性能 -->
+    <section class="section product-section cloud-performance dcim-product-section">
+        <div class="section-title">产品性能</div>
+        <div class="section-des">集成行业前沿技术，助推企业数智发展</div>
+        <div class="section-main">
+            <div class="product-left" data-aos="fade-up">
+                <img src="/web/mf101/assets/img/cloud-product-img.svg" alt="">
+            </div>
+            <div class="product-right">
+                <ul class="product-list">
+                    <li class="product-item">
+                        <div class="product-title">可定制硬件</div>
+                        <div class="product-des">硬件配置可随时更换或扩容，免费定期硬件维保，安全放心。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">资源独享</div>
+                        <div class="product-des">完全独享CPU、内存、磁盘、网络等计算资源，拥有卓越计算性能。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">智能管理</div>
+                        <div class="product-des">一键式远程执行服务器的重启、开关机命令，敏捷高效。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">可视化监管</div>
+                        <div class="product-des">自动生成可视化流量统计图，实时监控带宽速率、流量消耗情况。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">高配硬件</div>
+                        <div class="product-des">所有组件均采用国际顶级品牌，满足高性能应用需求。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">快速响应</div>
+                        <div class="product-des">专业运维团队全天候监控，有效保障设备的高可用性。</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 热销特惠推荐 -->
+    <section class="section recommend-section">
+        <div class="section-title">热销特惠推荐</div>
+        <div class="section-des">为您精挑细选了热门产品和特别折扣产品，超划算！</div>
+        <div class="section-main">
+            <ul class="section-list">
+                {if ( isset($data.product) ) }
+                {foreach $data.product as $key=>$value}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">{$value.title}</div>
+                        <div class="goods-des">{$value.description}</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">CPU</div>
+                            <div class="goods-config-item-value">{$value.cpu}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.memory)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.bandwidth)}</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            {$value.price}<span
+                                class="price-num-unit">{$data.currency_suffix}/{$value.price_unit}</span>
+                        </div>
+                        <a href="/cloud-buy.html?id={$value.product_id}" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/foreach}
+                {else /}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">轻量型</div>
+                        <div class="goods-des">小规格、低带宽，轻量级部署</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">CPU</div>
+                            <div class="goods-config-item-value">1Core</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            298<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">轻量型</div>
+                        <div class="goods-des">小规格、低带宽，轻量级部署</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">CPU</div>
+                            <div class="goods-config-item-value">1Core</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            399<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">轻量型</div>
+                        <div class="goods-des">小规格、低带宽，轻量级部署</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">CPU</div>
+                            <div class="goods-config-item-value">1Core</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            399<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">轻量型</div>
+                        <div class="goods-des">小规格、低带宽，轻量级部署</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">CPU</div>
+                            <div class="goods-config-item-value">1Core</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            399<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/if}
+            </ul>
+        </div>
+
+    </section>
+
+    <!-- 立即启动您的项目 -->
+    <section class="section register-section">
+        <div class="register-box">
+            <h3>立即启动您的项目，享受专业服务</h3>
+            <a href="/regist.htm" class="btn btn-black">立即注册</a>
+        </div>
+    </section>
+
+    <!-- 文档 -->
+    <section class="section common-section ">
+        <div class="section-title">文档</div>
+        <div class="section-main doc-main" id="doc-main">
+            <!-- <ul class="doc-list">
+                <li class="doc-type">入门</li>
+                <li class="doc-item"><a href="javascript:;">弹性云服务器概述</a></li>
+                <li class="doc-item"><a href="javascript:;">登录Windows弹性云服务器</a></li>
+                <li class="doc-item"><a href="javascript:;">登录Linux弹性云服务器</a></li>
+                <li class="doc-item"><a href="javascript:;">使用脚本初始化Windows数据盘</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul>
+            <ul class="doc-list">
+                <li class="doc-type">最佳实践</li>
+                <li class="doc-item"><a href="javascript:;">ESC最佳实践</a></li>
+                <li class="doc-item"><a href="javascript:;">服务器迁移至云端</a></li>
+                <li class="doc-item"><a href="javascript:;">设置网站</a></li>
+                <li class="doc-item"><a href="javascript:;">跨账号跨地域迁移弹性云服务器</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul>
+            <ul class="doc-list">
+                <li class="doc-type">常见问答</li>
+                <li class="doc-item"><a href="javascript:;">如何解决连接问题？</a></li>
+                <li class="doc-item"><a href="javascript:;">如何知道我的带宽是否已经到达限制？</a></li>
+                <li class="doc-item"><a href="javascript:;">为什么我的ESC网站无法访问？</a></li>
+                <li class="doc-item"><a href="javascript:;">为什么我的Windows弹性云服务器无法登录？</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul> -->
+        </div>
+    </section>
+
+
+    <script src="/web/mf101/js/document.js"></script>
+    {include file="footer"}

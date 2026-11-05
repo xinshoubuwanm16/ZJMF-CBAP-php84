@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_client_level/template/admin/css/client_level.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="client-level" v-cloak :class="{hasCrumb: crumbOptions.length}">
+  <com-config>
+    <t-breadcrumb :options="crumbOptions"></t-breadcrumb>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <t-button @click="addLevel" class="add" v-permission="'auth_idcsmart_client_level_create_client_level'">
+          {{lang.new_create}}{{lang.clinet_level}}
+        </t-button>
+        <div>
+          {{lang.level_text1}}
+          <t-switch @change="uodateConfig" size="large"
+            v-model="configData.configuration_addon_idcsmart_client_level_home_show" :custom-value=[1,0]>
+          </t-switch>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+        :hide-sort-tips="true">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #id="{row}">
+          <a :href="`add_client_level.htm?id=${row.id}`" class="aHover"
+            v-if="authList.includes('ClientController::index')">{{row.id}}</a>
+          <span v-else>{{row.id}}</span>
+        </template>
+        <template #background_color="{row}">
+          <span class="bg" :style="{'background-color': row.background_color}"></span>
+        </template>
+        <template #client_num="{row}">
+          <a :href="`${jumpUrl}client.htm?level_id=${row.id}`" class="aHover num">{{row.client_num}}</a>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.update" :show-arrow="false" theme="light">
+            <t-icon name="edit-1" class="common-look" @click="updateLevel(row)"
+              v-permission="'auth_idcsmart_client_level_update_client_level'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" class="common-look" @click="deleteLevel(row)"
+              v-permission="'auth_idcsmart_client_level_delete_client_level'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" @change="changePage" />
+    </t-card>
+    <!-- 删除弹窗 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="cancelDel">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+
+</div>
+
+<script src="/plugins/addon/idcsmart_client_level/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/idcsmart_client_level/template/admin/api/client_level.js"></script>
+<script src="/plugins/addon/idcsmart_client_level/template/admin/js/client_level.js"></script>

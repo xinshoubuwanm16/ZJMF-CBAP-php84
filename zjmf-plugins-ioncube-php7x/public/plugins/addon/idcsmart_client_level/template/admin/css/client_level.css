@@ -1,0 +1,150 @@
+.client-level {
+  font-size: 14px;
+  color: #333;
+}
+.client-level .bg {
+  width: 117px;
+  height: 11px;
+  display: block;
+}
+.client-level .num {
+  color: var(--td-brand-color);
+}
+.add-client-level .t-card__body {
+  padding: 0;
+}
+.add-client-level .t-form {
+  max-width: 800px;
+}
+.add-client-level .t-form td,
+.add-client-level .t-form th {
+  padding: 12px 24px;
+}
+.add-client-level .add-more {
+  line-height: 42px;
+  text-align: center;
+  color: var(--td-brand-color-active);
+  border: 1px solid var(--td-component-border);
+  margin-top: -1px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.add-client-level .box {
+  padding: 26px 40px;
+}
+.add-client-level .t-input,
+.add-client-level .s-item {
+  width: 320px;
+  color: #333;
+  max-width: 100%;
+}
+.add-client-level .t-input-number .t-input {
+  width: auto;
+}
+.add-client-level .productPop .t-input {
+  width: 290px;
+}
+.add-client-level .s-item {
+  width: 370px;
+}
+.add-client-level .item {
+  display: flex;
+}
+.add-client-level .item .t-form__item {
+  margin-right: 40px;
+}
+.add-client-level .t-form__label {
+  width: auto !important;
+  padding-right: 10px !important;
+}
+.add-client-level .t-form__controls {
+  margin-left: auto !important;
+}
+.add-client-level .pro {
+  display: flex;
+}
+.add-client-level .pro .t-form__item {
+  margin-right: 40px !important;
+}
+.add-client-level .com-icon {
+  width: 32px;
+  height: 32px;
+  color: #282828;
+  display: flex;
+  margin-right: 10px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--td-border-level-2-color);
+}
+.add-client-level .f-btn {
+  margin-top: 40px;
+}
+.add-client-level .f-btn .t-button {
+  margin-right: 20px;
+}
+.add-client-level .t-icon-help-circle {
+  color: var(--td-brand-color);
+  font-size: 16px;
+}
+.add-client-level .add {
+  margin-bottom: 24px;
+}
+.add-client-level .t-input__suffix .t-icon.active {
+  color: var(--td-brand-color);
+  transform: rotateX(180deg);
+}
+.add-client-level .t-popup {
+  width: 320px;
+}
+.add-client-level .t-popup .t-popup__content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.add-client-level .discount {
+  display: flex;
+}
+.add-client-level .discount .t-form__item {
+  margin-right: 8px !important;
+}
+.add-client-level .opt {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.add-client-level .opt .percentage {
+  margin-right: 20px;
+}
+.add-client-level .t-color-picker--bg-alpha {
+  height: auto;
+}
+.add-client-level .color-inner {
+  width: 117px;
+  height: 11px;
+}
+.colorPic .t-input__inner {
+  display: none !important;
+}
+.t-color-picker {
+  width: 320px;
+}
+.t-color-picker__head {
+  display: none;
+}
+.t-color-picker__panel {
+  width: 100% !important;
+}
+.t-color-picker__body {
+  padding-top: 82px;
+  padding-bottom: 18px;
+}
+.t-color-picker__body .t-color-picker__swatches-wrap {
+  position: absolute;
+  top: 0;
+}
+.edit-pop {
+  width: 290px;
+}

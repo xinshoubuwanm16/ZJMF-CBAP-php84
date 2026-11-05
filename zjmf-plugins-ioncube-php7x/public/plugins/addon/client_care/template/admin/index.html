@@ -1,0 +1,92 @@
+<!-- 独有 -->
+<link rel="stylesheet" href="/plugins/addon/client_care/template/admin/css/client_care.css">
+<!-- 内容开始 -->
+<div id="content" class="client-care" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="top-search">
+        <div class="add-btn" @click="add" v-if="$checkPermission('auth_client_care_create_push')">{{lang.client_care_btn1}}</div>
+        <div v-else></div>
+        <div class="top-right">
+          <t-select v-model="params.status" :placeholder="lang.push_status" clearable @change="seacrh">
+            <t-option v-for="item in statusArr" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+          <div class="searchbar com-search">
+            <t-input v-model="params.keywords" class="search-input" :placeholder="lang.client_care_label8" clearable
+              @keyup.enter.native="seacrh" :on-clear="clearKey">
+            </t-input>
+            <t-icon size="20px" name="search" @click="seacrh" class="com-search-btn" />
+          </div>
+        </div>
+      </div>
+      <t-table :data="dataList" display-type="fixed-width" :hide-sort-tips="true" :loading="loading" :columns="columns"
+        row-key="id" :hover="true" :on-row-click="toDetail">
+        <template #content="{row}">
+          <span>{{row.content?row.content:row.title}}</span>
+        </template>
+        <template #send_cycle="{row}">
+          <span v-if="row.send_cycle == 'onetime'">{{lang.onetime}}</span>
+          <span v-if="row.send_cycle == 'day'">{{lang.client_care_label19}}</span>
+          <span v-if="row.send_cycle == 'week'">{{lang.cycle_week}}{{lang[`care_week${row.week_day}`]}}</span>
+          <span
+            v-if="row.send_cycle == 'month'">{{lang.cycle_month}} {{row.month_day}} {{lang.client_care_message18}}</span>
+        </template>
+        <template #send_num="{row}">
+          {{row.fail_num}}/{{row.send_num}}
+        </template>
+        <template #push_start_time="{row}">
+          {{moment(row.push_start_time * 1000).format('YYYY-MM-DD')}}~{{moment(row.push_end_time *
+          1000).format('YYYY-MM-DD')}}
+        </template>
+        <template #status="{row}">
+          <t-tag theme="primary" v-if="row.status === 'Wait'">{{lang.to_be_executed}}</t-tag>
+          <t-tag theme="warning" v-if="row.status === 'Exec'">{{lang.Exec}}</t-tag>
+          <t-tag theme="danger" v-if="row.status === 'Suspended'">{{lang.Suspended}}</t-tag>
+          <t-tag v-if="row.status === 'Expired'">{{lang.promo_expiration}}</t-tag>
+          <t-tag theme="success" v-if="row.status === 'Finish'">{{lang.app_finish}}</t-tag>
+        </template>
+        <template #operation="{row}">
+          <div @click="stopPop">
+            <t-tooltip :content="lang.deactivate" :show-arrow="false" theme="light">
+              <t-icon class="icon open-icon" v-if="(row.status === 'Wait' || row.status === 'Exec') && $checkPermission('auth_client_care_deactivate_enable_push')"
+                name="play-circle-stroke" @click="showStatusDialog(row)">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.enable" :show-arrow="false" theme="light">
+              <t-icon class="icon stop-icon" v-if="row.status === 'Suspended' && $checkPermission('auth_client_care_deactivate_enable_push')" name="stop-circle"
+                @click="showStatusDialog(row)">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon class="icon del-icon" name="delete" @click="showDelDialog(row)" v-permission="'auth_client_care_delete_push'"></t-icon>
+            </t-tooltip>
+          </div>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit"
+        :page-size-options="pageSizeOptions" :on-change="changePage" :current="params.page" />
+    </t-card>
+
+    <!-- 启用/停用 -->
+    <t-dialog theme="warning" :header="statusTip" :visible.sync="statusVisble">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureChange" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="closeDialog">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+    <t-dialog theme="warning" :header="lang.client_care_title7" :visible.sync="delVisble">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisble=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+
+</div>
+<!-- 内容结束 -->
+<!-- 独有 -->
+
+<script src="/plugins/addon/client_care/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/client_care/template/admin/api/client_care.js"></script>
+<script src="/plugins/addon/client_care/template/admin/js/client_care.js"></script>

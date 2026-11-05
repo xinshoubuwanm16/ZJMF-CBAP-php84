@@ -1,0 +1,81 @@
+<style>
+  .table-mains {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-mains thead tr {
+  background-color: #f1f1f1;
+}
+.table-mains th,
+.table-mains td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+.table-mains tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+.table-mains tbody tr:hover {
+  background-color: #ccc;
+}
+.btn-info {
+  background-color: #5bc0de;
+  color: #fff;
+  border: 1px solid #5bc0de;
+  border-radius: 5px;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+.btn-info:hover {
+  background-color: #46b8da;
+  border-color: #46b8da;
+}
+</style>
+    <td data-label='操作'>
+              <form action='http://$server_ip:$port/vhost/index.php?c=session&a=login' method='post' target='_blank'>
+        <input type='hidden' name='username' value='{$res['name']}' />
+		<input type='hidden' name='passwd' value='$password' />
+		<button type='submit' class='btn btn-info'><i class='bx bx-exit'></i> 登录面板</button>
+		</form>
+      </td>
+    <table class='table-mains'>
+      <thead>
+        <tr>
+          <th>状态</th>
+          <th>产品类型</th>
+          <th>面板账号</th>
+          <th>面板密码</th>
+          <th <?php echo $hide; ?>数据库账号</th>
+        </tr>
+      </thead>
+      <tbody style='height: 50px;'>
+        <tr>
+          <td style='text-align: center;'>$status</td>
+          <td style='text-align: center;'>$lei</td>
+          <td style='text-align: center;'>{$res['name']}</td>
+          <td style='text-align: center;'>$password</td>
+          <td <?php echo $hide; ?>{$res['db_name']}</td>
+        </tr>
+      </tbody>
+    </table>
+  <table class='table-mains'>
+      <thead>
+    <tr>
+      <th <?php echo $hide; ?>空间容量</th>
+      <th <?php echo $hide; ?>数据库容量</th>
+      <th>每月流量</th>
+      <th>绑定域名数</th>
+      <th>解析IP地址</th>
+    </tr>
+    </thead>
+    <tbody style='height: 50px;'>
+    <tr>
+      <td <?php echo $hide; ?>{$res['web_quota']} M</td>
+      <td <?php echo $hide; ?>{$res['db_quota']} M</td>
+      <td style='text-align: center;'>{$res['flow_limit']} G</td>
+      <td style='text-align: center;'>{$res['domain']} 个</td>
+      <td style='text-align: center;'>$server_ip</td>
+    </tr>
+    </tbody>

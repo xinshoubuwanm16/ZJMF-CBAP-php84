@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_domain/template/admin/css/domain.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="domain_list" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_domain_list_view'">
+          <a href="index.htm">{{lang.domain_list}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_domain_template_view'">
+          <a href="javascript:;">{{lang.domain_template}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_domain_server_view'">
+          <a href="domain_template.htm">{{lang.domain_module}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_domain_configuration_view'">
+          <a href="domain_setting.htm">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <div class="common-header">
+        <div></div>
+        <div class="right-search">
+          <div class="com-search">
+            <t-input v-model="params.keywords" class="search-input" :placeholder="`${lang.domain_name}、${lang.user}、${lang.company}、${lang.registrant}`" @keyup.enter.native="seacrh" :on-clear="clearKey" clearable>
+            </t-input>
+          </div>
+          <t-select v-model="params.type" :placeholder="lang.type" clearable>
+            <t-option value="personal" :label="lang.personal_way"></t-option>
+            <t-option value="enterprise" :label="lang.business_way"></t-option>
+          </t-select>
+          <t-select v-model="params.status" :placeholder="lang.template_status" clearable>
+            <t-option v-for="item in creditStatus" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+          <t-button @click="seacrh">{{lang.query}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'"
+       @sort-change="sortChange" :hide-sort-tips="hideSortTips">
+        <template #username="{row}">
+          <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">
+            <template>
+              <span v-if="row.username">{{row.username}}</span>
+              <span v-else-if="row.phone">+{{row.phone_code}}-{{row.phone}}</span>
+              <span v-else="row.email">{{row.email}}</span>
+            </template>
+            <span v-if="row.company">({{row.company}})</span>
+          </a>
+        </template>
+        <template #zh_last_name="{row}">
+          {{row.zh_last_name}}{{row.zh_first_name}}
+        </template>
+        <template #type="{row}">
+          <span>{{row.type === 'personal' ? lang.personal_way : row.type === 'enterprise' ? lang.business_way : '--'}}</span>
+        </template>
+        <template #status="{row}">
+          <t-tag theme="default" class="status" v-if="row.status === 0" variant="light">{{lang.no_upload_picture}}
+          </t-tag>
+          <t-tag theme="success" class="status" v-if="row.status === 1" variant="light">{{lang.examine_pass}}
+          </t-tag>
+          <t-tag theme="primary" class="status" v-if="row.status === 2" variant="light">{{lang.examining}}</t-tag>
+          <t-tag theme="warning" class="status" v-if="row.status === 3" variant="light">{{lang.examine_reject}}</t-tag>
+          <t-tag theme="danger" class="status" v-if="row.status === 4" variant="light">{{lang.examine_abnormal}}</t-tag>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.look" :show-arrow="false" theme="light">
+            <t-icon name="view-module" class="common-look" @click="lookDetails(row)" v-permission="'auth_idcsmart_domain_template_check_template'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination :total="total" v-if="total" :page-size="params.limit" :page-size-options="pageSizeOptions" :on-change="changePage" :current="params.page" />
+    </t-card>
+    <t-dialog :visible.sync="visible" :header="lang.info_template_details" :on-close="close" :footer="false"
+     :width="isEn ? 1000 : 800" class="domain-dialog">
+      <div class="con">
+        <div class="l-con">
+          <div class="item">
+            <p class="s-tit">{{lang.zh_name_owner}}：</p>
+            <p class="s-des">{{curDomain.zh_owner}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.zh_name_concat}}：</p>
+            <p class="s-des">{{curDomain.zh_last_name}}{{curDomain.zh_first_name}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.type_owner}}：</p>
+            <p class="s-des">{{curDomain.type === 'personal' ? lang.personal_way : curDomain.type === 'enterprise' ? lang.business_way : '--'}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.phone_tel}}：</p>
+            <p class="s-des">{{curDomain.phone}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.zh_address}}：</p>
+            <p class="s-des">{{curDomain.zh_address}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.en_address}}：</p>
+            <p class="s-des">{{curDomain.en_address}}</p>
+          </div>
+        </div>
+        <div class="r-con">
+          <div class="item">
+            <p class="s-tit">{{lang.en_name_owner}}：</p>
+            <p class="s-des">{{curDomain.en_owner}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.en_name_concat}}：</p>
+            <p class="s-des">{{curDomain.en_first_name}}{{curDomain.en_last_name}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.auth_status}}：</p>
+            <p class="s-des">{{calcCertificate(curDomain.status)}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.owning_region}}：</p>
+            <p class="s-des">{{curDomain.zh_province}}/{{curDomain.zh_city}}</p>
+          </div>
+          <div class="item">
+            <p class="s-tit">{{lang.email_address}}：</p>
+            <p class="s-des">{{curDomain.email}}</p>
+          </div>
+        </div>
+      </div>
+      <t-button theme="default" @click="visible = false" class="close">{{lang.close}}</t-button>
+    </t-dialog>
+  </com-config>
+</div>
+
+
+<script src="/plugins/addon/idcsmart_domain/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_domain/template/admin/api/domain.js"></script>
+<script src="/plugins/addon/idcsmart_domain/template/admin/js/template_mangment.js"></script>

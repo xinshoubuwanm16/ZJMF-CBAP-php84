@@ -1,0 +1,94 @@
+<link rel="stylesheet" href="/plugins/addon/wanyun_resource/template/admin/css/wanyun_resource.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="wanyun-ip" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <div class="flex left">
+          <t-input v-model="params.keywords" :placeholder="`${lang.wy_ip_segment}、${lang.wy_subnet}、${lang.wy_notes}`"
+            clearable></t-input>
+          <t-select v-model="params.group_id" :placeholder="lang.wy_belong_group" clearable>
+            <t-option v-for="item in ipGroup" :value="item.id" :label="item.name" :key="item.id"></t-option>
+          </t-select>
+          <t-button @click="seacrh" class="search">{{lang.wy_search}}</t-button>
+        </div>
+        <div class="flex right">
+          <t-button @click="handlerDcim"
+            v-permission="'auth_addon_wanyun_resource_ip_manage_dcim_config'">DCIM{{lang.wy_config}}</t-button>
+          <t-button @click="handlerSync" :loading="syncLoading"
+            v-permission="'auth_addon_wanyun_resource_ip_manage_sync'">{{lang.wy_sync}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+        :hide-sort-tips="true" :expanded-row-keys="expandedRowKeys" :expand-icon="false">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #group_name="{row}">
+          {{row.group_name || '--'}}
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+        <template #op="{row}">
+          <span v-if="row.ips_sub.length > 0" class="common-look" @click="handlerExpand(row)">{{row.expand ?
+            lang.wy_retract : lang.wy_expand}}</span>
+          <a class="common-look" v-else @click="lookIp(row)">{{lang.wy_details}}</a>
+        </template>
+        <template #expanded-row="{ row }">
+          <div class="more-detail">
+            <t-table row-key="id" :data="row.ips_sub" size="medium" :columns="subColumns" :hover="hover"
+              :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'">
+              <template #notes="{row}">
+                {{row.notes || '--'}}
+              </template>
+              <template #op="scope">
+                <a class="common-look" @click="lookIp(row, scope.row)">{{lang.wy_details}}</a>
+              </template>
+            </t-table>
+          </div>
+        </template>
+      </t-table>
+      <t-pagination :total="total" :page-size="params.limit" :current="params.page" :page-size-options="pageSizeOptions"
+        @change="changePage" v-if="total" />
+    </t-card>
+    <!-- DICM配置 -->
+    <t-dialog :header="`DCIM${lang.wy_config}`" :visible.sync="configVisible" :footer="false" width="500px">
+      <t-form :data="formData" :rules="rules" ref="userInfo" @submit="submitDcim">
+        <t-form-item :label="`DCIM${lang.wy_interface}`" name="server_id" class="dcim-server">
+          <t-select v-model="formData.server_id" :placeholder="`DCIM${lang.wy_interface}`">
+            <t-option v-for="item in serverList" :value="item.id" :label="item.name" :key="item.id"></t-option>
+          </t-select>
+          <span class="s-tip">{{lang.wy_tip1}}</span>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.wy_hold}}</t-button>
+          <t-button theme="default" @click="configVisible = false">{{lang.wy_cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- IP段详情  -->
+    <t-dialog :header="`「${curIp}」${lang.wy_detail}`" :visible.sync="ipDialog" :footer="false" width="600px"
+      class="ip-details" placement="center">
+      <t-table row-key="id" :data="ipList" size="medium" :columns="ipColumns" :hover="hover" :loading="ipLoading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true"
+        :max-height="500">
+        <template #use_time="{row}">
+          {{row.use_time | formateTime}}
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+      </t-table>
+      <div class="com-f-btn">
+        <t-button theme="default" @click="ipDialog = false">{{lang.wy_close}}</t-button>
+      </div>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/wanyun_resource/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/api/wanyun_resource.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/js/ip_manage.js"></script>

@@ -1,0 +1,206 @@
+<link rel="stylesheet" href="/plugins/addon/cost_pay/template/admin/css/client.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="order-details hasCrumb" v-cloak>
+  <com-config>
+    <div class="com-crumb">
+      <span>{{lang.business_manage}}</span>
+      <t-icon name="chevron-right"></t-icon>
+      <span style="cursor: pointer;" @click="goOrder">{{lang.order_manage}}</span>
+      <t-icon name="chevron-right"></t-icon>
+      <span class="cur">{{lang.piece_cost}}</span>
+      <span class="back-text" @click="goBack">
+        <t-icon name="chevron-left-double"></t-icon>{{lang.back}}
+      </span>
+    </div>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_business_order_detail_order_detail_view'">
+          <a :href="`${baseUrl}order_details.htm?id=${id}`">{{lang.create_order_detail}}</a>
+        </li>
+        <li v-permission="'auth_business_order_detail_refund_record_view'">
+          <a :href="`${baseUrl}order_refund.htm?id=${id}`">{{lang.refund_record}}</a>
+        </li>
+        <li v-permission="'auth_business_order_detail_transaction'">
+          <a :href="`${baseUrl}order_flow.htm?id=${id}`">{{lang.flow}}</a>
+        </li>
+        <li class="active" v-permission="'auth_addon_cost_pay_show_tab'">
+          <a>{{lang.piece_cost}}</a>
+        </li>
+        <li v-permission="'auth_business_order_detail_notes_view'">
+          <a :href="`${baseUrl}order_notes.htm?id=${id}`">{{lang.notes}}</a>
+        </li>
+      </ul>
+      <div class="cost-box">
+        <div class="top-search">
+          <div class="left-search">
+            <t-input v-model="params.keywords" :placeholder="lang.cost_text9" @keyup.enter.native="searchData"
+              clearable></t-input>
+            <t-select v-model="params.owner" clearable :placeholder="lang.cost_text3" :options="ownerList"></t-select>
+            <t-date-range-picker v-model="costTime" value-type='time-stamp' :placeholder="lang.cost_text1"
+              :presets="presets" enable-time-picker clearable>
+            </t-date-range-picker>
+            <t-date-range-picker v-model="creatTime" value-type='time-stamp' :placeholder="lang.cost_text6"
+              :presets="presets" enable-time-picker clearable>
+            </t-date-range-picker>
+            <t-button @click="searchData"> {{lang.query}} </t-button>
+          </div>
+          <div class="right-btn">
+            <t-button @click="openFieldManagement" v-if="$checkPermission('auth_addon_cost_pay_field_manage') && orderDetail.is_recycle === 0">{{lang.cost_text13}}</t-button>
+            <t-button @click="handeladd" v-if="$checkPermission('auth_addon_cost_pay_create') && orderDetail.is_recycle === 0">{{lang.cost_text14}}</t-button>
+          </div>
+        </div>
+        <div class="cost-table">
+          <t-table hover row-key="index" :loading="loading" :data="list" :columns="columns">
+            <template #cost_time="{row}">
+              <span>{{moment(row.cost_time * 1000).format('YYYY-MM-DD HH:mm')}}</span>
+            </template>
+            <template #cost="{row}">
+              <span>{{currency_prefix}}{{thousandth(row.cost * 1)}}</span>
+            </template>
+            <template #notes="{row}">
+              <span>{{row.notes === '' ? '--' : row.notes}}</span>
+            </template>
+            <template #create_time="{row}">
+              <span>{{moment(row.create_time * 1000).format('YYYY-MM-DD HH:mm')}}
+                ({{row.admin_name}})
+              </span>
+            </template>
+            <template #op="slotProps">
+              <t-icon v-if="$checkPermission('auth_addon_cost_pay_update') && orderDetail.is_recycle === 0" name="edit-1" color="#0052D9"
+                style="margin-right: 10px;" @click="edit(slotProps.row)" class="common-look"></t-icon>
+              <t-icon name="delete" v-if="$checkPermission('auth_addon_cost_pay_delete') && orderDetail.is_recycle === 0" color="#0052D9" class="common-look"
+                @click="deletes(slotProps.row.id)"></t-icon>
+            </template>
+          </t-table>
+          <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+            :page-size-options="pageSizeOptions" @change="changePage" />
+        </div>
+      </div>
+
+
+
+      <t-dialog :header="editId ? lang.cost_text20 : lang.cost_text19" :visible.sync="materialVisble" :footer="false"
+        width="650">
+        <t-form :rules="rules" ref="formRef" label-align="top" :data="formData" @submit="onSubmit" :label-width="120"
+          reset-type="initial">
+          <t-form-item>
+            <t-form-item :label="lang.cost_text2" name="name" style="width: 50%;">
+              <t-input v-model="formData.name" :placeholder="lang.cost_text2"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.cost_text3" name="owner" style="width: 50%;">
+              <t-input v-model="formData.owner" :placeholder="lang.cost_text3"></t-input>
+            </t-form-item>
+          </t-form-item>
+          <t-form-item>
+            <t-form-item :label="lang.cost_text4" name="cost" style="width: 50%;">
+              <t-input-number style="width: 100%;" v-model="formData.cost" theme="normal"
+                :placeholder="lang.cost_text4"></t-input-number>
+            </t-form-item>
+            <t-form-item :label="lang.cost_text1" name="cost_time" style="width: 50%;">
+              <t-date-picker style="width: 100%;" v-model="formData.cost_time" value-type='time-stamp'
+                enable-time-picker allow-input clearable></t-date-picker>
+            </t-form-item>
+          </t-form-item>
+          <div class="form-waop">
+            <t-form-item :name="`self_defined_field[${item.id}]`" :label="item.field_name" v-for="item in costFieldList"
+              :key="item.id"
+              :rules="[{ required: item.is_required === 1 , message: item.field_name + lang.cost_text21}]">
+              <t-input v-model="formData.self_defined_field[item.id]" :placeholder="item.field_name"
+                v-if="item.field_type === 'text'"></t-input>
+              <t-select v-model="formData.self_defined_field[item.id]" v-if="item.field_type === 'dropdown'" clearable
+                :placeholder=" item.field_name" :options="item.options">
+              </t-select>
+            </t-form-item>
+          </div>
+          <t-form-item :label="lang.cost_text7">
+            <t-textarea v-model="formData.notes" :placeholder="lang.cost_text7" maxlength="200"
+              name="description"></t-textarea>
+          </t-form-item>
+          <div class="com-f-btn">
+            <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.cost_text17}}</t-button>
+            <t-button theme="default" variant="base" @click="closeDialog">{{lang.cost_text18}}</t-button>
+          </div>
+        </t-form>
+      </t-dialog>
+
+      <t-dialog :header="lang.cost_text13" :visible.sync="fieldManagementVisible" :footer="false" width="650">
+        <t-form :rules="rules" ref="fieldManagement" label-align="top" :data="fieldFormData" @submit="onFieldSubmit"
+          :label-width="120" reset-type="initial">
+          <t-form-item :label="lang.cost_text22" name="field_name"
+            :rules="[{ required: true, message: lang.cost_text22 + lang.cost_text21}]">
+            <t-input style="width:60%; margin-right: 20px;" v-model="fieldFormData.field_name"
+              :placeholder="lang.cost_text22">
+            </t-input>
+            <t-checkbox v-model="fieldFormData.is_required" style="flex-shrink: 0;">{{lang.cost_text23}}</t-checkbox>
+          </t-form-item>
+          <t-form-item :label="lang.cost_text24" name="field_type"
+            :rules="[{ required: true, message: lang.cost_text24 + lang.cost_text21}]">
+            <div class="itme-flex">
+              <t-select style="width:60%;  margin-right: 20px;" v-model="fieldFormData.field_type" clearable
+                :placeholder="lang.cost_text24">
+                <t-option value="text" :label="lang.cost_text25"></t-option>
+                <t-option value="dropdown" :label="lang.cost_text26"></t-option>
+              </t-select>
+              <t-button v-if="fieldFormData.field_type !== 'dropdown'" theme="primary" type="submit"
+                :loading="submitLoading">{{editFieldId ? lang.cost_text30 : lang.cost_text29 }}
+              </t-button>
+            </div>
+          </t-form-item>
+          <t-form-item :rules="[{ required: true, message: lang.cost_text27 + lang.cost_text21}]"
+            :label="lang.cost_text27" name="field_option" v-if="fieldFormData.field_type == 'dropdown'">
+            <div class="itme-flex">
+              <t-input style="width:60%;  margin-right: 20px;" v-model="fieldFormData.field_option"
+                :placeholder="lang.cost_text28">
+              </t-input>
+              <t-button theme="primary" type="submit" :loading="submitLoading">{{editFieldId ? lang.cost_text30 :
+                lang.cost_text29 }}
+              </t-button>
+            </div>
+          </t-form-item>
+        </t-form>
+        <t-table style="margin-top: 30px;" @drag-sort="onDragSort" table-layout="auto" drag-sort="row-handler"
+          row-key="id" :columns="fieldColumns" :data="costFieldList" bordered lazy-load>
+          <template #drag="{row}">
+            <t-icon name="move" style="cursor: move;"></t-icon>
+          </template>
+          <template #field_name="{row}">
+            <span> <span class="red-text" v-if="row.is_required === 1">*</span>{{ row.field_name }}</span>
+          </template>
+
+          <template #field_type="{row}">
+            <t-tooltip :content="row.field_option" theme="light" v-if="row.field_type === 'dropdown'">
+              <span>{{lang.cost_text26}}</span>
+            </t-tooltip>
+            <span v-else>{{lang.cost_text25 }}</span>
+          </template>
+          <template #show_list="{row}">
+            <t-switch @change="showList(row)" :custom-value="[1,0]" size="large" :loading="row.loading"
+              v-model="row.show_list"></t-switch>
+          </template>
+          <template #op="slotProps">
+            <t-icon name="edit-1" color="#0052D9" style="margin-right: 10px;" @click="editField(slotProps.row)"
+              class="common-look"></t-icon>
+            <t-icon name="delete" color="#0052D9" class="common-look" @click="deleteField(slotProps.row.id)"></t-icon>
+          </template>
+        </t-table>
+
+      </t-dialog>
+
+      <!-- 删除提示框 -->
+      <t-dialog theme="warning" attach="body" :header="delId ? lang.sureDelete : lang.client_custom_label6"
+        :close-btn="false" :visible.sync="delVisible" class="delDialog">
+        <template slot="footer">
+          <t-button theme="primary" @click="sureDelUser" :loading="delLoading">{{lang.cost_text32}}</t-button>
+          <t-button theme="default" @click="delVisible=false">{{lang.cost_text33}}</t-button>
+        </template>
+      </t-dialog>
+    </t-card>
+    <div class="deleted-svg">
+      <img :src="`${rootRul}img/deleted.svg`" alt="" v-show="orderDetail.is_recycle">
+    </div>
+  </com-config>
+</div>
+<script src="/plugins/addon/cost_pay/template/admin/api/common.js"></script>
+<script src="/plugins/addon/cost_pay/template/admin/api/client.js"></script>
+<script src="/plugins/addon/cost_pay/template/admin/lang.js"></script>
+<script src="/plugins/addon/cost_pay/template/admin/js/order_cost.js"></script>

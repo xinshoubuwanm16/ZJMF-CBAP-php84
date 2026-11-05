@@ -1,0 +1,222 @@
+<!-- 独有 -->
+<link rel="stylesheet" href="/plugins/addon/client_care/template/admin/css/client_care_add.css">
+<!-- 内容开始 -->
+<div id="content" class="client-care-add table" v-cloak>
+  <com-config>
+    <t-card class="list-card-container table">
+      <div class="title-line">
+        <div class="title">{{lang.client_care_title1}}</div>
+        <div class="line"></div>
+      </div>
+      <div class="main-form">
+        <t-form :data="formData" ref="form" label-align="top" :label-width="60" :rules="rules" @submit="sub">
+          <!-- 通知标题 -->
+          <t-form-item name="title" :label="lang.client_care_label8">
+            <t-input class="short" v-model="formData.title" :disabled="true"></t-input>
+          </t-form-item>
+          <!-- 通知形式 -->
+          <t-form-item name="type" :label="lang.notice_type">
+            <t-select class="short" v-model="formData.type" :placeholder="lang.notice_type" :disabled="true">
+              <t-option v-for="item in typeList" :key="item.value" :value="item.value" :label="item.label">
+              </t-option>
+            </t-select>
+          </t-form-item>
+          <template v-if="formData.type === 2">
+            <div class="email">
+              <!-- 短信接口 -->
+              <t-form-item name="sms_name" :label="lang.client_care_label9">
+                <t-select class="short" v-model="formData.sms_name" @change="smsChange" :disabled="true">
+                  <t-option v-for="item in smsList" :key="item.id" :value="item.name" :label="item.title"></t-option>
+                </t-select>
+              </t-form-item>
+              <!-- 短信模板 -->
+              <t-form-item name="sms_template_id" :label="lang.client_care_label10">
+                <t-select class="short" v-model="formData.sms_template_id" :disabled="true">
+                  <t-option v-for="item in smsTemplateList" :key="item.id" :value="item.id"
+                    :label="item.type==0 ? (item.title + '-' + lang.client_care_label47) : (item.title + '-' + lang.client_care_label48)"></t-option>
+                </t-select>
+              </t-form-item>
+              <!-- 邮件接口 -->
+              <t-form-item name="email_name" :label="lang.client_care_label11">
+                <t-select class="short" v-model="formData.email_name" @change="emailChange" :disabled="true">
+                  <t-option v-for="item in emailList" :key="item.id" :value="item.name" :label="item.title"></t-option>
+                </t-select>
+              </t-form-item>
+              <!-- 邮件模板 -->
+              <t-form-item name="email_template_id" :label="lang.client_care_label12">
+                <t-select class="short" v-model="formData.email_template_id" @change="emailTemplateChange"
+                  :disabled="true">
+                  <t-option v-for="item in emailTemplateList" :key="item.id" :value="item.id"
+                    :label="item.name"></t-option>
+                </t-select>
+              </t-form-item>
+            </div>
+            <!-- 邮件标题 -->
+            <t-form-item name="subject" :label="lang.client_care_label13">
+              <t-input class="long" v-model="formData.subject" :disabled="true"></t-input>
+            </t-form-item>
+          </template>
+          <!-- 邮件内容 -->
+          <t-form-item name="message" :label="calcTit">
+            <div id="emailTemp"></div>
+            <!-- <t-textarea ></t-textarea> -->
+          </t-form-item>
+          <div class="time">
+            <!-- 推送开始时间 -->
+            <t-form-item name="range" :label="lang.client_care_label16">
+              <t-date-range-picker allow-input clearable class="short" v-model="formData.range" :disabled="true"
+                :placeholder="[`${lang.select}${lang.client_care_label44}`,`${lang.select}${lang.client_care_label44}`]"></t-date-range-picker>
+            </t-form-item>
+          </div>
+          <div class="time">
+            <!-- 推送周期 -->
+            <t-form-item name="send_cycle" :label="lang.client_care_label15">
+              <t-select class="short" v-model="formData.send_cycle" :disabled="true">
+                <t-option v-for="item in sendCycleList" :key="item.id" :value="item.value"
+                  :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <!-- week -->
+            <t-form-item name="week_day" label=" " v-if="formData.send_cycle === 'week'" :required-mark="false">
+              <t-select class="short" v-model="formData.week_day" :placeholder="lang.select" :disabled="true">
+                <t-option v-for="item in weekArr" :key="item.value" :value="item.value" :label="item.label">
+                </t-option>
+              </t-select>
+            </t-form-item>
+            <!-- month -->
+            <t-form-item name="month_day" label=" " v-if="formData.send_cycle === 'month'" :required-mark="false">
+              <t-select class="short" v-model="formData.month_day" :placeholder="lang.select" :disabled="true">
+                <t-option v-for="item in monthArr" :key="item.value" :value="item.value" :label="item.label">
+                </t-option>
+              </t-select>
+            </t-form-item>
+            <!-- 时分 -->
+            <t-form-item name="timeHourMin" label=" " :required-mark="false"
+              v-if="formData.send_cycle && formData.send_cycle !== 'onetime'">
+              <t-time-picker format="HH:mm" v-model="formData.timeHourMin" :placeholder="lang.choose_time"
+                :disabled="true" />
+            </t-form-item>
+          </div>
+          <div class="title-line title-line-2">
+            <div class="title">{{lang.client_care_title2}}</div>
+            <div class="line"></div>
+          </div>
+          <div class="target">
+            <!-- 一级选择 -->
+            <t-form-item name="condition1" label=" ">
+              <t-select class="short" @change="firstChange" v-model="formData.push_object.condition1" :disabled="true">
+                <t-option v-for="item in selectFirst" :key="item.id" :value="item.value" :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <!-- 二级选择 -->
+            <t-form-item name="condition2" label=" " v-show="formData.push_object.condition1">
+              <t-select class="short" v-model="formData.push_object.condition2" @change="secondChange" :disabled="true">
+                <t-option v-for="item in selectSecond" :key="item.id" :value="item.value"
+                  :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <!-- 三级选择开始 -->
+            <!-- 大于等于小于选择框 -->
+            <t-form-item name="condition3Arr" label=" " v-show="thirdType == 'more' && formData.push_object.condition2">
+              <t-select class="short" v-model="formData.push_object.condition3Arr" multiple :filterable="true" multiple
+                :min-collapsed-num="1" @change="thirdChange" :disabled="true">
+                <t-option v-for="item in selectThird" :key="item.id" :value="item.value" :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item name="condition3" label=" " v-show="thirdType=='one'  && formData.push_object.condition2">
+              <t-select class="short" v-model="formData.push_object.condition3" :filterable="true" @change="thirdChange"
+                :disabled="true">
+                <t-option v-for="item in selectThird" :key="item.id" :value="item.value" :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item name="condition3Arr" label=" "
+              v-show="thirdType=='config'  && formData.push_object.condition2">
+              <t-button>{{lang.client_care_btn2}}</t-button>
+            </t-form-item>
+            <!-- 特定产品多选 -->
+            <t-form-item :required-mark="false" label=" "
+              v-show="thirdType=='owner_special_product' && formData.push_object.condition2">
+              <t-tree-select v-model="formData.push_object.productArr" :data="productList" multiple clearable
+                :placeholder="lang.select" :tree-props="{
+                keys:{ label: 'name', value: 'key'}}" :min-collapsed-num="1" class="short" :disabled="true">
+              </t-tree-select>
+            </t-form-item>
+            <!-- 三级选择结束 -->
+            <!-- 四级选择开始 -->
+            <t-form-item name="condition4" label=" ">
+              <t-input :disabled="true" class="short-4"
+                v-show="(formData.push_object.condition5 == 'day') || isDay || isNum"
+                v-model="formData.push_object.condition4" theme="normal" :min="0" :decimal-places="0"></t-input>
+              <t-date-picker :disabled="true" class="short-4" v-show="formData.push_object.condition5 == 'date'"
+                v-model="formData.push_object.condition4" value-type="time-stamp" />
+            </t-form-item>
+            <!-- 四级选择结束 -->
+            <!-- 五级选择开始 -->
+            <t-form-item name="condition5" v-show="isFifth" label=" ">
+              <t-select class="date" v-model="formData.push_object.condition5" @change="fifthChange" :disabled="true">
+                <t-option v-for="item in fifthSelect" :key="item.id" :value="item.value" :label="item.label"></t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item v-show="isDay || isNum">
+              <span v-show="isDay">{{lang.client_care_text3}}</span>
+              <span v-show="isNum">{{lang.client_care_text4}}</span>
+            </t-form-item>
+            <!-- 五级选择结束 -->
+          </div>
+          <t-checkbox v-model="formData.repeat_send" :disabled="true">{{lang.client_care_text5}}</t-checkbox>
+          <div class="client-text">{{lang.client_care_text6}}{{postClientData.count}}{{lang.client_care_text7}}<span
+              @click="listVisible=true">{{lang.client_care_btn3}}</span></div>
+          <div class="footer-operation">
+            <!-- <t-button class="save-btn" theme="primary" type="submit">{{lang.client_care_btn4}}</t-button>
+                    <t-button class="see-btn" @click="showPreview">{{lang.client_care_btn5}}</t-button> -->
+            <t-button class="quit-btn" @click="back">{{lang.client_care_label49}}</t-button>
+          </div>
+        </t-form>
+      </div>
+
+      <!-- 推送名单弹窗 -->
+      <t-dialog :visible.sync="listVisible" :header="lang.client_care_title3" :footer="false"
+        @close="listVisible=false">
+        <t-table :data="postClientData.list" max-height=400 display-type="fixed-width" :hide-sort-tips="true"
+          :loading="loading" :columns="nameColumns" row-key="id">
+          <template #username="{row}">
+            {{row.username}}({{row.email?row.email:row.phone}})
+          </template>
+        </t-table>
+        <t-button style="margin-top: 20px;float:right;" @click="listVisible=false">{{lang.client_care_btn7}}</t-button>
+      </t-dialog>
+      <!-- 发送预览弹窗 -->
+      <t-dialog :visible.sync="previewVisible" :header="lang.client_care_title4" :footer="false"
+        @close="previewVisible=false">
+        <t-form :data="previewParams" label-align="top" :label-width="60" @submit="preview" :rules="previewRules">
+          <t-form-item name="email" :label="lang.client_care_label17" v-if="formData.email_name">
+            <t-input v-model="previewParams.email"></t-input>
+          </t-form-item>
+          <t-form-item name="phone" :label="lang.client_care_label18" v-if="formData.sms_name">
+            <!-- <t-select v-model="previewParams.phone_code"></t-select> -->
+            <t-select v-model="previewParams.phone_code" filterable style="width: 100px" :placeholder="lang.phone_code">
+              <t-option v-for="item in country" :value="item.phone_code" :label="item.name_zh + '+' + item.phone_code"
+                :key="item.name">
+              </t-option>
+            </t-select>
+            <t-input v-model="previewParams.phone"></t-input>
+          </t-form-item>
+          <div class="preview-footer">
+            <t-button class="save-btn" theme="primary" type="submit">{{lang.sure}}</t-button>
+            <t-button theme="default" @click="previewVisible=false">{{lang.cancel}}</t-button>
+          </div>
+        </t-form>
+
+      </t-dialog>
+      <!-- 商品配置弹窗 -->
+    </t-card>
+  </com-config>
+</div>
+<!-- 内容结束 -->
+<!-- 独有 -->
+<script src="/tinymce/tinymce.min.js"></script>
+<script src="/plugins/addon/client_care/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTinymce/comTinymce.js"></script>
+<script src="/plugins/addon/client_care/template/admin/api/client_care.js"></script>
+<script src="/plugins/addon/client_care/template/admin/js/client_care_detail.js"></script>

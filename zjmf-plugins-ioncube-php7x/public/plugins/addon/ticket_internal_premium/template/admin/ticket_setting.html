@@ -1,0 +1,203 @@
+<link rel="stylesheet" href="/plugins/addon/ticket_internal_premium/template/admin/css/ticket_setting.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="template" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_addon_ticket_internal_premium_ticket_list'">
+          <a href="index.htm">{{lang.inside_work_order}}</a>
+        </li>
+        <li class="active">
+          <a>{{lang.order__configuration}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_cron'">
+          <a href="ticket_time.htm">{{lang.order_text142}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_statistics'">
+          <a href="ticket_statistics.htm">{{lang.order_text88}}</a>
+        </li>
+
+      </ul>
+      <div class="conten-box">
+        <div class="order-type" v-permission="'auth_addon_ticket_internal_premium_department'">
+          <div class="mar-10 order-box">
+            <span class="title-text">{{lang.order_text124}}</span>
+            <span class="add-stauts-btn" @click="addTicket"
+              v-permission="'auth_addon_ticket_internal_premium_department_create'">{{lang.order_text53}}</span>
+          </div>
+          <t-table bordered row-key="id" :data="orderTypeData" :columns="columns">
+            <template #name="{row}">
+              <div>{{row.name}}</div>
+            </template>
+            <template #type="{row}">
+              <span v-for="(item,index) in row.type"
+                :key="item.id">{{item.name}}-{{item.processing_limit}}{{lang.order_text118}}
+                <span v-if="index !== row.type.length-1">、</span>
+              </span>
+            </template>
+            <template #admin="{row}">
+              <span v-for="(item,index) in row.admin" :key="item.id">{{item.name}}
+                <span v-if="index !== row.admin.length-1">、</span>
+              </span>
+            </template>
+            <template #op="{row}">
+              <t-icon class="btn-icon" name="edit-1" style="margin-right: 10px;" @click="edithandleClickOp( row)"
+                v-permission="'auth_addon_ticket_internal_premium_department_update'">
+              </t-icon>
+              <t-icon class="btn-icon" name="delete" @click="orderTypeMgtDelete(row.id)"
+                v-permission="'auth_addon_ticket_internal_premium_department_delete'">
+              </t-icon>
+            </template>
+          </t-table>
+        </div>
+
+
+        <div class="status-box" v-permission="'auth_addon_ticket_internal_premium_status'">
+          <div class="status-title">
+            <span class="title-text">{{lang.order_text54}}</span>
+            <span class="add-stauts-btn" @click="appendStatus">{{lang.order_text53}}</span>
+          </div>
+          <t-table bordered row-key="id" :data="orderStatusData" :columns="columns2">
+            <template #index="slotProps">
+              <div>{{slotProps.row.index}}</div>
+            </template>
+            <template #name="slotProps">
+              <div v-if="!slotProps.row.isedit && !slotProps.row.isAdd">{{slotProps.row.name}}</div>
+              <t-input v-else :placeholder="lang.order_text55" clearable v-model="slotProps.row.name"></t-input>
+            </template>
+            <template #color="slotProps">
+              <div v-if="!slotProps.row.isedit && !slotProps.row.isAdd" :style={background:slotProps.row.color}
+                class="color-box"></div>
+              <div v-else class="tdesign-demo-block-row">
+                <t-color-picker v-model="slotProps.row.color" />
+              </div>
+            </template>
+            <template #status="slotProps">
+              <div v-if="!slotProps.row.isedit && !slotProps.row.isAdd">{{slotProps.row.statusText}}</div>
+              <t-select v-else :placeholder="lang.order_text56" filterable clearable v-model="slotProps.row.status"
+                :keys="{ label: 'statusText', value: 'status' }" :options="statusOpitons"></t-select>
+            </template>
+            <template #op="slotProps">
+              <div v-if="slotProps.row.id">
+                <t-icon class="btn-icon" v-if="slotProps.row.isedit" name="save" style="margin-right: 10px;"
+                  @click="orderStatustSave(slotProps.row)"></t-icon>
+                <t-icon class="btn-icon" v-if="slotProps.row.isedit" name="close-rectangle" @click="cancelStatusEdit()">
+                </t-icon>
+                <t-icon class="btn-icon" v-if="!slotProps.row.isedit" name="edit-1" style="margin-right: 10px;"
+                  @click="editStatus(slotProps.row)"></t-icon>
+                <t-icon class="btn-icon" v-if="!slotProps.row.isedit" name="delete"
+                  @click="orderStatusMgtDelete(slotProps.row)"></t-icon>
+              </div>
+              <div v-else>
+                <t-icon class="btn-icon" name="save" style="margin-right: 10px;"
+                  @click="orderStatustSave(slotProps.row)"></t-icon>
+                <t-icon class="btn-icon" name="close-rectangle" @click="deleteStatusadd()"></t-icon>
+              </div>
+            </template>
+            <template #footer-summary>
+              <div class="tip-box">
+                <span>*</span>
+                <span>{{lang.order_text57}}</span>
+              </div>
+            </template>
+          </t-table>
+        </div>
+
+        <div class="ohter-box" v-permission="'auth_addon_ticket_internal_premium_config_save'">
+          <span class="title-text">{{lang.order_text131}}</span>
+          <div class="ohter-switch">
+            <t-switch v-model="configObj.order_button" :custom-value="[1,0]" @change="saveConfig"></t-switch>
+            <span class="ohter-text">{{lang.order_text132}}</span>
+          </div>
+          <div class="ohter-switch">
+            <t-switch :custom-value="[1,0]" v-model="configObj.follow_limit" @change="saveConfig"></t-switch>
+            <span class="ohter-text">{{lang.order_text133}}</span>
+          </div>
+
+        </div>
+        <!-- 预设回复 -->
+        <div class="prplay-box" v-permission="'auth_addon_ticket_internal_premium_prereply'">
+          <div class="title-text mar-10">{{lang.order_text58}}</div>
+          <t-table bordered row-key="id" :data="prereplyList" :columns="columns3">
+            <template #content="slotProps">
+              <div v-html="slotProps.row.content" class="repaly-content"></div>
+            </template>
+            <template #op="slotProps">
+              <div>
+                <t-icon class="btn-icon" name="edit-1" style="margin-right: 10px;"
+                  @click="editPrereply(slotProps.row)"></t-icon>
+                <t-icon class="btn-icon" name="delete" @click="deletePrereply(slotProps.row)"></t-icon>
+              </div>
+            </template>
+          </t-table>
+          <div class="input-box">
+            <!-- <textarea textarea id="tiny" name="content" v-model="prereplyContent"></textarea> -->
+            <com-tinymce ref="comTinymce1" id="recover"></com-tinymce>
+          </div>
+          <div class="save-replay-btn">
+            <t-button @click="savePreReplay" :loading="saveLoading">{{lang.order_text59}}</t-button>
+          </div>
+        </div>
+      </div>
+
+      <t-dialog width="550px" :header="lang.order_text124" :footer="false" :visible.sync="departmentDialog"
+        destroy-on-close :close-btn="false">
+        <t-form reset-type="initial" :data="departFormData" :rules="departFormRules" ref="departdForm"
+          @submit="departFormSubmit">
+          <t-form-item :label="lang.order_text125" name="name">
+            <t-input :placeholder="lang.order_text125" clearable v-model="departFormData.name"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.order_text159" name="admin">
+            <t-tree-select @change="adminChange" :min-collapsed-num="1" v-model="departFormData.admin_id"
+              :data="departmentOptions" multiple :placeholder="lang.please_search_order_type" clearable>
+            </t-tree-select>
+          </t-form-item>
+          <t-form-item :label="lang.order_text127" name="director_admin_id">
+            <t-select :placeholder="lang.order_text127" clearable v-model="departFormData.director_admin_id"
+              :options="calcDirectorList">
+            </t-select>
+          </t-form-item>
+          <t-form-item :label="lang.order_text128">
+            <div class="type-box">
+              <div v-for="(item,index) in departFormData.type" :key="index" class="type-item">
+                <t-form-item :label-width="0" :name="`type[${index}].name`"
+                  :rules="[{ required: true, message: lang.order_text128}]">
+                  <t-input :placeholder="lang.order_text128" v-model="item.name"></t-input>
+                </t-form-item>
+                <t-form-item :label-width="0" :name="`type[${index}].processing_limit`"
+                  :rules="[{ required: true, message: lang.order_text129}]">
+                  <t-input-number v-model="item.processing_limit" theme="normal" :min="0">
+                    <template #suffix>
+                      <span>{{lang.order_text118}}</span>
+                    </template>
+                  </t-input-number>
+                </t-form-item>
+                <t-icon class="minus-icon" name="minus-circle" @click="minusType(index)"
+                  v-show="departFormData.type.length > 1"></t-icon>
+              </div>
+              <span class="add-icon" @click="addType"><t-icon class="add-icon" name="add-circle"></t-icon>
+                {{lang.order_text130}}</span>
+            </div>
+          </t-form-item>
+
+          <t-form-item class="turn-inside-dialog-footer">
+            <t-button style="margin-right: 16px;" theme="primary" type="submit"
+              :loading="departmentLoading">{{lang.hold}}</t-button>
+            <t-button theme="default" @click="departmentClose">{{lang.cancel}}</t-button>
+          </t-form-item>
+        </t-form>
+      </t-dialog>
+      <t-dialog :visible.sync="deleteVisible" :header="lang.order_text123" :confirm-btn="lang.order_text32"
+        :cancel-btn="lang.order_text33" @confirm="handelDelete" @close="deleteVisible = false">
+      </t-dialog>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/ticket_internal_premium/template/admin/api/order.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/ticket_setting.js"></script>
+<script src="/tinymce/tinymce.min.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comTinymce/comTinymce.js"></script>

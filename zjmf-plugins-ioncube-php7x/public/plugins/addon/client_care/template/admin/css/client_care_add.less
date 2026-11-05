@@ -1,0 +1,133 @@
+.client-care-add {
+  height: auto !important;
+
+  // .disable {
+  //     position: relative;
+  //     left: 0;
+  //     top: 0;
+  //     opacity: .5;
+  //     width: 100%;
+  //     height: 300rpx;
+  //     background: #000;
+  //     z-index: 998;
+  //     /*pointer-events: none; 是可以点击下面的事件，但是因为div是包着tinymac的，所以无效 */
+  //     pointer-events: none;
+  // }
+
+  .list-card-container {
+    .title-line {
+      display: flex;
+      line-height: 1;
+      margin-top: 26px;
+
+      .title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333333;
+        white-space: nowrap;
+      }
+
+      .line {
+        width: 100%;
+        border-bottom: 1px solid #DCDCDC;
+      }
+    }
+
+    .main-form {
+      margin-top: 30px;
+
+      .email,
+      .time {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+
+        .short {
+          margin-right: 40px;
+        }
+      }
+
+      .target {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .short {
+          margin-right: 40px;
+        }
+
+        .short-4 {
+          width: 320px;
+          margin-right: 10px;
+        }
+
+        .date {
+          width: 100px;
+        }
+      }
+
+      .short {
+        width: 320px;
+      }
+
+
+
+      .long {
+        width: 680px;
+      }
+
+      .title-line-2 {
+        margin-top: 0;
+      }
+
+      .footer-operation {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+
+        .save-btn {
+          margin-right: 20px;
+
+        }
+
+        .see-btn {
+          margin-right: 20px;
+          background: var(--td-brand-color-1);
+          color: #333333;
+          border: 1px solid var(--td-brand-color-1);
+        }
+
+        .quit-btn {
+          background: #E7E7E7;
+          color: #333333;
+          border: 1px solid #E7E7E7;
+        }
+      }
+
+      .client-text {
+        margin-top: 12px;
+
+        span {
+          color: rgba(0, 82, 217, 1);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.preview-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+
+  .save-btn {
+    margin-right: 10px;
+  }
+}
+
+.t-select .t-is-disabled .t-tag--default {
+  color: var(--td-text-color-primary) !important;
+  background-color: var(--td-bg-color-component);
+}

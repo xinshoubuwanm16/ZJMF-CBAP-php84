@@ -1,0 +1,213 @@
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/server/bt_virtual_host/template/clientarea/pc/default/css/bt_virtual_host.css">
+<div class="template common-config">
+  <!-- 自己的东西 -->
+  <div class="common-box">
+    <div class="l-config">
+      <h1 class="tit">{{tit}}</h1>
+      <div class="main-card mf-cloud" v-loading="loadingPrice && isInit" :class="{'no-login': !isLogin}">
+        <div class="con">
+          <el-form :model="params" :rules="rules" ref="orderForm" label-position="top" label-width="100px"
+            hide-required-asterisk>
+            <el-form-item :label="lang.common_cloud_label1">
+              <el-tabs v-model="country" @tab-click="changeCountry" :class="{hide: dataList.length === 1}">
+                <el-tab-pane :label="item.name" :name="String(item.id)" v-for="item in dataList" :key="item.country_id">
+                  <el-radio-group v-model="city" @input="changeCity($event,item.city)">
+                    <el-radio-button :label="c.name" v-for="(c,cInd) in item.areas" :key="cInd">
+                      {{c.name}}
+                      <i class="el-icon-check"></i>
+                    </el-radio-button>
+                  </el-radio-group>
+                </el-tab-pane>
+              </el-tabs>
+            </el-form-item>
+            <!-- 可用区 -->
+            <el-form-item :label="lang.usable_area" class="usable_area">
+              <el-radio-group v-model="area_name" @input="changeArea">
+                <el-radio-button :label="c.name" v-for="(c,cInd) in calcAreaList" :key="cInd">
+                  {{c.name}}
+                  <i class="el-icon-check"></i>
+                </el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <!-- 套餐 -->
+            <el-form-item :label="lang.common_cloud_text7">
+              <div class="cloud-box" v-if="calcMeals.length > 0">
+                <div class="cloud-item" :class="{active: index=== cloudIndex}" v-for="(item,index) in calcMeals"
+                  :key="index" @click="changeRecommend(item,index)">
+                  <p class="tit">{{item.name}}</p>
+                  <p class="des" :title="item.description">{{item.description}}</p>
+                  <div class="info">
+                    <p>{{item.web_space}}{{item.web_space_unit}}&nbsp;{{lang.da_web_space}}</p>
+                    <p>{{item.database_space}}{{item.database_space_unit}}&nbsp;{{lang.database_space}}</p>
+                    <p>{{item.flow}}{{item.flow_unit}}&nbsp;{{lang.mf_flow}}</p>
+                    <p v-if="item.independent_ip">{{lang.da_ip}}</span></p>
+                    <p>{{lang.da_php}}&nbsp;{{item.php_version_min}}-{{item.php_version_max}}</p>
+                  </div>
+                  <i class="el-icon-check"></i>
+                  <div class="gift-tip" v-if="item.gift_domain">
+                    <el-tooltip class="item" effect="dark" placement="bottom" popper-class="com-bottom-tooltip">
+                      <div slot="content">
+                        <p>{{lang.da_tip1}} <span class="num">{{baseConfig.gift_domain_value}}</span> {{lang.da_tip2}}
+                        </p>
+                        <p v-if="baseConfig.gift_domain_suffix && baseConfig.gift_domain_suffix.length > 0">
+                          {{lang.da_tip3}}：
+                          <span v-for="(item,index) in baseConfig.gift_domain_suffix" :key="index">/{{item}}</span>
+                        </p>
+                      </div>
+                      <span class="gift_domain">
+                        {{lang.da_free_domain}}
+                        <i class="el-icon-warning-outline"></i>
+                      </span>
+                    </el-tooltip>
+                  </div>
+
+                </div>
+              </div>
+              <div class="empty" v-else>
+                {{lang.mf_tip9}}
+              </div>
+            </el-form-item>
+
+            <!-- 系统 -->
+            <el-form-item :label="lang.cloud_os" class="system">
+              <span class="show-sys">
+                <img
+                  :src="`/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/bt_virtual_host/${os}.svg`"
+                  alt="">
+                <span class="name">{{os}}</span>
+              </span>
+              <span class="show-sys" v-if="os_detail">
+                {{os_detail}}
+              </span>
+            </el-form-item>
+            <el-form-item :label="lang.domain" class="domain">
+              <el-radio-group v-model="domain_type" class="domain-group">
+                <el-radio :label="lang.exist_domain">{{lang.exist_domain}}</el-radio>
+                <el-radio :label="lang.no_exist_domain">{{lang.no_exist_domain}}</el-radio>
+              </el-radio-group>
+              <el-input v-model="params.domain" class="email" @blur="changeConfig" :placeholder="calcDomainPre">
+              </el-input>
+            </el-form-item>
+            <el-form-item :label="lang.cycle">
+              <div class="cycle">
+                <div class="item" v-for="(item,index) in cycleList" :key="item.id" @click="changeCycle(item,index)"
+                  :class="{'com-active': index === curCycle }">
+                  <p class="discount" v-if="item.discount">{{item.discount}}{{lang.mf_tip25}}</p>
+                  <p class="name">{{item.name}}</p>
+                  <p class="price">{{commonData.currency_prefix}}{{((item.price !== '' ? item.price :
+                    item.amount) * 1).toFixed(2) | filterMoney}}</p>
+                  <i class="el-icon-check"></i>
+                </div>
+              </div>
+            </el-form-item>
+          </el-form>
+        </div>
+      </div>
+    </div>
+    <!-- 配置预览 -->
+    <div class="order-right">
+      <div class="right-main">
+        <div class="right-title">
+          {{lang.product_preview}}
+        </div>
+        <div class="info">
+          <p class="des" v-for="(item,index) in preview" :key="index">
+            <span class="name">{{item.name}}</span>
+            <span class="value" :title="item.value">{{item.value}}</span>
+            <span class="price">{{commonData.currency_prefix}}{{item.price | filterMoney}}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="f-box">
+        <!-- 合计 优惠码 购买按钮 -->
+        <div class="order-right-footer">
+          <div class="order-right-item">
+            <div class="row">
+              <div class="label">{{lang.shoppingCar_goodsNums}}</div>
+              <div class="value del-add">
+                <span class="del" @click="delQty">-</span>
+                <el-input-number class="num" :controls="false" v-model="qty" :min="1">
+                </el-input-number>
+                <span class="add" @click="addQty">+</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer-total">
+            <div class="left">{{lang.shoppingCar_tip_text3}}</div>
+            <div class="right" v-loading="loadingPrice">
+              <span>{{commonData.currency_prefix}} {{calcTotalPrice | filterMoney}}</span>
+              <el-popover placement="top" width="200" trigger="hover"
+                v-show="levelNum || discount || eventData.discount" popper-class="level-pup">
+                <div class="show-config-list">
+                  <p v-if="levelNum">{{lang.shoppingCar_tip_text2}}：{{commonData.currency_prefix}} {{ levelNum |
+                    filterMoney }}</p>
+                  <p v-if="discount">{{lang.shoppingCar_tip_text4}}：{{commonData.currency_prefix}} {{ discount |
+                    filterMoney }}</p>
+                  <p v-if="promo.event_promotion">{{lang.goods_text4}}：{{commonData.currency_prefix}} {{
+                    eventData.discount | filterMoney }}
+                  </p>
+                </div>
+                <i class="el-icon-warning-outline total-icon" slot="reference"></i>
+              </el-popover>
+              <!-- 已使用 -->
+              <div class="show" v-if="totalPrice * 1 !== calcTotalPrice*1">
+                {{commonData.currency_prefix}} {{totalPrice | filterMoney}}
+              </div>
+              <el-popover placement="top" trigger="click" popper-class="discount-pup" v-model="dis_visible"
+                v-if="!discount">
+                <div class="discount">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/common/close_icon.png"
+                    alt="" class="close" @click="dis_visible = !dis_visible">
+                  <div class="code">
+                    <el-input v-model="promo.promo_code"
+                      :placeholder="`${lang.placeholder_pre1}${lang.cloud_code}`"></el-input>
+                    <button class="sure" @click="useDiscount">{{lang.referral_btn6}}</button>
+                  </div>
+                  <span class="error-tip" v-show="showErr">{{lang.mf_tip8}}</span>
+                </div>
+                <div class="use-box" slot="reference" v-show="isShowPromo">
+                  <p class="use">{{lang.use_discount}}</p>
+                </div>
+              </el-popover>
+              <div class="used" v-if="discount">
+                <span>{{promo.promo_code}}</span>
+                <i class="el-icon-circle-close" @click="canclePromo"></i>
+              </div>
+              <!-- 活动插件 -->
+              <event-code v-if="isShowFull" :product_id='id' :qty="qty" :amount="totalPrice"
+                :billing_cycle_time="duration" @change="eventChange">
+              </event-code>
+            </div>
+          </div>
+        </div>
+        <!-- 需读 -->
+        <!-- 购买按钮 -->
+        <div class="f-btn ifram-hiden">
+          <template v-if="isUpdate && !isConfig">
+            <el-button class="buy-btn" type="primary" @click="changeCart" :loading="submitLoading"
+              style="width:100%">{{lang.product_sure_check}}</el-button>
+          </template>
+          <template v-else>
+            <el-button class="cart" type="primary" plain @click="addCart" :loading="submitLoading"
+              style="width:100%">{{lang.product_add_cart}}</el-button>
+            <el-button class="buy-btn" type="primary" @click="submitOrder" :loading="submitLoading"
+              style="width:100%">{{lang.product_buy_now}}</el-button>
+          </template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <el-dialog title="" :visible.sync="cartDialog" custom-class="cartDialog" :show-close="false">
+    <span class="tit">{{lang.product_tip}}</span>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="cartDialog = false">{{lang.product_continue}}</el-button>
+      <el-button @click="goToCart">{{lang.product_settlement}}</el-button>
+    </span>
+  </el-dialog>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/api/bt_virtual_host.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/lang/index.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/js/bt_virtual_host.js"></script>

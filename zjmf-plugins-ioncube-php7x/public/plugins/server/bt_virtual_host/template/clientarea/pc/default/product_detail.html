@@ -1,0 +1,1797 @@
+<!-- 统计图表 -->
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/server/bt_virtual_host/template/clientarea/pc/default/css/cloudTop.css">
+<link rel="stylesheet" href="/plugins/server/bt_virtual_host/template/clientarea/pc/default/css/cloudDetail.css">
+
+<div class="template" id="product_detail_cloud">
+  <div id="mainLoading" class="pro-des" v-if="initLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <!-- 自己的东西 -->
+  <div class="main-card">
+    <div class="card-top">
+      <div class="top-operation">
+        <div class="operation-row1">
+          <img @click="goBack" class="back-img"
+            src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/finance/back.png" />
+          <span class="top-product-name">{{hostData.product_name}}</span>
+          <div class="host-status" @click="goPay" :class="hostData.status">{{hostData.status_name}}</div>
+          <span class="top-area">
+            <!-- <img class="country-img" :src="'/upload/common/country/' + cloudData.data_center.iso +'.png'"> -->
+            <span class="country">{{cloudData.country_name}}</span>
+            <span class="city">{{cloudData.city}}</span>
+          </span>
+        </div>
+        <div class="operation-row2">
+          <div class="row2-left">
+            <span class="name">{{hostData.name}}</span>
+            <span class="ip">{{cloudData.second_domain}}</span>
+          </div>
+          <div class="row2-right" v-show="hostData.status == 'Active' && !initLoading">
+            <!-- 停用-->
+            {foreach $addons as $addon}
+            {if ($addon.name=='IdcsmartRefund')}
+            <span class="refund">
+              <span class="refund-status"
+                v-if="refundData && refundData.status != 'Cancelled' && refundData.status != 'Reject'">{{refundStatus[refundData.status]}}</span>
+              <span class="refund-stop-btn"
+                v-if="refundData && (refundData.status=='Pending' || refundData.status=='Suspend' || refundData.status=='Suspending')"
+                @click="quitRefund">{{lang.common_cloud_btn8}}</span>
+              <span class="refund-btn" @click="showRefund"
+                v-if="!refundData || (refundData && (refundData.status=='Reject')) || (refundData && (refundData.status=='Cancelled'))">{{lang.common_cloud_btn9}}</span>
+            </span>
+            {/if}
+            {/foreach}
+            <!-- <div class="host-status">
+              <p class="status">
+                <span>{{lang.site_status}}：</span>
+                <span v-show="siteInfo.status == 1" class="icon on" @click="changeSite('stop')">
+                  {{lang.site_on}}
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg" alt="">
+                </span>
+                <span v-show="siteInfo.status == 0" class="icon off" @click="changeSite('start')">
+                  {{lang.site_off}}
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg" alt="">
+                </span>
+              </p>
+            </div> -->
+          </div>
+        </div>
+        <div class="operation-row3" v-show="hostData.status == 'Active'">
+          <!-- 有备注 -->
+          <span class="yes-notes" v-if="hostData.notes" @click="doEditNotes">
+            <i class="el-icon-edit notes-icon"></i>
+            <span class="notes-text">{{hostData.notes}}</span>
+          </span>
+          <!-- 无备注 -->
+          <span class="no-notes" v-else @click="doEditNotes">
+            {{lang.cloud_add_notes + ' +'}}
+          </span>
+
+        </div>
+      </div>
+      {foreach $addons as $addon}
+      {if ($addon.name=='IdcsmartRefund')}
+      <div class="refund-msg">
+        <!-- 停用成功 -->
+        <div class="refund-success" v-if="refundData && refundData.status == 'Suspending'">
+          ({{lang.common_cloud_tip6}}{{refundData.create_time | formateTime}}{{lang.common_cloud_tip7}}
+          {{refundData.type=='Expire'?lang.common_cloud_tip8:lang.common_cloud_tip9}}，{{lang.common_cloud_tip13}}<span
+            v-if="refundData.type=='Expire'">{{hostData.due_time | formateTime}}</span>{{refundData.type=='Expire'?
+          lang.common_cloud_tip10:lang.common_cloud_tip11}} {{lang.common_cloud_tip12}})
+        </div>
+        <!-- 停用失败 -->
+        <div class="refund-fail" v-if="refundData && refundData.status == 'Reject'">
+          ({{lang.common_cloud_tip6}}{{refundData.create_time | formateTime}}{{lang.common_cloud_tip7}}
+          {{refundData.type=='Expire'?lang.common_cloud_tip8:lang.common_cloud_tip9}} {{lang.common_cloud_tip14}}，
+          <el-popover placement="top-start" trigger="hover">
+            <span>{{refundData.reject_reason}}</span>
+            <span class="reason-text" slot="reference">{{lang.common_cloud_text15}}</span>
+          </el-popover>
+
+          )
+        </div>
+      </div>
+      {/if}
+      {/foreach}
+
+      <!-- tab -->
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane :label="lang.host_info" name="host">
+          <div class="top-msg">
+            <!-- 实例信息 -->
+            <div class="msg-l">
+              <div class="l-t">
+                <div class="l-t-l">
+                  <span class="l-t-l-text">{{lang.appstore_text301}}</span>
+                </div>
+              </div>
+              <div class="l-b">
+                <div class="row">
+                  <div class="row-l">
+                    <div class="label">{{lang.da_web_space}}:</div>
+                    <div class="value">{{cloudData.web_space}}{{cloudData.web_space_unit}}</div>
+                  </div>
+                  <div class="row-m">
+                    <div class="label">{{lang.database_space}}:</div>
+                    <div class="value">
+                      <template v-if="cloudData.database_space">
+                        {{cloudData.database_space}}{{cloudData.database_space_unit}}
+                      </template>
+                      <template v-else>{{lang.not_limit}}</template>
+                    </div>
+                  </div>
+                  <div class="row-r">
+                    <div class="label">{{lang.mf_flow}}:</div>
+                    <div class="value">{{cloudData.flow}}{{cloudData.flow_unit}}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="row-l">
+                    <div class="label">{{lang.domain}}{{lang.shoppingCar_goodsNums}}:</div>
+                    <div class="value">{{cloudData.domain_num}}</div>
+                  </div>
+                  <div class="row-m">
+                    <div class="label">{{lang.da_subdomains}}:</div>
+                    <div class="value">{{cloudData.sub_domain_num}}</div>
+                  </div>
+                  <div class="row-r">
+                    <div class="label">{{lang.common_cloud_text5}}:</div>
+                    <div class="value">{{cloudData.os_detail}}</div>
+                  </div>
+                </div>
+                <div class="row jump-box">
+                  <div class="jump" @click="goDomain" v-if="cloudData.gift_domain && cloudData.buy_domain === 0">
+                    {{lang.buy_discount_domain}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 付款信息 -->
+            <div class="msg-r">
+              <div class="r-t">
+                <div class="r-t-l">
+                  <span class="r-t-l-text">{{lang.cloud_pay_title}}</span>
+                  <span @click="applyCashback" class="common-cashback"
+                    v-if="isShowCashBtn">{{lang.apply_cashback}}</span>
+                </div>
+                <!-- 续费 -->
+                {foreach $addons as $addon}
+                {if ($addon.name=='IdcsmartRenew')}
+                <div class="r-t-r" v-show="hostData.status == 'Active'">
+                  <span>{{lang.common_cloud_text16}}：</span>
+                  <el-switch v-model="isShowPayMsg" active-color="#0052D9" @change="autoRenewChange">
+                  </el-switch>
+                  <el-popover placement="top" trigger="hover">
+                    <div class="sure-remind">
+                      {{lang.common_cloud_tip15}}
+                    </div>
+                    <div class="help" slot="reference">?</div>
+                  </el-popover>
+                </div>
+                {/if}
+                {/foreach}
+              </div>
+              <div class="r-b">
+                <div class="row">
+                  <div class="row-l">
+                    <div class="label">{{lang.cloud_due_time}}:</div>
+                    <div class="value" :class="isRead?'red':''">{{hostData.due_time | formateTime}}</div>
+                  </div>
+                  <div class="row-r">
+                    <div class="label">{{lang.cloud_creat_time}}:</div>
+                    <div class="value">{{hostData.active_time | formateTime}}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="row-l">
+                    <div class="label">{{lang.cloud_pay_style}}:</div>
+                    <div class="value">{{hostData.billing_cycle_name + lang.common_cloud_text17}}</div>
+                  </div>
+                  <div class="row-r">
+                    <div class="label">{{lang.cloud_first_pay}}:</div>
+                    <div class="value">{{commonData.currency_prefix + hostData.first_payment_amount +
+                      commonData.currency_suffix}}</div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="row-l">
+                    <div class="label">{{lang.cloud_re_text}}:</div>
+                    <div class="value">{{commonData.currency_prefix + showRenewPrice + commonData.currency_suffix}}
+                    </div>
+                    {foreach $addons as $addon}
+                    {if ($addon.name=='IdcsmartRenew')}
+                    <!--  || 'Suspended' -->
+                    <span v-show="hostData.status == 'Active' || hostData.status == 'Suspended'"
+                      v-loading="renewBtnLoading" class="renew-btn" @click="showRenew"
+                      v-if="!refundData || refundData || (refundData && refundData.status=='Cancelled') || (refundData && refundData.status=='Reject')">{{lang.cloud_re_btn}}</span>
+                    <span v-show="hostData.status == 'Active'" class="renew-btn-disable"
+                      v-else>{{lang.cloud_re_btn}}</span>
+                    {/if}
+                    {/foreach}
+                  </div>
+                  <div class="row-r">
+                    <div class="label">{{lang.cloud_code}}:</div>
+                    <div class="value" :title="codeString">{{codeString?codeString:'--'}}</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane :label="lang.site_admin" name="site">
+          <!-- 网站信息 -->
+          <p class="com-s-tit">{{lang.web_info}}</p>
+          <div class="site-info">
+            <div class="item">
+              <p class="site-tit">{{lang.domain}}</p>
+              <p class="list" v-for="(item,index) in domainList" :key="index">
+                {{item.name}}
+                <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/copy.svg" alt=""
+                  class="com-copy" @click="copyPass(item.name)">
+              </p>
+            </div>
+            <div class="item">
+              <p class="site-tit">{{lang.ftp_address}}</p>
+              <p>
+                <span> {{ftpInfo.address}}</span>
+                <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/copy.svg" alt=""
+                  class="com-copy" @click="copyPass(ftpInfo.address)" v-if="ftpInfo.address">
+              </p>
+            </div>
+            <div class="item">
+              <p class="site-tit">{{lang.ftp_info}}</p>
+              <p>
+                <span> {{ftpInfo.name}}</span>
+              </p>
+              <p>
+                <span v-show="isShowPass"> {{ftpInfo.password}}</span>
+                <span v-show="!isShowPass">{{passHidenCode}} </span>
+                <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/copy.svg" alt=""
+                  class="com-copy" @click="copyPass(ftpInfo.password)" v-if="ftpInfo.password">
+                <img class="eyes"
+                  :src="!isShowPass?'/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/cloud/pass-show.png':'/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/cloud/pass-hide.png'"
+                  @click="isShowPass=!isShowPass">
+                </img>
+                <span class="password" @click="changePassword('ftp')">[{{lang.change_password}}]</span>
+              </p>
+            </div>
+            <div class="item">
+              <p class="site-tit">FTP{{lang.common_cloud_label13}}</p>
+              <p>
+                <span>{{ftpInfo.ftp_port}}</span>
+              </p>
+            </div>
+            <div class="item">
+              <p class="site-tit">{{lang.space_size}}</p>
+              <p class="space">
+                <span class="used">{{formateUnit(ftpInfo.quota.used)}}</span>
+                <span class="total">/ {{formateUnit(ftpInfo.quota.size)}}</span>
+              </p>
+              <span class="password" @click="getFtp">[{{lang.refesh}}]</span>
+            </div>
+          </div>
+          <!-- 基础功能 -->
+          <p class="com-s-tit">{{lang.base_function}}</p>
+          <div class="func-box">
+            <div class="item" v-for="(item,index) in baseFunc" :key="index" @click="handlerBase(item.tag)">
+              <img :src="`/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/${item.url}.svg`"
+                alt="">
+              <p class="name">{{item.name}}</p>
+              <div class="status-tag" v-if="item.tag === 'host'">
+                <span v-show="siteInfo.status == 1" class="icon on">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg" alt="">
+                </span>
+                <span v-show="siteInfo.status == 0" class="icon off">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+          <!-- 安全设置 -->
+          <p class="com-s-tit">{{lang.safe_setting}}</p>
+          <div class="func-box">
+            <div class="item" v-for="(item,index) in safeFunc" :key="index" @click="handlerSafe(item.tag)">
+              <img :src="`/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/${item.url}.svg`"
+                alt="">
+              <p class="name">{{item.name}}</p>
+              <div class="status-tag" v-if="item.tag === 'ftp'">
+                <span v-show="ftpInfo.status == 1" class="icon on">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg" alt="">
+                </span>
+                <span v-show="ftpInfo.status == 0" class="icon off">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg" alt="">
+                </span>
+              </div>
+            </div>
+          </div>
+        </el-tab-pane>
+        <!-- 数据库 -->
+        <el-tab-pane :label="lang.database" name="data">
+          <el-table :data="database" style="width: 100%" v-loading="tableLoading" class="data-table">
+            <el-table-column prop="name" :label="lang.database_name" min-width="120" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="username" :label="lang.common_cloud_label14" min-width="120" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="password" :label="lang.login_pass" min-width="120" show-overflow-tooltip>
+              <template slot-scope="{row}">
+                <span v-show="isShowPass"> {{row.password}}</span>
+                <span v-show="!isShowPass">{{passHidenCode}} </span>
+                <img class="eyes"
+                  :src="!isShowPass?'/plugins/server/mf_cloud/template/clientarea/img/cloud/pass-show.png':'/plugins/server/mf_cloud/template/clientarea/img/cloud/pass-hide.png'"
+                  @click="isShowPass=!isShowPass">
+                </img>
+                <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/copy.svg" alt=""
+                  class="com-copy" @click="copyPass(row.password)" v-if="row.password">
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="capacity" :label="lang.common_cloud_label20" width="120">
+              <template slot-scope="{row}">
+                {{formateUnit(row.quota.size)}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="capacity" :label="lang.common_cloud_title5" width="120">
+              <template slot-scope="{row}">
+                <span class="has-back" v-if="row.backup_count > 0" @click="openBackup">
+                  {{lang.have_backup}}({{row.backup_count}})
+                </span>
+                <span v-else class="no-back" @click="openBackup">{{lang.click_backup}}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="local" :label="lang.database_pos" width="120">
+              {{lang.local_database}}
+            </el-table-column>
+            <el-table-column prop="capacity" :label="lang.finance_label10" width="150" show-overflow-tooltip>
+              <template slot-scope="{row}">
+                {{row.ps}}
+              </template>
+            </el-table-column>
+            <el-table-column prop="op" :label="lang.ticket_label5" width="100">
+              <template slot-scope="scope">
+                <el-popover placement="top-start" trigger="hover">
+                  <div class="operation">
+                    <div class="operation-item" @click="handleAuth">{{lang.authority}}</div>
+                    <div class="operation-item" @click="handleTool">{{lang.tool}}</div>
+                    <div class="operation-item" @click="changePassword('data')">{{lang.change_pass}}</div>
+                  </div>
+                  <span class="more-operation" slot="reference">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                  </span>
+                </el-popover>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+        <el-tab-pane :label="lang.common_cloud_tab6" name="log">
+          <div class="log">
+            <div class="main_table">
+              <el-table v-loading="logLoading" :data="logDataList" style="width: 100%;margin-bottom: .2rem;">
+                <el-table-column prop="description" :label="lang.common_cloud_label34" min-width="300" align="left"
+                  :show-overflow-tooltip="true">
+                </el-table-column>
+                <el-table-column prop="create_time" width="200" :label="lang.common_cloud_label33" align="left">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.create_time | formateTime}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <pagination :page-data="logParams" v-if="logParams.total" @sizechange="logSizeChange"
+                @currentchange="logCurrentChange">
+              </pagination>
+            </div>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+
+      <!-- 修改备注弹窗 -->
+      <div class="notes-dialog">
+        <el-dialog width="6.2rem" :visible.sync="isShowNotesDialog" :show-close=false @close="notesDgClose">
+          <div class="dialog-title">
+            {{hostData.notes?lang.common_cloud_title7:lang.common_cloud_title8}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.common_cloud_label29}}</div>
+            <el-input class="notes-input" v-model="notesValue"></el-input>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subNotes">{{lang.common_cloud_btn28}}</div>
+            <div class="btn-no" @click="notesDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 续费弹窗 -->
+      <div class="renew-dialog">
+        <el-dialog width="6.9rem" :visible.sync="isShowRenew" :show-close=false @close="renewDgClose">
+          <div class="dialog-title">
+            {{lang.common_cloud_title10}}
+          </div>
+          <div class="dialog-main">
+            <div class="renew-content">
+              <div class="renew-item" :class="renewActiveId==item.id?'renew-active':''" v-for="item in renewPageData"
+                :key="item.id" @click="renewItemChange(item)">
+                <div class="item-top">{{item.billing_cycle}}</div>
+                <div class="item-bottom" v-if="isShowPromo && renewParams.isUseDiscountCode">
+                  {{commonData.currency_prefix + item.base_price}}
+                </div>
+                <div class="item-bottom" v-else>{{commonData.currency_prefix + item.price}}</div>
+                <div class="item-origin-price" v-if="item.price < item.base_price && !renewParams.isUseDiscountCode">
+                  {{commonData.currency_prefix + item.base_price}}
+                </div>
+                <i class="el-icon-check check" v-show="renewActiveId==item.id"></i>
+              </div>
+            </div>
+            <div class="pay-content">
+              <div class="pay-price">
+                <div class="money" v-loading="renewLoading">
+                  <span class="text">{{lang.common_cloud_label11}}:</span>
+                  <span>{{commonData.currency_prefix}}{{renewParams.totalPrice | filterMoney}}</span>
+                  <el-popover placement="top-start" width="200" trigger="hover"
+                    v-if="(isShowLevel && renewParams.clDiscount*1 > 0) || (isShowPromo && renewParams.isUseDiscountCode) || ( isShowCash && renewParams.customfield.voucher_get_id)">
+                    <div class="show-config-list">
+                      <p v-if="isShowLevel && renewParams.clDiscount*1 > 0">
+                        {{lang.shoppingCar_tip_text2}}：{{commonData.currency_prefix}} {{ renewParams.clDiscount |
+                        filterMoney}}
+                      </p>
+                      <p v-if="isShowPromo && renewParams.isUseDiscountCode">
+                        {{lang.shoppingCar_tip_text4}}：{{commonData.currency_prefix}} {{ renewParams.code_discount |
+                        filterMoney }}
+                      </p>
+                      <p v-if="isShowCash && renewParams.customfield.voucher_get_id">
+                        {{lang.common_cloud_text29}}：{{commonData.currency_prefix}} {{ renewParams.cash_discount |
+                        filterMoney}}
+                      </p>
+                    </div>
+                    <i class="el-icon-warning-outline total-icon" slot="reference"></i>
+                  </el-popover>
+                  <p class="original-price"
+                    v-if="renewParams.customfield.promo_code && renewParams.totalPrice != renewParams.base_price">
+                    {{commonData.currency_prefix}} {{ renewParams.base_price | filterMoney}}
+                  </p>
+                  <p class="original-price"
+                    v-if="!renewParams.customfield.promo_code && renewParams.totalPrice != renewParams.original_price">
+                    {{commonData.currency_prefix}} {{ renewParams.original_price | filterMoney}}
+                  </p>
+                  <div class="code-box">
+                    <!-- 代金券 -->
+                    <cash-coupon ref="cashRef" v-show="isShowCash && !cashObj.code"
+                      :currency_prefix="commonData.currency_prefix" @use-cash="reUseCash" scene='renew'
+                      :product_id="[product_id]" :price="renewParams.original_price"></cash-coupon>
+                    <!-- 优惠码 -->
+                    <discount-code v-show="isShowPromo && !renewParams.customfield.promo_code"
+                      @get-discount="getRenewDiscount(arguments)" scene='renew' :product_id="product_id"
+                      :amount="renewParams.base_price" :billing_cycle_time="renewParams.duration"></discount-code>
+                  </div>
+                  <div class="code-number-text">
+                    <div class="discount-codeNumber" v-show="renewParams.customfield.promo_code">{{
+                      renewParams.customfield.promo_code }}<i class="el-icon-circle-close remove-discountCode"
+                        @click="removeRenewDiscountCode()"></i></div>
+                    <div class="cash-codeNumber" v-show="cashObj.code">{{ cashObj.code }}<i
+                        class="el-icon-circle-close remove-discountCode" @click="reRemoveCashCode()"></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subRenew">{{lang.common_cloud_btn30}}</div>
+            <div class="btn-no" @click="renewDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 停用弹窗（删除实例） -->
+      <div class="refund-dialog">
+        <el-dialog width="6.8rem" :visible.sync="isShowRefund" :show-close=false @close="refundDgClose">
+          <div class="dialog-title">
+            {{refundPageData.allow_refund == 1?lang.common_cloud_title11:lang.common_cloud_title12}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.common_cloud_label35}}</div>
+            <div class="host-content">
+              <div class="host-item" v-if="cloudData.bw">
+                <div class="left">{{lang.common_cloud_label36}}:</div>
+                <div class="right">
+                  <div class="right-row">
+                    <div class="right-row-item">{{cloudData.bw}}M{{lang.mf_bw}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="host-item">
+                <div class="left">{{lang.common_cloud_label37}}:</div>
+                <div class="right">{{refundPageData.host.create_time | formateTime}}</div>
+              </div>
+              <div class="host-item" v-if="refundPageData.allow_refund == 1">
+                <div class="left">{{lang.common_cloud_label38}}:</div>
+                <div class="right">{{commonData.currency_prefix + refundPageData.host.first_payment_amount}}</div>
+              </div>
+            </div>
+            <div class="label">{{lang.common_cloud_label39}}</div>
+            <el-select v-if="refundPageData.reason_custom == 0" v-model="refundParams.suspend_reason" multiple>
+              <el-option v-for="item in refundPageData.reasons" :key="item.id" :value="item.id"
+                :label="item.content"></el-option>
+            </el-select>
+            <el-input v-else v-model="refundParams.suspend_reason"></el-input>
+            <div class="label">{{lang.common_cloud_label40}}</div>
+            <el-select v-model="refundParams.type">
+              <el-option value="Expire" :label="lang.common_cloud_label41"></el-option>
+              <el-option value="Immediate" :label="lang.common_cloud_label42"></el-option>
+            </el-select>
+            <div class="label" v-if="refundPageData.allow_refund == 1">{{lang.common_cloud_label43}}</div>
+            <div class="amount-content" v-if="refundPageData.allow_refund == 1">
+              {{commonData.currency_prefix}}{{refundParams.type=='Immediate'?refundPageData.host.amount:'0.00'}}
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subRefund">{{refundPageData.allow_refund == 1? lang.common_cloud_btn31:
+              lang.common_cloud_btn32}}</div>
+            <div class="btn-no" @click="refundDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 自动续费确认弹窗 -->
+      <div class="power-dialog">
+        <el-dialog width="6.2rem" :visible.sync="isShowAutoRenew" :show-close=false :close-on-click-modal=false>
+          <div class="dialog-title">
+            {{lang.common_cloud_text37}}{{isShowPayMsg? lang.common_cloud_text38 :
+            lang.common_cloud_text39}}{{lang.auto_renew}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.fin_host}}</div>
+            <div class="value">{{hostData.name}}</div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="doAutoRenew">{{lang.common_cloud_btn28}}</div>
+            <div class="btn-no" @click="autoRenewDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+
+      <!-- 基础功能 -->
+      <div class="base-dialog">
+        <el-dialog width="10rem" :visible.sync="baseDialog" :show-close=false @close="baseDgClose">
+          <div class="dialog-title">
+            {{lang.base_setting}}[{{siteInfo.name}}] -- {{lang.add_time}}[{{siteInfo.addtime}}]
+            <i class="close" @click="baseDgClose">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-tabs tab-position="left" v-model="baseActiveName" @tab-click="tabBase">
+              <!-- 域名绑定 -->
+              <el-tab-pane name="domain">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_01.svg" alt="">
+                  {{lang.bind_domain}}
+                </span>
+                <div class="domain-bind">
+                  <div class="top-text">
+                    <el-input type="textarea" :placeholder="`${lang.bt_tip1}\n${lang.bt_tip2}\n${lang.bt_tip3}`"
+                      v-model="domainText"></el-input>
+                    <el-button class="com-btn" @click="submitDomain" :loading="submitLoading">{{lang.invoice_text47}}
+                    </el-button>
+                  </div>
+                  <el-table :data="domainList" style="width: 100%" v-loading="tableLoading"
+                    @selection-change="handleSelectionChange" ref="domainMultiple">
+                    <el-table-column type="selection" width="35" :selectable="checkSelect"></el-table-column>
+                    <el-table-column prop="name" :label="lang.domain" min-width="80">
+                    </el-table-column>
+                    <el-table-column prop="port" :label="lang.common_cloud_label13" min-width="50">
+                    </el-table-column>
+                    <el-table-column prop="op" :label="lang.ticket_label5" width="80">
+                      <template slot-scope="{row, $index}">
+                        <span class="del" @click="comDel('domain',row)"
+                          v-if="$index !== domainList.length - 1 ">{{lang.referral_title9}}</span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <p class="batch-del" :class="{dis:multipleSelection.length === 0 }" @click="batchDelete">
+                    {{lang.batch_delete}}
+                    <span v-show="multipleSelection.length > 0">({{lang.checked}}{{multipleSelection.length}})</span>
+                  </p>
+                </div>
+              </el-tab-pane>
+              <!-- 主机状态 -->
+              <el-tab-pane name="host">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_03.svg" alt="">
+                  {{lang.host_status_setting}}
+                </span>
+                <div class="host-status">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/host.png" alt=""
+                    class="host">
+                  <p class="status">
+                    <span>{{lang.site_status}}：</span>
+                    <span v-show="siteInfo.status == 1" class="icon on" @click="changeSite('stop')">
+                      {{lang.site_on}}
+                      <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg" alt="">
+                    </span>
+                    <span v-show="siteInfo.status == 0" class="icon off" @click="changeSite('start')">
+                      {{lang.site_off}}
+                      <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg" alt="">
+                    </span>
+                  </p>
+                </div>
+              </el-tab-pane>
+              <!-- 伪静态 -->
+              <el-tab-pane name="rewrite">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_04.svg" alt="">
+                  {{lang.rewrite_setting}}
+                </span>
+                <div class="rewrite">
+                  <el-input type="textarea" v-model="rewriteText"></el-input>
+                  <div class="bot">
+                    <div class="info">
+                      <p class="dot-des">{{lang.bt_tip5}}</p>
+                      <p class="dot-des">{{lang.bt_tip6}}</p>
+                    </div>
+                    <el-button class="com-btn" @click="submitRewrite" :loading="submitLoading">
+                      {{lang.account_btn1}}
+                    </el-button>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <!-- php版本 -->
+              <el-tab-pane name="php">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_05.svg" alt="">
+                  {{lang.php_version_setting}}
+                </span>
+                <div class="php-box">
+                  <div class="top">
+                    <span>{{lang.php_version}}</span>
+                    <el-select v-model="curVersion" :placeholder="`${lang.placeholder_pre2}${lang.php_version}`">
+                      <el-option v-for="item in phpVersion" :key="item.version" :label="item.name"
+                        :value="item.version">
+                      </el-option>
+                    </el-select>
+                    <el-button class="com-btn" @click="submitPhp" :loading="submitLoading">
+                      {{lang.bt_change}}
+                    </el-button>
+                  </div>
+                  <div class="bot">
+                    <p class="dot-des">{{lang.bt_tip7}}</p>
+                    <p class="dot-des" v-if="curVersion !== '00'">{{lang.bt_tip8}}</p>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <!-- 子目录 -->
+              <el-tab-pane name="subdirectory">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_06.svg" alt="">
+                  {{lang.subdirectory_page}}
+                </span>
+                <div class="subdirectory">
+                  <div class="top">
+                    <span class="text">{{lang.domain}}</span>
+                    <el-input :placeholder="`${lang.placeholder_pre1}${lang.domain}`" v-model="subDirFrom.domain"
+                      class="domain">
+                    </el-input>
+                    <span class="text">{{lang.subdirectory}}</span>
+                    <el-select v-model="subDirFrom.dir" placeholder="" filterable>
+                      <el-option v-for="item in pathList" :key="item" :label="item" :value="item">
+                      </el-option>
+                    </el-select>
+                    <el-button class="com-btn" @click="submitDir" :loading="submitLoading">
+                      {{lang.invoice_text47}}
+                    </el-button>
+                  </div>
+                  <el-table :data="bindList" style="width: 100%" @selection-change="checkSubDir" ref="subMultiple"
+                    v-loading="tableLoading">
+                    <el-table-column type="selection" width="35"></el-table-column>
+                    <el-table-column prop="domain" :label="lang.domain" min-width="80">
+                    </el-table-column>
+                    <el-table-column prop="port" :label="lang.common_cloud_label13" min-width="50">
+                    </el-table-column>
+                    <el-table-column prop="path" :label="lang.subdirectory" min-width="100">
+                    </el-table-column>
+                    <el-table-column prop="op" :label="lang.ticket_label5" width="80">
+                      <template slot-scope="{row}">
+                        <span class="del" @click="comDel('sub',row)">{{lang.referral_title9}}</span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <p class="batch-del" :class="{dis:subCheckList.length === 0 }" @click="batchDeleteSub">
+                    {{lang.batch_delete}}
+                    <span v-show="subCheckList.length > 0">({{lang.checked}}{{subCheckList.length}})</span>
+                  </p>
+                </div>
+              </el-tab-pane>
+              <!-- 重定向 -->
+              <el-tab-pane name="redirect">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_07.svg" alt="">
+                  {{lang.redirect}}
+                </span>
+                <div class="redirect">
+                  <div class="top">
+                    <el-button class="com-btn" @click="addRedirect">{{lang.add_redirect}}</el-button>
+                    <el-button @click="addError">{{lang.error_redirect}}</el-button>
+                  </div>
+                  <el-table :data="redirectList" style="width: 100%" @selection-change="handleSelectRedirect"
+                    ref="dirMultiple" v-loading="tableLoading">
+                    <el-table-column type="selection" width="35"></el-table-column>
+                    <el-table-column prop="redirectdomain" :label="lang.be_redirected" min-width="80"
+                      show-overflow-tooltip>
+                      <template slot-scope="{row}">
+                        <template v-if="row.domainorpath === 'domain'">
+                          <span v-for="(item,index) in row.redirectdomain" :key="index" style="display: block;">
+                            {{item}}<span v-if="index !== row.redirectdomain.length - 1">、</span>
+                          </span>
+                        </template>
+                        <template v-else>{{row.redirectpath}}</template>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="domainorpath" :label="lang.redirect_type" min-width="50">
+                      <template slot-scope="{row}">
+                        <template v-if="row.errorpage === 1">{{lang.bt_error}}</template>
+                        <template v-else>
+                          {{row.domainorpath === "domain" ? lang.domain : lang.bt_path}}
+                        </template>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="tourl" :label="lang.redirect_to" min-width="80" show-overflow-tooltip>
+                      <template slot-scope="{row}">
+                        {{row.tourl ? row.tourl : lang.menu_1}}
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="type" :label="lang.cloud_table_head_3" min-width="60">
+                      <template slot-scope="{row}">
+                        <span v-show="row.type == 1" class="icon on" @click="changeRedirectStatus(row)">
+                          {{lang.site_on}}
+                          <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg"
+                            alt="">
+                        </span>
+                        <span v-show="row.type == 0" class="icon off" @click="changeRedirectStatus(row)">
+                          {{lang.site_off}}
+                          <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg"
+                            alt="">
+                        </span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column prop="op" :label="lang.ticket_label5" width="120">
+                      <template slot-scope="{row}">
+                        <span class="edit" @click="editRedirect(row)">{{lang.edit}}</span>
+                        <span class="del" @click="comDel('redirect',row)">{{lang.referral_title9}}</span>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="bot">
+                    <!-- 批量操作 -->
+                    <el-select v-model="batchType" :placeholder="calcBatchPre" :disabled="checkRedirect.length === 0">
+                      <el-option v-for="item in batchArr" :key="item.type" :label="item.name" :value="item.type">
+                      </el-option>
+                    </el-select>
+                    <el-button class="com-btn" @click="batchHandler"
+                      :disabled="checkRedirect.length === 0 || !batchType">
+                      {{lang.batch_opt}}
+                    </el-button>
+                  </div>
+                  <p class="dot-des">{{lang.bt_tip23}}</p>
+                </div>
+              </el-tab-pane>
+              <!-- 运行目录 -->
+              <el-tab-pane name="run_directory">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_08.svg" alt="">
+                  {{lang.run_directory_setting}}
+                </span>
+                <div class="directory">
+                  <div class="top">
+                    <span>{{lang.run_directory}}</span>
+                    <el-select v-model="dirObj.runPath.runPath" placeholder="" filterable>
+                      <el-option v-for="item in dirObj.runPath.dirs" :key="item" :label="item" :value="item">
+                      </el-option>
+                    </el-select>
+                    <el-button class="com-btn" @click="submitRunDir" :loading="submitLoading">
+                      {{lang.account_btn1}}
+                    </el-button>
+                  </div>
+                  <p class="dot-des">{{lang.bt_tip9}}</p>
+                  <p class="dot-des">{{lang.bt_tip10}}</p>
+                  <div class="bot">
+                    <span class="txt">{{lang.prevent_cross_site_attacks}}</span>
+                    <el-switch v-model="dirObj.userini" active-color="#0058ff" class="small-switch"
+                      @change="changeRunSwitch">
+                    </el-switch>
+                    <span>{{lang.bt_tip11}}</span>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <!-- 监控报表 -->
+              <el-tab-pane name="monitoring">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_09.svg" alt="">
+                  {{lang.monitoring_report}}
+                </span>
+                <div class="monitoring">
+                  <div class="top">
+                    <div class="left">
+                      <span>{{lang.finance_label3}}：</span>
+                      <div class="chart" :class="{disabled: isReal}">
+                        <span class="item" :class="{active: monitorForm.query_date === 'today'}"
+                          @click="changeTime('today')">{{lang.today}}</span>
+                        <span class="item" :class="{active: monitorForm.query_date === 'yesterday'}"
+                          @click="changeTime('yesterday')">{{lang.yesterday}}</span>
+                        <!-- <span class="item" :class="{active: monitorForm.query_date === 'h1'}"
+                          @click="changeTime('h1')">{{lang.near_one_hour}}</span> -->
+                        <span class="item" :class="{active: monitorForm.query_date === 'l7'}"
+                          @click="changeTime('l7')">{{lang.near_seven_day}}</span>
+                        <span class="item" :class="{active: monitorForm.query_date === 'l30'}"
+                          @click="changeTime('l30')">{{lang.last_30_days}}</span>
+                        <span class="item range" :class="{active: monitorForm.query_date.indexOf('-') !== -1}">
+                          <el-date-picker v-model="timeRange" type="daterange" :disabled="isReal"
+                            @change="changeTime('range')" :picker-options="pickerOptions" :clearable="false"
+                            :start-placeholder="lang.start_time" :end-placeholder="lang.end_time">
+                          </el-date-picker>
+                        </span>
+                      </div>
+                    </div>
+                    <div class="left">
+                      <span>{{lang.time_frame}}：</span>
+                      <div class="chart" :class="{disabled: isReal}">
+                        <span class="item" :class="{active: monitorForm.time_scale === 'hour'}"
+                          @click="changeTimeWay('hour')">{{lang.on_schedule}}</span>
+                        <span class="item" :class="{active: monitorForm.time_scale === 'day'}"
+                          @click="changeTimeWay('day')">{{lang.per_diem}}</span>
+                      </div>
+                      <div class="chart way" :class="{disabled: isReal}">
+                        <span class="item" :class="{active: !monitorForm.list_display }"
+                          @click="changeListWay(false)">{{lang.bt_chart}}</span>
+                        <span class="item" :class="{active: monitorForm.list_display}"
+                          @click="changeListWay(true)">{{lang.bt_list}}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="con">
+                    <!-- 图表展示 -->
+                    <div class="chart-area" v-if="!monitorForm.list_display">
+                      <div class="chart-top">
+                        <div class="item">
+                          <p class="label">
+                            {{lang.page_view}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip63">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{sumData.pv}}</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.visitor_volume}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip64">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{sumData.uv}}</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.ip_number}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip65">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{sumData.ip}}</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.mf_flow}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip66">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{formateUnit(sumData.length)}}</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.bt_request}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip67">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{sumData.req | filterNum}}</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.real_time_traffic}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip68">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{monitorData.realtime_traffic[0]?.flow || 0}} B</p>
+                        </div>
+                        <div class="item">
+                          <p class="label">
+                            {{lang.requests_per_second}}
+                            <el-popover placement="top" trigger="hover" popper-class="tip-poppper"
+                              :content="lang.bt_tip69">
+                              <i class="help" slot="reference">?</i>
+                            </el-popover>
+                          </p>
+                          <p class="value">{{monitorData.realtime_request[0]?.req || 0}}</p>
+                        </div>
+                      </div>
+                      <div class="indicator ssl-tab">
+                        {{lang.trend_indicator}}：
+                        <el-radio-group v-model="monitorForm.target" @input="changeTarget">
+                          <el-radio label="pv">{{lang.page_view}}</el-radio>
+                          <el-radio label="uv">{{lang.visitor_volume}}</el-radio>
+                          <el-radio label="ip">{{lang.ip_number}}</el-radio>
+                          <el-radio label="length">{{lang.mf_flow}}</el-radio>
+                          <el-radio label="req">{{lang.bt_request}}</el-radio>
+                          <el-radio label="realtime_traffic">{{lang.real_time_traffic}}</el-radio>
+                          <el-radio label="realtime_request">{{lang.requests_per_second}}</el-radio>
+                        </el-radio-group>
+                      </div>
+                      <div class="chart-box">
+                        <div id="monitor-echart" v-loading="dataLoading"></div>
+                      </div>
+                    </div>
+                    <!-- 列表展示 -->
+                    <div class="list" v-else>
+                      <el-table :data="monitorData.data" style="width: 100%" v-loading="dataLoading" max-height="500px">
+                        <el-table-column prop="time" :label="lang.finance_label3" width="120">
+                          <template slot-scope="{row}">
+                            {{row.time || row.time1}}
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="pv" :label="lang.page_view" width="100"></el-table-column>
+                        <el-table-column prop="uv" :label="lang.visitor_volume" width="110"></el-table-column>
+                        <el-table-column prop="ip" :label="lang.ip_number"></el-table-column>
+                        <el-table-column prop="length" :label="lang.mf_flow" width="120">
+                          <template slot-scope="{row}">
+                            {{formateUnit(row.length)}}
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="req" :label="lang.bt_request"></el-table-column>
+                        <el-table-column prop="40x" label="40x">
+                          <template slot-scope="{row}">
+                            {{calcX(row['40x'])}}
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="50x" label="50x">
+                          <template slot-scope="{row}">
+                            {{calcX(row['50x'])}}
+                          </template>
+                        </el-table-column>
+                        <el-table-column prop="http_get" label="GET"></el-table-column>
+                        <el-table-column prop="http_post" label="POST"></el-table-column>
+                        <el-table-column prop="spider" :label="lang.spider"></el-table-column>
+                        <el-table-column prop="fake_spider" :label="lang.fake_spider"></el-table-column>
+                      </el-table>
+                    </div>
+                  </div>
+                </div>
+              </el-tab-pane>
+
+            </el-tabs>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 安全设置 -->
+      <div class="base-dialog">
+        <el-dialog width="10rem" :visible.sync="safeDialog" :show-close=false @close="baseDgClose">
+          <div class="dialog-title">
+            {{lang.safe_setting}}[{{siteInfo.name}}] -- {{lang.add_time}}[{{siteInfo.addtime}}]
+            <i class="close" @click="baseDgClose">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-tabs tab-position="left" v-model="baseActiveName" @tab-click="tabSafe">
+              <!-- 证书 -->
+              <el-tab-pane name="certificate">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_10.svg" alt="">
+                  {{lang.import_certificate}}
+                </span>
+                <el-tabs v-model="sslActive" class="ssl-tab" @tab-click="tabSsl">
+                  <el-tab-pane name="key">
+                    <template slot="label">
+                      {{lang.secret_key}}-
+                      <span class="com-red" v-show="!sslInfo.status">[{{lang.not_deployed}}SSL]</span>
+                      <span class="com-success" v-show="sslInfo.status">[{{lang.deployed}}SSL]</span>
+                    </template>
+                    <div class="ssl-info" v-if="sslInfo.cert_data.notBefore">
+                      <p class="item">
+                        <span class="l-txt">{{lang.certificate_class}}</span>
+                        <span class="r-txt">Let's Encry</span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.certificate_brand}}</span>
+                        <span class="r-txt"> {{sslInfo.cert_data.issuer}}</span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.force_https}}</span>
+                        <span class="r-txt">
+                          <el-switch v-model="sslInfo.httpTohttps" active-color="#0058ff" class="small-switch"
+                            @change="changeForce">
+                          </el-switch>
+                        </span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.auth_domain}}</span>
+                        <span class="r-txt">
+                          <span v-for="(item, index) in sslInfo.cert_data.dns" :key="index">{{item}}</span>
+                        </span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.cloud_table_head_4}}</span>
+                        <span class="r-txt">
+                          {{sslInfo.cert_data.notAfter}}，
+                          {{lang.residue}}{{sslInfo.cert_data.endtime}}{{lang.residue_day}}
+                        </span>
+                      </p>
+                    </div>
+                    <el-form :model="comForm" :rules="comRules" ref="sslForm" label-position="top" class="top"
+                      hide-required-asterisk>
+                      <el-form-item :label="lang.secret_key" class="input-item" prop="key">
+                        <el-input type="textarea" v-model="comForm.key"></el-input>
+                      </el-form-item>
+                      <el-form-item :label="lang.certificate_pem" class="input-item" prop="csr">
+                        <el-input type="textarea" v-model="comForm.csr"></el-input>
+                      </el-form-item>
+                    </el-form>
+                    <div class="bot-btn">
+                      <el-button class="com-btn" :loading="submitLoading" @click="submitSsl">{{sslInfo.type === 1
+                        ? lang.account_btn1 :lang.save_open_certificate}}
+                      </el-button>
+                      <template v-if="sslInfo.cert_data.notBefore && sslInfo.type === 1">
+                        <el-button class="com-btn" @click="handlerRenew">{{lang.renewal_certificate}}</el-button>
+                        <el-button class="com-btn close" @click="closeSsl">{{lang.ticket_btn5}}SSL</el-button>
+                      </template>
+                    </div>
+                    <div class="bot">
+                      <p class="dot-des">{{lang.bt_tip32}}<a href="https://www.bt.cn/bbs/thread-704-1-1.html"
+                          target="_blank" class="link">[{{lang.domain_help}}]</a></p>
+                      <p class="dot-des">{{lang.bt_tip28}}</p>
+                      <p class="dot-des">{{lang.bt_tip29}}</p>
+                      <p class="dot-des">{{lang.bt_tip30}}</p>
+                      <p class="dot-des">{{lang.bt_tip31}}</p>
+                    </div>
+                  </el-tab-pane>
+                  <el-tab-pane name="encry" label="Let's Encry">
+                    <div class="ssl-info encry" v-if="sslInfo.type === 1">
+                      <p class="item">
+                        <span class="l-txt">{{lang.deployed_success}}</span>
+                        <span class="r-txt">{{lang.bt_tip40}}</span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.certificate_brand}}</span>
+                        <span class="r-txt"> {{sslInfo.cert_data.issuer}}</span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.auth_domain}}</span>
+                        <span class="r-txt">
+                          <span v-for="(item, index) in sslInfo.cert_data.dns" :key="index">{{item}}</span>
+                        </span>
+                      </p>
+                      <p class="item">
+                        <span class="l-txt">{{lang.cloud_table_head_4}}</span>
+                        <span class="r-txt">
+                          {{sslInfo.cert_data.notAfter}}
+                        </span>
+                      </p>
+                    </div>
+                    <el-form :model="comForm" class="top" v-if="sslInfo.type === 1">
+                      <el-form-item :label="lang.secret_key" class="input-item" prop="key">
+                        <el-input type="textarea" v-model="comForm.key" disabled></el-input>
+                      </el-form-item>
+                      <el-form-item :label="lang.certificate_pem" class="input-item" prop="csr">
+                        <el-input type="textarea" v-model="comForm.csr" disabled></el-input>
+                      </el-form-item>
+                    </el-form>
+                    <el-form :model="comForm" :rules="comRules" ref="sslForm" label-position="right" label-width="70px"
+                      hide-required-asterisk v-else>
+                      <el-form-item :label="lang.verificate_mode" class="input-item" prop="key">
+                        <el-radio :label="0" :value="0">{{lang.file_verificate}}</el-radio>
+                      </el-form-item>
+                      <el-form-item :label="lang.domain" class="input-item" class="input-item" prop="csr">
+                        <div class="check">
+                          <el-checkbox v-model="checkAll" @change="handleCheckAllChange"
+                            class="check-all">{{lang.shoppingCar_select_all}}</el-checkbox>
+                          <el-checkbox-group v-model="comForm.domains" @change="chooseDomain">
+                            <el-checkbox v-for="item in sslInfo.domain" :label="item.name" :key="item.name">
+                              {{item.name}}
+                            </el-checkbox>
+                          </el-checkbox-group>
+                        </div>
+                      </el-form-item>
+                    </el-form>
+                    <div class="bot-btn">
+                      <template v-if="sslInfo.type === 1">
+                        <el-button class="com-btn" @click="handlerRenew">{{lang.renewal_certificate}}</el-button>
+                        <el-button class="com-btn close" @click="closeSsl">{{lang.ticket_btn5}}SSL</el-button>
+                      </template>
+                      <el-button class="com-btn" :loading="submitLoading" v-else
+                        @click="applySsl">{{lang.common_cloud_tip7}}
+                      </el-button>
+                    </div>
+                    <div class="bot" v-if="sslInfo.type === 1">
+                      <p class="dot-des">{{lang.bt_tip41}}</p>
+                      <p class="dot-des">{{lang.bt_tip42}}</p>
+                      <p class="dot-des">{{lang.bt_tip43}}</p>
+                    </div>
+                    <div class="bot" v-else>
+                      <p class="dot-des red">{{lang.bt_tip32}}</p>
+                      <p class="dot-des">{{lang.bt_tip33}}<a href="https://letsencrypt.org/zh-cn/docs/rate-limits/"
+                          target="_blank" class="link">[{{lang.click_view}}]</a></p>
+                      <p class="dot-des">{{lang.bt_tip34}}</p>
+                      <p class="dot-des">{{lang.bt_tip35}}</p>
+                      <p class="dot-des">{{lang.bt_tip36}}</p>
+                      <p class="dot-des">{{lang.bt_tip37}}</p>
+                      <p class="dot-des">{{lang.bt_tip38}}</p>
+                    </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-tab-pane>
+              <!-- ftp -->
+              <el-tab-pane name="ftp">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_11.svg" alt="">
+                  {{lang.ftp_manage}}
+                </span>
+                <div class="ftp-box">
+                  <div class="top">
+                    <p class="item">
+                      <span class="l-txt">{{lang.common_cloud_label14}}</span>
+                      <span class="r-txt">
+                        {{ftpInfo.name}}
+                      </span>
+                    </p>
+                    <p class="item">
+                      <span class="l-txt">{{lang.cloud_table_head_3}}</span>
+                      <span class="r-txt">
+                        <span v-show="ftpInfo.status == 1" class="icon on" @click="changeFtp('stop')">
+                          {{lang.site_on}}
+                          <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/on.svg"
+                            alt="">
+                        </span>
+                        <span v-show="ftpInfo.status == 0" class="icon off" @click="changeFtp('start')">
+                          {{lang.site_off}}
+                          <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/off.svg"
+                            alt="">
+                        </span>
+                      </span>
+                    </p>
+                    <p class="item">
+                      <span class="l-txt">{{lang.finance_label10}}</span>
+                      <span class="r-txt">
+                        {{ftpInfo.ps}}
+                      </span>
+                    </p>
+                    <p class="item">
+                      <span class="l-txt">{{lang.common_cloud_label7}}</span>
+                      <img class="r-txt">
+                      <span v-show="isShowPass"> {{ftpInfo.password}}</span>
+                      <span v-show="!isShowPass">{{passHidenCode}} </span>
+                      <img class="eyes"
+                        :src="isShowPass?'/plugins/server/mf_cloud/template/clientarea/img/cloud/pass-show.png':'/plugins/server/mf_cloud/template/clientarea/img/cloud/pass-hide.png'"
+                        @click="isShowPass=!isShowPass">
+                      </img>
+                      <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/copy.svg" alt=""
+                        class="com-copy" @click="copyPass(ftpInfo.password)" v-if="ftpInfo.password">
+                      </span>
+                    </p>
+                    <p class="item">
+                      <span class="l-txt">{{lang.common_cloud_label20}}</span>
+                      <span class="r-txt">
+                        {{formateUnit(ftpInfo.quota.size, 'capacity')}}
+                      </span>
+                    </p>
+                  </div>
+                  <el-tabs tab-position="top" v-model="ftpActiveName" @tab-click="tabFtp" class="ssl-tab">
+                    <!-- 登录日志 -->
+                    <el-tab-pane name="login" :label="lang.login_log">
+                      <div class="search">
+                        <el-button class="com-btn" @click="refeshLog('login')">{{lang.refresh_log}}</el-button>
+                        <div class="right">
+                          <el-input v-model="ftpLoginParams.keywords" clearable @clear="searchLoginLog"
+                            :placeholder="`${lang.placeholder_pre1}${lang.login}IP/${lang.ticket_label4}/${lang.finance_label3}`"></el-input>
+                          <el-button class="com-btn" @click="searchLoginLog">{{lang.ticket_btn2}}</el-button>
+                        </div>
+                      </div>
+                      <el-table :data="loginLog" style="width: 100%" v-loading="dataLoading" max-height="350px">
+                        <el-table-column prop="user" :label="lang.common_cloud_label14">
+                        </el-table-column>
+                        <el-table-column prop="ip" :label="`${lang.login}IP`" width="150">
+                        </el-table-column>
+                        <el-table-column prop="status" :label="lang.cloud_table_head_3" width="120">
+                        </el-table-column>
+                        <el-table-column prop="in_time" :label="lang.login_time" width="150">
+                        </el-table-column>
+                        <el-table-column prop="out_time" :label="lang.Logout_time" width="150">
+                        </el-table-column>
+                      </el-table>
+                      <div class="page">
+                        <pagination :page-data="ftpLoginParams" v-if="ftpLoginParams.total" @sizechange="sizeChange"
+                          @currentchange="currentChange" />
+                      </div>
+                    </el-tab-pane>
+                    <!-- 操作日志 -->
+                    <el-tab-pane name="option" :label="lang.option_log">
+                      <div class="search">
+                        <el-button class="com-btn" @click="refeshLog('login')">{{lang.refresh_log}}</el-button>
+                        <div class="right">
+                          <el-select v-model="ftpLogParams.type" @change="getFtOptLog">
+                            <el-option v-for="item in optSelect" :key="item.value" :label="item.label"
+                              :value="item.value">
+                            </el-option>
+                          </el-select>
+                          <el-input v-model="ftpLogParams.keywords" clearable @clear="searchFtpLog"
+                            :placeholder="`${lang.placeholder_pre1}${lang.file_opt}IP/${lang.bt_file}/${lang.finance_label11}/${lang.finance_label3}`"></el-input>
+                          <el-button class="com-btn" @click="searchFtpLog">{{lang.ticket_btn2}}</el-button>
+                        </div>
+                      </div>
+                      <el-table :data="optLog" style="width: 100%" v-loading="dataLoading" max-height="350px">
+                        <el-table-column prop="user" :label="lang.common_cloud_label14">
+                          {{ftpInfo.name}}
+                        </el-table-column>
+                        <el-table-column prop="ip" :label="lang.bt_ip" width="150">
+                        </el-table-column>
+                        <el-table-column prop="file" :label="lang.bt_file" width="200" show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column prop="type" :label="lang.opt_type" width="100">
+                        </el-table-column>
+                        <el-table-column prop="time" :label="lang.common_cloud_label33" width="150">
+                        </el-table-column>
+                      </el-table>
+                      <div class="page">
+                        <pagination :page-data="ftpLogParams" v-if="ftpLogParams.total" @sizechange="logSizeChange"
+                          @currentchange="logCurrentChange" />
+                      </div>
+                      <p class="dot-des">{{lang.bt_tip44}}</p>
+                    </el-tab-pane>
+
+                  </el-tabs>
+                </div>
+              </el-tab-pane>
+              <!-- 防盗链 -->
+              <el-tab-pane name="chain">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_12.svg" alt="">
+                  {{lang.Anti_theft_chain}}
+                </span>
+                <div class="chain">
+                  <el-form :model="comForm" :rules="comRules" ref="chainForm" label-position="left"
+                    hide-required-asterisk label-width="70px">
+                    <el-form-item :label="lang.url_suffix" prop="fix">
+                      <el-input v-model="comForm.fix" placeholder=""></el-input>
+                    </el-form-item>
+                    <el-form-item :label="lang.license_domain" prop="domains">
+                      <el-input type="textarea" v-model="comForm.domain"></el-input>
+                    </el-form-item>
+                    <el-form-item :label="lang.response_resource" prop="return_rule">
+                      <el-input v-model="comForm.return_rule" placeholder=""></el-input>
+                    </el-form-item>
+                    <el-form-item label="" class="empty-item">
+                      <el-checkbox v-model="comForm.status"
+                        @change="changeChain">{{lang.open_Anti_theft_chain}}</el-checkbox>
+                      <el-checkbox v-model="comForm.http_status"
+                        :disabled="!comForm.status">{{lang.allow_empty_request}}</el-checkbox>
+                    </el-form-item>
+                    <el-form-item label="">
+                      <el-button class="com-btn" :loading="submitLoading"
+                        @click="submitChain">{{lang.account_btn1}}</el-button>
+                    </el-form-item>
+                  </el-form>
+                  <div class="bot">
+                    <p class="dot-des">{{lang.bt_tip45}}</p>
+                    <p class="dot-des">{{lang.bt_tip46}}</p>
+                    <p class="dot-des">{{lang.bt_tip47}}</p>
+                    <p class="dot-des">{{lang.bt_tip48}}</p>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <!-- 防篡改 -->
+              <el-tab-pane name="resistant">
+                <span slot="label" class="left">
+                  <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/site_13.svg" alt="">
+                  {{lang.tamper_resistant}}
+                </span>
+                <div class="resistant">
+                  <el-tabs v-model="tamperActive" class="ssl-tab">
+                    <el-tab-pane name="view" :label="lang.overview">
+                      <p class="t-switch">
+                        <span>{{lang.tamper_switch}}</span>
+                        <el-switch v-model="tamperStatus" active-color="#0058ff" class="small-switch" :active-value="1"
+                          :inactive-value="0" @change="changeTamper">
+                        </el-switch>
+                      </p>
+                      <div class="intercept-num">
+                        <p class="item">
+                          <span class="txt">{{lang.total_intercept}}</span>
+                          <span class="num">{{calcTotal(tamperInfo.total.all)}}</span>
+                        </p>
+                        <p class="item">
+                          <span class="txt">{{lang.today_intercept}}</span>
+                          <span class="num">{{calcTotal(tamperInfo.total.today)}}</span>
+                        </p>
+                      </div>
+                      <el-table :data="tamperLog" style="width: 100%">
+                        <el-table-column prop="date" :label="lang.finance_label3" width="180">
+                        </el-table-column>
+                        <el-table-column prop="content" :label="lang.catalogue" min-width="200" show-overflow-tooltip>
+                        </el-table-column>
+                        <el-table-column prop="type" :label="lang.finance_label11" min-width="100">
+                        </el-table-column>
+                        <el-table-column prop="user" :label="lang.common_cloud_label14" min-width="100">
+                        </el-table-column>
+                        <el-table-column prop="process" :label="lang.course" min-width="100">
+                        </el-table-column>
+                      </el-table>
+                      <div class="page">
+                        <pagination :page-data="tamperParams" v-if="tamperParams.total" @sizechange="tamperSizeChange"
+                          @currentchange="tamperCurrentChange" />
+                      </div>
+                    </el-tab-pane>
+                  </el-tabs>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 修改密码 -->
+      <div class="base-dialog password-dialog">
+        <el-dialog width="5rem" :visible.sync="passwordDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{passwordType === 'ftp' ? lang.change_ftp_pass : lang.change_data_pass}}
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-form :model="comForm" :rules="comRules" ref="comForm" label-width="80px">
+              <el-form-item :label="lang.common_cloud_label14">
+                <el-input :value="passwordType === 'ftp' ? ftpInfo.name : database[0]?.name" disabled>
+                </el-input>
+              </el-form-item>
+              <el-form-item :label="lang.login_pass" prop="password" class="password">
+                <el-input v-model="comForm.password" :placeholder="`${lang.placeholder_pre1}${lang.login_pass}`">
+                </el-input>
+                <i class="el-icon-refresh-right" v-if="passwordType === 'data'" @click="radomPassword"></i>
+              </el-form-item>
+            </el-form>
+            <div class="dialog-footer">
+              <el-button class="btn-ok" @click="subPassword"
+                :loading="submitLoading">{{lang.common_cloud_btn28}}</el-button>
+              <el-button class="btn-no" @click="closeDialog">{{lang.common_cloud_btn29}}</el-button>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 重定向 -->
+      <div class="base-dialog password-dialog redirect-dialog">
+        <el-dialog width="6.6rem" :visible.sync="redirectDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{optType === 'update' ? `${lang.edit}${lang.redirect}` :
+            `${lang.invoice_text47}${lang.redirect}`}}
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-form :model="comForm" :rules="comRules" ref="redirectForm" label-width="100px" hide-required-asterisk>
+              <el-form-item :label="lang.open_redirect" class="mul-item">
+                <el-form-item label="">
+                  <el-switch v-model="comForm.type" active-color="#0058ff" class="small-switch" :active-value="1"
+                    :inactive-value="0"></el-switch>
+                </el-form-item>
+                <el-form-item :label="lang.save_url">
+                  <el-switch v-model="comForm.holdpath" active-color="#0058ff" class="small-switch" :active-value="1"
+                    :inactive-value="0"></el-switch>
+                </el-form-item>
+              </el-form-item>
+              <el-form-item :label="lang.redirect_type">
+                <el-select v-model="comForm.domainorpath" @change="changeRedirectType">
+                  <el-option :label="lang.domain" value="domain"></el-option>
+                  <el-option :label="lang.bt_path" value="path"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="lang.redirect_way">
+                <el-select v-model="comForm.redirecttype">
+                  <el-option :label="`301(${lang.permanent_redirect})`" value="301"></el-option>
+                  <el-option :label="`302(${lang.temp_redirect})`" value="302"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="`${lang.redirect}${lang.bt_path}`" prop="redirectpath"
+                v-if="comForm.domainorpath === 'path'">
+                <el-input v-model="comForm.redirectpath" :placeholder="`${lang.bt_tip22}`">
+                </el-input>
+              </el-form-item>
+              <el-form-item :label="`${lang.redirect_domain}`" prop="redirectdomain" v-else>
+                <el-select v-model="comForm.redirectdomain" multiple collapse-tags clearable
+                  :placeholder="`${lang.placeholder_pre2}${lang.redirect_domain}`">
+                  <el-option :label="item.name" :value="item.name" v-for="item in calcDomain"
+                    :key="item.name"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="lang.target_url" prop="tourl">
+                <el-input v-model="comForm.tourl" :placeholder="lang.bt_tip22">
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <div class="bot">
+              <p class="dot-des">{{lang.bt_tip16}}</p>
+              <p class="dot-des">{{lang.bt_tip17}}</p>
+              <p class="dot-des">{{lang.bt_tip18}}</p>
+              <p class="dot-des">{{lang.bt_tip19}}</p>
+              <p class="dot-des">{{lang.bt_tip20}}</p>
+              <p class="dot-des">{{lang.bt_tip21}}</p>
+            </div>
+            <div class="dialog-footer">
+              <el-button class="btn-ok" @click="subRedirect"
+                :loading="submitLoading">{{lang.common_cloud_btn28}}</el-button>
+              <el-button class="btn-no" @click="closeDialog">{{lang.common_cloud_btn29}}</el-button>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 404重定向 -->
+      <div class="base-dialog password-dialog">
+        <el-dialog width="4rem" :visible.sync="errorDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{hasErrorData ? `${lang.edit}${lang.error_redirect}` :
+            `${lang.invoice_text47}${lang.error_redirect}`}}
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-form :model="comForm" :rules="comRules" ref="redirectForm" label-width="130px">
+              <el-form-item :label="lang.open_redirect">
+                <el-switch v-model="comForm.type" active-color="#0058ff" class="small-switch" :active-value="1"
+                  :inactive-value="0"></el-switch>
+              </el-form-item>
+              <el-form-item :label="lang.error_type">
+                <el-select :value="404">
+                  <el-option :label="lang.error_page" :value="404"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="lang.redirect_way">
+                <el-select v-model="comForm.redirecttype">
+                  <el-option label="301" value="301"></el-option>
+                  <el-option label="302" value="302"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="lang.error_redirect_to">
+                <el-select v-model="errorType" @change="comForm.tourl = ''">
+                  <el-option :label="lang.menu_1" value="/"></el-option>
+                  <el-option :label="lang.custom_page" value="custom"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="" prop="tourl" v-if="errorType === 'custom'" class="empty-item">
+                <el-input v-model="comForm.tourl" :placeholder="lang.bt_tip22"></el-input>
+              </el-form-item>
+            </el-form>
+            <div class="dialog-footer">
+              <el-button class="btn-ok" @click="subErrorRedirect"
+                :loading="submitLoading">{{lang.common_cloud_btn28}}</el-button>
+              <el-button class="btn-no" @click="closeDialog">{{lang.common_cloud_btn29}}</el-button>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- ssl进度 -->
+      <div class="pre-dialog">
+        <el-dialog :visible.sync="preDialog" :show-close=false>
+          <div class="pre">
+            <pre>{{preContent}}</pre>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 数据库权限 -->
+      <div class="base-dialog password-dialog">
+        <el-dialog width="4rem" :visible.sync="authDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{lang.set_data_auth}}
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main">
+            <el-form :model="comForm" :rules="comRules" ref="comForm" label-width="80px">
+              <el-form-item :label="lang.access_auth">
+                <el-select v-model="accessType" @change="changeAccessType">
+                  <el-option v-for="item in accessSelect" :key="item.value" :label="item.label" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="" prop="access" class="empty-item" v-if="accessType === 'specify'">
+                <el-input type="textarea" v-model="comForm.access" :placeholder="lang.bt_tip49"></el-input>
+              </el-form-item>
+            </el-form>
+            <div class="dialog-footer">
+              <el-button class="btn-ok" @click="submitAuth"
+                :loading="submitLoading">{{lang.common_cloud_btn28}}</el-button>
+              <el-button class="btn-no" @click="closeDialog">{{lang.common_cloud_btn29}}</el-button>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 数据库工具 -->
+      <div class="base-dialog password-dialog ">
+        <el-dialog width="9rem" :visible.sync="toolDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{lang.mysql_tool}}[{{databaseInfo.name}}]
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="tool-dialog">
+            <div class="top">
+              <div class="left">
+                <span>{{lang.database_name}}：{{dataTableInfo.database}}</span>
+                <span>{{lang.file_size}}：{{dataTableInfo.data_size}}</span>
+              </div>
+              <div class="right" v-if="tableCheck.length > 0">
+                <span class="item" @click="handleBatch('repair')">{{lang.repair}}</span>
+                <span class="item" @click="handleBatch('optimize')">{{lang.optimize}}</span>
+                <span class="item" @click="handleBatch('turn', 'InnoDB')">{{lang.turn_to}}InnoDB</span>
+                <span class="item" @click="handleBatch('turn', 'MyISAM')">{{lang.turn_to}}MyISAM</span>
+              </div>
+            </div>
+            <el-table :data="dataTableInfo.tables" style="width: 100%" @selection-change="handleTableChange"
+              ref="tableMultiple" v-loading="dataLoading" max-height="350px">
+              <el-table-column type="selection" width="35"></el-table-column>
+              <el-table-column prop="table_name" :label="lang.table_name" min-width="200" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="type" :label="lang.engine" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="collation" :label="lang.chart_set" width="120" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="rows_count" :label="lang.lines" width="60" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="data_size" :label="lang.file_size" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column prop="op" :label="lang.ticket_label5" width="220" class-name="opt-column"
+                show-overflow-tooltip>
+                <template slot-scope="{row}">
+                  <span class="opt" @click="handleTable(row, 'repair')">{{lang.repair}}</span>
+                  <span class="line">|</span>
+                  <span class="opt" @click="handleTable(row, 'optimize')">{{lang.optimize}}</span>
+                  <span class="line">|</span>
+                  <span class="opt" @click="handleTable(row, 'turn')">{{lang.turn_to}}{{row.type === 'MyISAM' ?
+                    'InnoDB' : 'MyISAM'}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="bot">
+              <p class="dot-des">{{lang.bt_tip50}}</p>
+              <p class="dot-des">{{lang.bt_tip51}}</p>
+              <p class="dot-des">{{lang.bt_tip52}}</p>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 备份数据库 -->
+      <div class="base-dialog password-dialog back-dialog">
+        <el-dialog width="10rem" :visible.sync="backDialog" :show-close=false @close="closeBackDialog">
+          <div class="dialog-title">
+            {{lang.mysql_tool}}[{{databaseInfo.name}}]
+            <i class="close" @click="closeBackDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="backup">
+            <el-tabs tab-position="top" :value="backActiveName" @tab-click="tabBackup" class="ssl-tab">
+              <!-- 常规备份 -->
+              <el-tab-pane name="regular" :label="lang.regular_backup">
+                <div class="search">
+                  <el-button class="com-btn" @click="handleBack"
+                    :loading="submitLoading">{{lang.backup_database}}</el-button>
+                </div>
+                <el-table :data="regularList" style="width: 100%" v-loading="dataLoading"
+                  @selection-change="handleBackChange" ref="backMultiple" max-height="450px">
+                  <el-table-column type="selection" width="35"></el-table-column>
+                  <el-table-column prop="name" :label="lang.files_name" min-width="150" show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column prop="location" :label="lang.storage_location" width="100" show-overflow-tooltip>
+                    <template slot-scope="{row}">
+                      {{row.local ? lang.bt_local : '--'}}
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="size" :label="lang.files_size" width="120" show-overflow-tooltip>
+                    <template slot-scope="{row}">
+                      {{formateUnit(row.size)}}
+                    </template>
+                  </el-table-column>
+                  <el-table-column prop="addtime" :label="lang.backup_time" width="180">
+                  </el-table-column>
+                  <el-table-column prop="ps" :label="lang.finance_label10" width="120" show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column prop="op" :label="lang.file_opt" width="120" class-name="opt-column">
+                    <template slot-scope="{row}">
+                      <span class="opt" @click="importBackup(row)">{{lang.recover}}</span>
+                      <span class="line">|</span>
+                      <span class="opt del" @click="comDel('back',row)">{{lang.security_btn4}}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <p class="batch-del" :class="{dis:backCheck.length === 0 }" @click="batchDeleteBackup">
+                  {{lang.batch_delete}}
+                  <span v-show="backCheck.length > 0">({{lang.checked}}{{backCheck.length}})</span>
+                </p>
+              </el-tab-pane>
+              <!-- 增量备份 -->
+              <el-tab-pane name="increment">
+                <span slot="label"><span class="icon">{{lang.bt_firm}}</span>{{lang.increment_backup}}</span>
+                <div class="search">
+                  <el-button class="com-btn" @click="addIncrement">{{lang.add_backup_task}}</el-button>
+                </div>
+                <el-table :data="incrementList" style="width: 100%" v-loading="dataLoading" max-height="320">
+                  <el-table-column prop="db_name" :label="lang.database_name" show-overflow-tooltip
+                    min-width="120"></el-table-column>
+                  <el-table-column prop="tb_name" :label="lang.table_name" min-width="150" show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column prop="full_size" :label="`${lang.common_cloud_title5}${lang.file_size}`" width="150"
+                    show-overflow-tooltip>
+                  </el-table-column>
+                  <el-table-column prop="last_backup_time" :label="lang.backup_time" width="180">
+                  </el-table-column>
+                  <el-table-column prop="op" :label="lang.file_opt" width="200" class-name="opt-column">
+                    <template slot-scope="{row}">
+                      <span class="opt" @click="handleExecute(row)">{{lang.execute}}</span>
+                      <span class="line">|</span>
+                      <span class="opt" @click="editBack(row)">{{lang.edit}}</span>
+                      <span class="line">|</span>
+                      <span class="opt" @click="lookLog(row)">{{lang.common_cloud_tab6}}</span>
+                      <span class="line">|</span>
+                      <span class="opt del" @click="comDel('increment',row)">{{lang.security_btn4}}</span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="page">
+                  <pagination :page-data="ftpLogParams" v-if="ftpLogParams.total" @sizechange="logSizeChange"
+                    @currentchange="logCurrentChange" />
+                </div>
+                <div class="bot">
+                  <p class="dot-des">{{lang.bt_tip57}}</p>
+                  <p class="dot-des">{{lang.bt_tip58}}</p>
+                  <p class="dot-des">{{lang.bt_tip59}}</p>
+                </div>
+              </el-tab-pane>
+
+            </el-tabs>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 增量备份 -->
+      <div class="base-dialog password-dialog">
+        <el-dialog width="6rem" :visible.sync="incrementDialog" :show-close=false @close="closeDialog">
+          <div class="dialog-title">
+            {{optType === 'add' ? lang.add_backup_task : lang.edit_backup_task}}
+            <i class="close" @click="closeDialog">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="dialog-main increment-box">
+            <el-form :model="backForm" :rules="comRules" ref="backForm" hide-required-asterisk label-width="90px">
+              <el-form-item :label="lang.database_name" v-if="optType === 'add'">
+                <el-input :value="databaseInfo.name" disabled>
+                </el-input>
+              </el-form-item>
+              <!-- 选择表 -->
+              <el-form-item :label="lang.choose_table" prop="tb_name" v-if="optType === 'add'">
+                <el-select v-model="backForm.tb_name" multiple collapse-tags :placeholder="lang.choose_table">
+                  <el-option value="all" :label="lang.bt_all" key="all" @click.native.stop="chooseAll"></el-option>
+                  <el-option v-for="item in dataTableInfo.tables" :key="item.table_name" :label="item.table_name"
+                    :value="item.table_name" @click.native.stop="chooseSingle(item)">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item :label="lang.backup_to">
+                <el-input :value="lang.serve_disk" disabled></el-input>
+              </el-form-item>
+              <el-form-item :label="lang.compress_password" class="password">
+                <el-input v-model="backForm.zip_password" :placeholder="lang.bt_tip60" :disabled="optType === 'update'">
+                </el-input>
+                <i class="el-icon-refresh-right" @click="radomPassword" v-show="optType === 'add'"></i>
+              </el-form-item>
+              <!-- 执行周期 -->
+              <el-form-item :label="lang.execution_cycle" class="choose-time">
+                <el-form-item>
+                  <el-select v-model="backForm.type" class="type">
+                    <el-option v-for="item in daySelect" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-if="backForm.type === 'day-n'" prop="where1">
+                  <el-input-number v-model="backForm.where1" :precision="0" :min="1" :max="31"
+                    :controls="false"></el-input-number>
+                  <span class="unit">{{lang.domain_day}}</span>
+                </el-form-item>
+                <el-form-item v-if="backForm.type === 'month'">
+                  <el-input-number v-model="backForm.where1" :precision="0" :min="1" :max="31"
+                    :controls="false"></el-input-number>
+                  <span class="unit">{{lang.bt_day}}</span>
+                </el-form-item>
+                <el-form-item v-if="backForm.type === 'week'">
+                  <el-select v-model="backForm.week" class="type">
+                    <el-option v-for="item in weekSelect" :key="item.value" :label="item.label" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item v-if="backForm.type !== 'hour' && backForm.type !== 'minute-n'" prop="hour">
+                  <el-input-number v-model="backForm.hour" :precision="0" :min="0" :max="23"
+                    :controls="false"></el-input-number>
+                  <span class="unit">{{lang.bt_hour}}</span>
+                </el-form-item>
+                <el-form-item>
+                  <el-input-number v-model="backForm.minute" :precision="0" :min="0" :max="59" prop="minute"
+                    :controls="false"></el-input-number>
+                  <span class="unit">{{lang.bt_minute}}</span>
+                </el-form-item>
+              </el-form-item>
+            </el-form>
+            <p class="dot-des com-red" v-show="optType === 'add'">{{lang.bt_tip57}}</p>
+            <div class="dialog-footer">
+              <el-button class="btn-ok" @click="subIncrement"
+                :loading="submitLoading">{{lang.common_cloud_btn28}}</el-button>
+              <el-button class="btn-no" @click="closeDialog">{{lang.ticket_btn5}}</el-button>
+            </div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 任务执行日志 -->
+      <div class="base-dialog pre-dialog log-dialog">
+        <el-dialog :visible.sync="logDialog" width="7rem" :show-close=false @close="logDialog = false">
+          <div class="dialog-title">
+            {{lang.mysql_tool}}[{{dataTableInfo.database}}]
+            <i class="close" @click="logDialog = false">
+              <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close.svg" alt="">
+            </i>
+          </div>
+          <div class="pre">
+            <pre>{{preContent}}</pre>
+          </div>
+          <div class="bot">
+            <el-button class="com-btn" @click="clearLog" :loading="submitLoading">{{lang.clear}}</el-button>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 删除弹窗 -->
+      <div class="delete-dialog">
+        <el-dialog width="3.8rem" :visible.sync="isShowDel" :show-close=false @close="delClose">
+          <img src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/img/icon/close_gray.svg" alt=""
+            class="del-close" @click="delClose">
+          <div class="del-dialog-title">
+            {{delTile}}
+            <span class="domian" v-if="curDomain">: {{curDomain}}</span>
+          </div>
+          <div class="del-dialog-main" v-html="delDes"></div>
+          <div class="dialog-footer">
+            <el-button class="btn-ok" @click="delSub" :loading="delLoading">{{lang.referral_btn6}}</el-button>
+            <el-button class="btn-no" @click="delClose">{{lang.security_btn6}}</el-button>
+          </div>
+        </el-dialog>
+      </div>
+
+      <pay-dialog ref="topPayDialog" @payok="paySuccess" @paycancel="payCancel"></pay-dialog>
+      <!-- 申请返现 -->
+      <cash-back :id="id" :show-cash="isShowCashDialog" @cancledialog="cancleDialog" @showbtn="showBtn"></cash-back>
+      <!-- 安全验证 -->
+      <safe-confirm ref="safeRef" :password.sync="client_operate_password" @confirm="hadelSafeConfirm"></safe-confirm>
+    </div>
+  </div>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/lang/index.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/api/cloud.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/js/echarts.min.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/js/cloudDetail.js"></script>

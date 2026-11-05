@@ -1,0 +1,183 @@
+/* 电子合同 */
+.e_contract .common-header,
+.contract_template .common-header {
+  margin: 0;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.e_contract .client-search,
+.contract_template .client-search {
+  display: flex;
+  align-items: center;
+}
+.e_contract .client-search .t-select__wrap,
+.contract_template .client-search .t-select__wrap,
+.e_contract .client-search .t-input__wrap,
+.contract_template .client-search .t-input__wrap {
+  width: 240px;
+  margin-right: 10px;
+}
+.e_contract .table-product,
+.contract_template .table-product {
+  white-space: nowrap;
+}
+.e_contract .t-icon-help-circle,
+.contract_template .t-icon-help-circle {
+  margin-left: 5px;
+}
+.e_contract .base-info,
+.contract_template .base-info {
+  background: #F2F2F7;
+  padding: 8px 20px;
+  border-radius: 3px;
+}
+.e_contract .base-info.active,
+.contract_template .base-info.active {
+  margin-bottom: 40px;
+}
+.e_contract .base-info .item,
+.contract_template .base-info .item {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+}
+.e_contract .base-info .item span,
+.contract_template .base-info .item span {
+  display: block;
+}
+.e_contract .base-info .l-txt,
+.contract_template .base-info .l-txt {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  color: rgba(0, 0, 0, 0.4);
+}
+.e_contract .base-info .r-txt,
+.contract_template .base-info .r-txt {
+  color: rgba(0, 0, 0, 0.6);
+}
+.e_contract .contract-status .t-table__ellipsis,
+.contract_template .contract-status .t-table__ellipsis {
+  display: flex;
+  align-items: center;
+}
+.e_contract .contract-status .mail,
+.contract_template .contract-status .mail {
+  margin-left: 5px;
+  cursor: pointer;
+}
+.e_contract .t-popup__content,
+.contract_template .t-popup__content {
+  white-space: pre-wrap;
+}
+/* contract_config */
+.contract_config .item {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.contract_config .s-tip {
+  color: rgba(0, 0, 0, 0.6);
+  margin-left: 10px;
+}
+.contract_config .t-input__wrap,
+.contract_config .t-select__wrap,
+.contract_config .t-form__label {
+  width: 320px;
+}
+.contract_config .t-form__item {
+  margin-bottom: 0;
+  margin-right: 64px;
+  position: relative;
+}
+.contract_config .t-form__item .day {
+  color: #333;
+  position: absolute;
+  left: 330px;
+}
+.contract_config .s-tit {
+  color: rgba(0, 0, 0, 0.4);
+}
+/* contract-details */
+.contract-details .con {
+  max-width: 1216px;
+  width: 100%;
+}
+.contract-details .top-info {
+  color: rgba(0, 0, 0, 0.9);
+  line-height: 1.5;
+  margin: 18px 0;
+  word-break: break-all;
+}
+.contract-details .reason {
+  background: #F9D7D9;
+  padding: 17px 24px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 0.9);
+  border-radius: 3px;
+  margin: 0 0 16px 0;
+}
+.contract-details .detail {
+  width: 100%;
+  height: 617px;
+  overflow-y: auto;
+  border: 1px solid #DCDCDC;
+  border-radius: 1px;
+  padding: 10px;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+}
+.contract-details .opt {
+  margin: 30px 0;
+  display: flex;
+}
+.contract-details .opt .t-button {
+  margin-right: 20px;
+}
+.contract-details .reject {
+  background: #C9353F;
+}
+.contract-details .t-form__label {
+  display: none;
+}
+.contract-details .t-dialog__body__icon {
+  padding-bottom: 0;
+  padding-left: 0;
+}
+.template-details .con {
+  max-width: 1460px;
+}
+.template-details textarea {
+  max-width: 100%;
+  width: 702px;
+}
+.template-details .emailTemp {
+  width: 100%;
+}
+.template-details .t-form__label {
+  display: block;
+}
+.template-details .tem-table {
+  margin-top: 24px;
+}
+.view-btn {
+  float: left;
+  margin: 0 !important;
+}
+.view-page {
+  margin-top: 50px;
+}
+@media screen and (max-width: 1300px) {
+  .contract_template .client-search .t-input__wrap,
+  .contract_template .client-search .t-select__wrap {
+    width: 180px;
+  }
+}
+@media screen and (max-width: 1100px) {
+  .contract_template .client-search .t-input__wrap,
+  .contract_template .client-search .t-select__wrap {
+    width: 150px;
+  }
+}

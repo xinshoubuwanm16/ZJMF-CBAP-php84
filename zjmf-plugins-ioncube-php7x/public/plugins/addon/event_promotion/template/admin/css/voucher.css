@@ -1,0 +1,274 @@
+/* 代金卷 */
+.voucher .client-search {
+  display: flex;
+  align-items: center;
+  column-gap: 15px;
+}
+.voucher .client-search .search-input {
+  width: 240px;
+}
+.voucher .t-table__body {
+  cursor: pointer;
+}
+.voucher .t-table__body .used {
+  color: var(--td-brand-color-active);
+  cursor: pointer;
+}
+.voucher .code {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+  left: 0;
+}
+.voucher .code-item {
+  position: relative;
+}
+.voucher .jump {
+  color: var(--td-brand-color-active);
+  cursor: pointer;
+}
+.voucher .grant {
+  margin-right: 12px;
+}
+.voucher .record-form {
+  display: flex;
+}
+.voucher .record-form .t-select {
+  width: 240px;
+  margin-right: 8px;
+}
+.voucher .record-form .t-select__wrap {
+  width: auto;
+}
+/* voucher-detail */
+.voucher-detail .box {
+  padding-top: 30px;
+}
+.voucher-detail .t-box {
+  display: flex;
+  align-items: flex-end;
+}
+.voucher-detail .t-input,
+.voucher-detail .t-select {
+  min-width: 320px;
+}
+.voucher-detail .choose-user .t-input,
+.voucher-detail .choose-user .t-select {
+  min-width: auto;
+}
+.voucher-detail .choose-user .user-select {
+  width: 270px;
+}
+.voucher-detail .t-input__wrap {
+  width: auto;
+}
+.voucher-detail .type-box .t-form__controls-content {
+  flex-wrap: wrap;
+}
+.voucher-detail .type-box > .t-form__label {
+  display: none;
+}
+.voucher-detail .num .t-input {
+  width: 240px;
+}
+.voucher-detail .random {
+  padding: 0 14px;
+  background: rgba(0, 82, 217, 0.2);
+  color: #0052d9;
+  border-radius: 4px;
+  line-height: 32px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.voucher-detail .type .t-form__controls {
+  display: block;
+}
+.voucher-detail .t-form__label {
+  width: auto !important;
+  padding-right: 10px !important;
+}
+.voucher-detail .t-form__controls {
+  margin-left: auto !important;
+}
+.voucher-detail .s-item {
+  white-space: nowrap;
+  display: flex;
+}
+.voucher-detail .s-item .t-form__item,
+.voucher-detail .s-item .t-select__wrap {
+  display: inline-block;
+  width: auto;
+  margin-right: 20px;
+}
+.voucher-detail .s-item .t-date-picker {
+  margin-right: 5px;
+}
+.voucher-detail .t-textarea {
+  width: 100%;
+  max-width: 1230px;
+  height: 210px;
+}
+.voucher-detail .t-textarea textarea {
+  height: 100%;
+}
+.voucher-detail .f-btn {
+  text-align: right;
+  max-width: 1230px;
+  width: 100%;
+}
+.voucher-detail .switch .t-form__label {
+  width: auto !important;
+  padding-right: 10px;
+}
+.voucher-detail .switch .t-form__controls {
+  margin-left: auto !important;
+}
+.voucher-detail .pack-tip {
+  font-size: 16px;
+}
+.voucher-detail .time-diff {
+  position: relative;
+  top: 3px;
+  height: 32px;
+  margin-left: 10px;
+}
+.voucher-detail .t-input__extra {
+  color: var(--td-error-color) !important;
+}
+.voucher-detail .t-select__wrap {
+  width: auto;
+}
+.voucher-detail .p-tip {
+  margin-left: 10px;
+  color: #333333;
+  font-size: 14px;
+}
+.voucher-detail .p-tip .tip {
+  color: #ff0000;
+}
+/* sourceModal */
+.sourceModal .t-dialog {
+  width: 1032px;
+  border-radius: 0;
+  padding: 0;
+}
+.sourceModal .t-dialog .t-dialog__header {
+  display: none;
+}
+.sourceModal .t-dialog .t-dialog__body {
+  width: 100%;
+  height: 100%;
+  min-height: 720px;
+  padding: 0;
+}
+.sourceModal .t-dialog .box {
+  display: flex;
+  position: absolute;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+.sourceModal .t-dialog .arrow {
+  width: 24px;
+  height: 24px;
+  background: #eeeeee;
+  border: 1px solid #dcdcdc;
+  border-radius: 3px;
+  text-align: center;
+  margin: 0 auto;
+}
+.sourceModal .t-dialog .item {
+  width: 492px;
+  height: 100%;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+.sourceModal .t-dialog .item:first-child {
+  border-right: 1px solid #dcdcdc;
+}
+.sourceModal .t-dialog .item:last-child {
+  border-left: 1px solid #dcdcdc;
+}
+.sourceModal .t-dialog .item:last-child .tit {
+  border-bottom: 1px solid #e7e7e7;
+  padding-bottom: 15px;
+  margin-bottom: 45px;
+}
+.sourceModal .t-dialog .item .tit {
+  font-size: 18px;
+  font-family: "PingFang SC";
+  color: #333;
+  font-weight: bold;
+}
+.sourceModal .del-icon {
+  font-size: 20px;
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+.sourceModal .delItem {
+  border: none;
+}
+.sourceModal .com-f-btn {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+}
+.sourceModal .grantPage .t-pagination__total,
+.sourceModal .grantPage .t-pagination__select {
+  display: none;
+}
+.sourceModal .com-search {
+  width: 300px;
+  margin-bottom: 10px;
+}
+.sourceModal .com-search .t-input {
+  width: 270px;
+}
+.sourceModal .f-box {
+  padding-left: 6px;
+  padding-top: 5px;
+}
+.sourceModal .f-box .active .t-checkbox__label {
+  color: var(--td-brand-color-active);
+}
+.sourceModal .f-box P {
+  margin: 0;
+  line-height: 1.2;
+  color: #ff0000;
+}
+.t-popup__content {
+  white-space: normal;
+}
+@media screen and (max-width: 1600px) {
+  .voucher-detail .time-item {
+    display: block;
+  }
+}
+@media screen and (max-width: 1360px) {
+  .voucher-detail .type-box .type-lable {
+    margin-top: 10px !important;
+  }
+  .voucher-detail .type-box .type-lable .t-form__controls-content {
+    display: flex;
+  }
+  .voucher-detail .type-box .t-box {
+    margin-top: 24px;
+  }
+  .voucher-detail .num .t-input {
+    width: 150px !important;
+  }
+  .promo-code .client-search .t-input,
+  .promo-code .client-search .t-select {
+    width: 150px;
+  }
+}
+.t-input__prefix {
+  max-width: 100% !important;
+}
+.t-tag {
+  max-width: 100% !important;
+}
+.t-input {
+  height: 32px !important;
+}

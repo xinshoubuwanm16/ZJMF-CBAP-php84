@@ -1,0 +1,395 @@
+{include file="header"}
+<script src="/web/mf101/js/index.js"></script>
+
+</head>
+
+<body>
+    <header>{include file="conf/header"}</header>
+    <!-- banner -->
+    <section class="section">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="banner-box">
+                        <h1 class="banner-title">中小企业的云计算底座</h1>
+                        <p class="banner-des">主题云聚焦中小企业的数智化转型进程，以技术和数据为驱动，以产品和场景为载体，专注于打磨云上业务服务能力，助力中小企业全面业务上云演化。
+                        </p>
+                    </div>
+                    <div class="banner-info">
+                        {if ( isset($data.introduce) ) }
+                        {foreach $data.introduce as $key=>$value}
+                        <div class="banner-info-item">
+                            <div
+                                class="banner-info-title {if ($key > 0 && $key < count($data.introduce)-1 )} pad-top-30 {/if}">
+                                {$value.summary}</div>
+                            <div class="banner-info-text">{$value.description}</div>
+                        </div>
+                        {/foreach}
+                        {else /}
+                        <div class="banner-info-item">
+                            <div class="banner-info-title">免费试用</div>
+                            <div class="banner-info-text">30+特色云产品</div>
+                        </div>
+                        <div class="banner-info-item">
+                            <div class="banner-info-title pad-top-30">业务发展平台</div>
+                            <div class="banner-info-text">中小企业一站式业务解决方案</div>
+                        </div>
+                        <div class="banner-info-item">
+                            <div class="banner-info-title pad-top-30">探索我们的产品</div>
+                            <div class="banner-info-text">安全、值得信赖、创新</div>
+                        </div>
+                        <div class="banner-info-item">
+                            <div class="banner-info-title">特色活动</div>
+                            <div class="banner-info-text">1个月的价格即可使用13个月的ESC</div>
+                        </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <!-- 如果需要分页器 -->
+            <!-- <div class="swiper-pagination"></div> -->
+        </div>
+    </section>
+
+    <!-- 最受欢迎的云服务产品 -->
+    <section class="section common-section">
+        <h3 class="section-title">最受欢迎的云服务产品</h3>
+        <p class="section-des">高性能、低成本、不断让更多客户信赖我们</p>
+        <div class="section-main">
+            <div class="index-block">
+                {if ( isset($data.product) ) }
+                {foreach $data.product as $key=>$value}
+                <a data-aos="fade-up" href="cloud-buy.html?id={$value.product_id}" class="index-item">
+                    <div class="index-items">
+                        <div class="index-item-icon">
+                            <img src="{$value.icon}" alt="">
+                        </div>
+                        <div class="index-item-title">{$value.title}</div>
+                        <p class="index-item-des">{$value.description}</p>
+                        <div class="price-box">
+                            <span class="price-num">{$value.price}</span>{$data.currency_suffix}/月起
+                        </div>
+                    </div>
+                </a>
+                {/foreach}
+                {else /}
+                <a data-aos="fade-up" href="cloud-buy.html?id=1" class="index-item">
+                    <div class="index-items" data-aos="fade-up">
+                        <div class="index-item-icon">
+                            <img src="/web/mf101/assets/img/index-icon.svg" alt="">
+                        </div>
+                        <div class="index-item-title">共享型</div>
+                        <p class="index-item-des">超高性价比，用最低成本满足70%的基础业务诉求</p>
+                        <div class="price-box">
+                            <span class="price-num">15</span>元/月起
+                        </div>
+                    </div>
+                </a>
+                <a data-aos="fade-up" href="cloud-buy.html?id=1" class="index-item">
+                    <div class="index-items" data-aos="fade-up">
+                        <div class="index-item-icon">
+                            <img src="/web/mf101/assets/img/index-icon.svg" alt="">
+                        </div>
+                        <div class="index-item-title">专用型</div>
+                        <p class="index-item-des">搭载高性能处理器，为大型网站及电子商务企业提供稳定支撑</p>
+                        <div class="price-box">
+                            <span class="price-num">18</span>元/月起
+                        </div>
+                    </div>
+
+                </a>
+                <a data-aos="fade-up" href="cloud-buy.html?id=1" class="index-item">
+                    <div class="index-items" data-aos="fade-up">
+                        <div class="index-item-icon">
+                            <img src="/web/mf101/assets/img/index-icon.svg" alt="">
+                        </div>
+                        <div class="index-item-title">内存型</div>
+                        <p class="index-item-des">超大内存，轻松应对大型内存数据集与快速的数据交换处理</p>
+                        <div class="price-box">
+                            <span class="price-num">20</span>元/月起
+                        </div>
+                    </div>
+                </a>
+                <a data-aos="fade-up" href="cloud-buy.html?id=1" class="index-item">
+                    <div class="index-items" data-aos="fade-up">
+                        <div class="index-item-icon">
+                            <img src="/web/mf101/assets/img/index-icon.svg" alt="">
+                        </div>
+                        <div class="index-item-title">存储型</div>
+                        <p class="index-item-des">提供大量的存储空间，非常适合数据备份和文件存档</p>
+                        <div class="price-box">
+                            <span class="price-num">26</span>元/月起
+                        </div>
+                    </div>
+                </a>
+                {/if}
+            </div>
+        </div>
+    </section>
+
+    <!-- 让你更专注业务发展 -->
+    <section class="section common-section  video-section">
+        <h3 class="section-title">让您更专注业务发展</h3>
+        <p class="section-des">高性能、低成本、不断让更多客户信赖我们</p>
+        <div class="section-main ">
+            <div class="pc-video-box">
+                <div class="video-left">
+                    <ul class="pic-box">
+                        <li class="pic-box-item active">
+                            <video autoplay loop muted webkit-playsinline playsinline="true"
+                                poster="/web/mf101/assets/img/poster-video1.png" class="pic-box--img w-100 lazy-video"
+                                src="/web/mf101/assets/video/index_video1.mp4"></video>
+                            </video>
+                        </li>
+                        <li class="pic-box-item">
+                            <video autoplay loop muted webkit-playsinline playsinline="true"
+                                poster="/web/mf101/assets/img/poster-video2.png" class="pic-box--img w-100 lazy-video"
+                                src="/web/mf101/assets/video/index_video2.mp4"></video>
+                            </video>
+                        </li>
+                        <li class="pic-box-item">
+                            <video autoplay loop muted webkit-playsinline playsinline="true"
+                                poster="/web/mf101/assets/img/poster-video3.png" class="pic-box--img w-100 lazy-video"
+                                src="/web/mf101/assets/video/index_video3.mp4"></video>
+                            </video>
+                        </li>
+                    </ul>
+                </div>
+                <div class="video-right">
+                    <div class="video-info active">
+                        <div class="video-op">管理便捷</div>
+                        <div class="video-title">够建清晰直观的操作界面</div>
+                        <div class="video-des">一键安装程序,让您1分钟内完成部署,轻松享受优质的云服务</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-op">线上订购</div>
+                        <div class="video-title">线上操作流程省时、省心、省力</div>
+                        <div class="video-des">所有产品均支持在线订购，在线客服24小时为您提供服务</div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-op">推介计划</div>
+                        <div class="video-title">注册成功后购买商品时，您将获得最高<span class="origin-text">10%</span>的推介奖励
+                        </div>
+                        <div class="video-des">通过推介链接邀请尚未注册的用户进行注册
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-video-box">
+                <ul class="mobile-video-list">
+                    <li class="mobile-box-item">
+                        <div class="video-info">
+                            <div class="video-op">管理便捷</div>
+                            <div class="video-title">够建清晰直观的操作界面</div>
+                            <div class="video-des">一键安装程序,让您1分钟内完成部署,轻松享受优质的云服务</div>
+                        </div>
+                        <video autoplay loop muted webkit-playsinline playsinline="true"
+                            poster="/web/mf101/assets/img/poster-video1.png" class="pic-box--img w-100 lazy-video"
+                            src="/web/mf101/assets/video/index_video1.mp4"></video>
+                        </video>
+                    </li>
+                    <li class="mobile-box-item">
+
+                        <div class="video-info">
+                            <div class="video-op">线上订购</div>
+                            <div class="video-title">线上操作流程省时、省心、省力</div>
+                            <div class="video-des">所有产品均支持在线订购，在线客服24小时为您提供服务</div>
+                        </div>
+                        <video autoplay loop muted webkit-playsinline playsinline="true"
+                            poster="/web/mf101/assets/img/poster-video2.png" class="pic-box--img w-100 lazy-video"
+                            src="/web/mf101/assets/video/index_video2.mp4"></video>
+                        </video>
+                    </li>
+                    <li class="mobile-box-item">
+                        <div class="video-info">
+                            <div class="video-op">推介计划</div>
+                            <div class="video-title">注册成功后购买商品时，您将获得最高<span class="origin-text">10%</span>的推介奖励
+                            </div>
+                            <div class="video-des">通过推介链接邀请尚未注册的用户进行注册
+                            </div>
+                        </div>
+                        <video autoplay loop muted webkit-playsinline playsinline="true"
+                            poster="/web/mf101/assets/img/poster-video3.png" class="pic-box--img w-100 lazy-video"
+                            src="/web/mf101/assets/video/index_video3.mp4"></video>
+                        </video>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 云服务 -->
+    <section class="section common-section net-section">
+        <div class="net-top">
+            <div class="section-left">
+                <div class="net-title">全球云基础设施</div>
+                <div class="net-des">为多个地理区域提供离您最近的全连接、高速、稳定的网络和服务</div>
+                <div class="net-info">
+                    <div class="net-num-text">
+                        <div class="net-num">20+</div>
+                        <div class="net-text">国家地理区域</div>
+                    </div>
+                    <div class="net-num-text">
+                        <div class="net-num">60+</div>
+                        <div class="net-text">可用区域</div>
+                    </div>
+                    <div class="net-num-text">
+                        <div class="net-num">500+</div>
+                        <div class="net-text">全球CDN节点</div>
+                    </div>
+                    <div class="net-num-text">
+                        <div class="net-num">1T+</div>
+                        <div class="net-text">可承载DDOS攻击</div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-right" data-aos="fade-up">
+                <img src="/web/mf101/assets/img/index-net-icon.svg" alt="">
+            </div>
+        </div>
+        <div class="net-bottom" data-aos="fade-up">
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon1.png" alt="">
+                </div>
+                <p class="net-bottom-des">ISO 22301:2012</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon2.png" alt="">
+                </div>
+                <p class="net-bottom-des">ISO 27001:2013</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon3.png" alt="">
+                </div>
+                <p class="net-bottom-des">ISO 27001</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon4.png" alt="">
+                </div>
+                <p class="net-bottom-des">SOC 1 Type Ⅱ</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon5.png" alt="">
+                </div>
+                <p class="net-bottom-des">网络安全等级保护</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon6.png" alt="">
+                </div>
+                <p class="net-bottom-des">PCI DSS认证</p>
+            </div>
+            <div class="net-bottom-icon">
+                <div class="net-bottom-img">
+                    <img src="/web/mf101/assets/img/index-net-icon7.png" alt="">
+                </div>
+                <p class="net-bottom-des">PCI DSS认证</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 客户信任 -->
+    <section class="section product-section ">
+        <div class="section-title">我们深受客户信任</div>
+        <div class="section-des">从头到尾，您都能得到最可靠的保障</div>
+        <div class="section-main">
+            <div class="product-left" data-aos="fade-up">
+                <img src="/web/mf101/assets/img/index-product-img.svg" alt="">
+            </div>
+            <div class="product-right">
+                <ul class="product-list">
+                    <li class="product-item">
+                        <div class="product-title">价格透明</div>
+                        <div class="product-des">所有产品价格可预见,即用即付,您可以规划您的基础架构，无需担心隐藏费用。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">数据保障</div>
+                        <div class="product-des">
+                            {$data.config.enterprise_name ??'重庆顺戴网络科技有限公司'}持续进行严密的安全审计,以三副本冗余的方式存储数据,全面保障您的数据安全。
+                        </div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">快速响应</div>
+                        <div class="product-des">专业的工程师团队为您提供7*24H全天候全流程服务支持。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">快速响应</div>
+                        <div class="product-des">专业的工程师团队为您提供7*24H全天候全流程服务支持。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">快速响应</div>
+                        <div class="product-des">专业的工程师团队为您提供7*24H全天候全流程服务支持。</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 我们的优势 -->
+    <section class="section common-section advantage-section">
+        <h3 class="section-title">我们的优势</h3>
+        <div class="section-main">
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon1.svg" alt="">
+                </div>
+                <div class="advantage-des">
+                    <div class="advantage-title">7*24小时技术支持</div>
+                    <div class="advantage-des">拥有专业的技术团队，能为客户提供各种优质增值服务，同时7X24小时不间断的为客户提供售后服务</div>
+                </div>
+            </div>
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon2.svg" alt="">
+                </div>
+                <div class="advantage-des" data-aos="fade-up">
+                    <div class="advantage-title">国内优质资源</div>
+                    <div class="advantage-des">拥有专业的技术团队，能为客户提供各种优质增值服务，同时7X24小时不间断的为客户提供售后服务</div>
+                </div>
+            </div>
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon3.svg" alt="">
+                </div>
+                <div class="advantage-des">
+                    <div class="advantage-title">资质齐全</div>
+                    <div class="advantage-des">拥有IDC、ICP、ISP三证合CNNIC&ICANN双认证知识产权管理体系认证证书高新技术企业</div>
+                </div>
+            </div>
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon4.svg" alt="">
+                </div>
+                <div class="advantage-des">
+                    <div class="advantage-title">灵活部署</div>
+                    <div class="advantage-des">针对不同行业、领域的企业级用户，以专业成熟的一站式行业云解决方案，帮助用户快速应用云计算</div>
+                </div>
+            </div>
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon5.svg" alt="">
+                </div>
+                <div class="advantage-des">
+                    <div class="advantage-title">1对1在线服务</div>
+                    <div class="advantage-des">来自经验丰富的云专家的独家咨询</div>
+                </div>
+            </div>
+            <div class="advantage-item" data-aos="fade-up">
+                <div class="advantage-icon">
+                    <img src="/web/mf101/assets/img/index-advantage-icon6.svg" alt="">
+                </div>
+                <div class="advantage-des">
+                    <div class="advantage-title">品质保障</div>
+                    <div class="advantage-des">年专注于为客户提供网络解决方案。与上百个数据中心达成合作，为客户提供优质的机房资源和专业的运维服务</div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    {include file="footer"}

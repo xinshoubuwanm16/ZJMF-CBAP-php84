@@ -1,0 +1,68 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_sale/template/admin/css/sales_management.css" />
+<div id="content" class="admin table commission-box" v-cloak>
+  <com-config>
+    <div class="commission-box">
+      <div class="top-box">
+        <t-divider class="reply-divider" align="left">{{lang.sales_plugin_text13}}</t-divider>
+        <div class="select-box">
+          <div>
+            <span class="title-text">{{lang.sales_plugin_text14}}: </span>
+            <t-date-picker mode="month" :default-value="defaultDate" @change="selectTime" theme="primary"></t-date-picker>
+          </div>
+          <div v-if="isSaleFlag">
+            <span class="title-text">{{lang.sales_plugin_text15}}: </span>
+            <t-select v-model="params.sale_id" :options="sale_list" :keys="{ label: 'name', value: 'id'}" :placeholder="lang.sales_plugin_text16" />
+          </div>
+          <t-button @click="search">{{lang.sales_plugin_text17}}</t-button>
+        </div>
+      </div>
+      <div class="bottom-box">
+        <div class="bottom-left">
+          <div class="bottom-title">{{lang.sales_plugin_text18}}</div>
+          <div id="monitorContainer" ref="monitorContainer" :style="{ width: `${326}px`, height: `${326}px`, margin: '100px auto 0' }"></div>
+        </div>
+        <div class="bottom-right">
+          <div class="bottom-right-item">
+            <div class="bottom-title">
+              <span>{{lang.sales_plugin_text19}}</span>
+              <t-button theme="default" variant="base" @click="handelDialog('1')">{{lang.sales_plugin_text20}}</t-button>
+            </div>
+            <t-table class="table-box" :data="orderTypeList" :columns="order_list_columns" row-key="productName"></t-table>
+            <div class="total-box"><span class="price-text">{{lang.sales_plugin_text21}}({{currency_suffix}})：</span>{{order_commission}}</div>
+          </div>
+          <div class="bottom-right-item">
+            <div class="bottom-title">
+              <span>{{lang.sales_plugin_text22}}</span>
+              <t-button theme="default" variant="base" @click="handelDialog('2')">{{lang.sales_plugin_text20}}</t-button>
+            </div>
+            <t-table class="table-box" :data="bigOderList" :columns="order_list_columns" row-key="productName"></t-table>
+            <div class="total-box"><span class="price-text">{{lang.sales_plugin_text23}}({{currency_suffix}})：</span>{{big_commission}}</div>
+          </div>
+          <div class="bottom-right-item mar-bom-0">
+            <div class="bottom-title">{{lang.sales_plugin_text24}}</div>
+            <t-table class="table-box" :data="task" :columns="task_columns" row-key="productName"></t-table>
+            <div class="total-box"><span class="price-text">{{lang.sales_plugin_text23}}({{currency_suffix}})：</span>{{task_commission}}</div>
+          </div>
+          <div class="all-total"><span class="price-text">{{lang.sales_plugin_text25}}: ({{currency_suffix}})：</span>{{commission}}</div>
+        </div>
+      </div>
+    </div>
+    <t-dialog :visible.sync="visible" :header="lang.sales_plugin_text26" :footer="false" width="1000">
+      <t-table :data="orderList" :columns="orderColumns" row-key="productName">
+        <template #pay_time="{row}">
+          <span>{{formatDate(row.pay_time)}}</span>
+        </template>
+      </t-table>
+      <div class="f-btn mar-top-20">
+        <t-button theme="primary" @click="dowloadFile" :loading="submitLoading">{{lang.sales_plugin_text27}}</t-button>
+        <t-button theme="default" variant="base" @click="visible = false">{{lang.sales_plugin_text28}}</t-button>
+      </div>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/echarts.min.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/api/sales.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/sale_commission.js"></script>

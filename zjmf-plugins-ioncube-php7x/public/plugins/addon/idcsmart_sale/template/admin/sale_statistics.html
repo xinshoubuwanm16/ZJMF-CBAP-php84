@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_sale/template/admin/css/sales_management.css" />
+<div id="content" class="admin" v-cloak>
+  <com-config>
+    <div class="content-box">
+      <div class="fir-div">
+        <div class="title-text">
+          {{lang.sale_text84}}
+        </div>
+        <div class="search-box">
+          <t-select v-model="sale_id" multiple :min-collapsed-num="2" filterable clearable
+            :placeholder="lang.sale_text85" :scroll="{ type: 'virtual' }"
+            :popup-props="{ overlayInnerStyle: { height: '300px' } }" :options="sale_list"
+            :keys="{ label: 'name', value: 'id'}" @change="onSelectChange" />
+        </div>
+      </div>
+      <div class="sec-div">
+        <div>
+          <div class="commission-title">{{lang.sale_text86}}</div>
+          <div class="money-div">
+            <div class="commission-money"><span>{{currency_prefix}}</span><span>{{thousandth(commission.today)}}</span>
+            </div>
+            <div class="commission-pic">
+              <img src="/plugins/addon/idcsmart_sale/template/admin/img/pic_1.png" alt="">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="commission-title">{{lang.sale_text87}}</div>
+          <div class="money-div">
+            <div class="commission-money"><span>{{currency_prefix}}</span><span>{{thousandth(commission.month)}}</span>
+            </div>
+            <div class="commission-pic">
+              <img src="/plugins/addon/idcsmart_sale/template/admin/img/pic_2.png" alt="">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="commission-title">{{lang.sale_text88}}</div>
+          <div class="money-div">
+            <div class="commission-money"><span>{{currency_prefix}}</span><span>{{thousandth(commission.total)}}</span>
+            </div>
+            <div class="commission-pic">
+              <img src="/plugins/addon/idcsmart_sale/template/admin/img/pic_3.png" alt="">
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="commission-title">{{lang.sale_text89}}</div>
+          <div class="detail-box">
+            <div id="pie-chars" class="pie-div"></div>
+            <div class="detail-content">
+              <div class="deail-item" v-for="item in detail" :key="item.type">
+                <span class="line-color" :style={background:item.color}></span>
+                <div class="detail-type">{{item.name}}</div>
+                <div class="detail-money">{{currency_prefix}}{{item.price}}</div>
+                <div class="detail-line"></div>
+                <div class="detail-right">{{item.percent}}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tree-div">
+        <div class="left-bottom">
+          <div class="chart-top">
+            <div class="total-box">
+              <span>{{lang.sale_text90}}</span>
+              <span><span>{{currency_prefix}}</span><span>{{thousandth(total_amount)}}</span></span>
+            </div>
+            <div class="time-box">
+              <div class="time-btn">
+                <t-radio-group variant="primary-filled" @change="onChange" default-value="0">
+                  <t-radio-button value="1">{{lang.sale_text91}}</t-radio-button>
+                  <t-radio-button value="2">{{lang.sale_text92}}</t-radio-button>
+                  <t-radio-button value="3">{{lang.sale_text93}}</t-radio-button>
+                  <t-radio-button value="4">{{lang.sale_text94}}</t-radio-button>
+                  <t-radio-button value="5">{{lang.sale_text95}}</t-radio-button>
+                </t-radio-group>
+              </div>
+              <div class="time-select">
+                <t-date-range-picker allow-input clearable @change="selectTime" />
+              </div>
+            </div>
+          </div>
+          <div id="echars-box" class="echars-div"></div>
+        </div>
+        <div class="ranking-div">
+          <div class="ranking-title">{{lang.sale_text96}}</div>
+          <div class="ranking-box">
+            <div class="ranking-item" v-for="(item,index) in rank" :key="item.id">
+              <div class="rank-left">
+                <div class="rank-index">{{index + 1}}</div>
+                <div class="rank-name">{{item.username}}</div>
+              </div>
+              <div class="rank-money">{{currency_prefix}}{{thousandth(item.amount)}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/echarts.min.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/api/sales.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/sale_statistics.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/utils/util.js"></script>

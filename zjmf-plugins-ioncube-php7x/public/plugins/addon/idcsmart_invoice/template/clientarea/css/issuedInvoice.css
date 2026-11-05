@@ -1,0 +1,173 @@
+header {
+  display: flex;
+  margin-bottom: 0.4rem;
+}
+header .back-img {
+  display: block;
+  width: 0.24rem;
+  height: 0.26rem;
+  margin-right: 0.25rem;
+  cursor: pointer;
+}
+header p {
+  font-size: 0.28rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.25rem;
+  color: #171725;
+}
+.invoice-after .title {
+  display: flex;
+  align-items: flex-end;
+}
+.invoice-after .title .el-button {
+  height: 0.46rem;
+  background: #0058ff;
+  border-radius: 0.03rem;
+}
+.invoice-after .title .el-button span {
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-right: 0.04rem;
+}
+.invoice-after .title span {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #8692b0;
+}
+.table-content {
+  border: 0.01rem solid #e6e7eb;
+  opacity: 1;
+  border-radius: 0.03rem;
+  margin-top: 0.2rem;
+}
+.myPage {
+  margin: 0;
+  padding: 0.26rem 0;
+}
+.myPage .el-pagination .page-total {
+  margin: 0 auto 0 3px;
+}
+.el-table .el-table__header-wrapper .cell {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #757575;
+}
+.el-table__body-wrapper .cell {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #171725;
+}
+.el-popover {
+  min-width: 0.5rem !important;
+}
+.el-popover .operation-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.operation-item {
+  color: #3699ff;
+  cursor: pointer;
+  font-size: 0.14rem;
+}
+.myCell .el-checkbox__input {
+  display: none;
+}
+.add-Invoice {
+  padding: 0 0.8rem;
+}
+.add-Invoice h3 {
+  font-size: 0.24rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.25rem;
+  color: #171725;
+  margin-bottom: 0.4rem;
+}
+.add-Invoice footer {
+  height: 0.46rem;
+  margin-bottom: 0.6rem;
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.add-Invoice footer .el-button {
+  width: 1.12rem;
+  opacity: 1;
+  border-radius: 0.03rem;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  border: none;
+}
+.add-Invoice footer .el-button:nth-child(1) {
+  background: #0058ff;
+  color: rgba(255, 255, 255, 0.9);
+}
+.add-Invoice footer .el-button:nth-child(2) {
+  background: #e7e7e7;
+  color: #1e2736;
+  margin-left: 0.12rem;
+}
+.add-Invoice .el-table td.el-table__cell,
+.add-Invoice .el-table th.el-table__cell.is-leaf {
+  background: #eef4ff;
+  color: #757575;
+}
+.add-Invoice .el-table tr {
+  background: #eef4ff;
+  color: #757575;
+}
+.price-box {
+  box-sizing: border-box;
+  background: #eef4ff;
+  border: 0.01rem solid #e6e7eb;
+}
+.price-box .proce-top,
+.price-box .proce-bom {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 2fr 2fr;
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #757575;
+}
+.price-box .proce-top p,
+.price-box .proce-bom p {
+  padding: 0.16rem 0.2rem 0.2rem 0.2rem;
+}
+.price-box .proce-bom {
+  border-top: 0.01rem solid #e6e7eb;
+}
+.price-box .proce-bom p:nth-child(1) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.total-box {
+  margin-top: 0.4rem;
+  display: flex;
+  font-size: 0.18rem;
+  align-items: center;
+}
+.total-box span {
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #8692b0;
+  margin: right 8px;
+}

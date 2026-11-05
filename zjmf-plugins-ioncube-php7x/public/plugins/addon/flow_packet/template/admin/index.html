@@ -1,0 +1,85 @@
+<link rel="stylesheet" href="/plugins/addon/flow_packet/template/admin/css/traffic_package.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template traffic_package_order" v-cloak>
+ <com-config>
+  <t-card class="list-card-container">
+    <ul class="common-tab">
+      <li class="active" v-permission="'auth_flow_packet_order_view'">
+        <a href="javascript:;">{{lang.traffic_package_order}}</a>
+      </li>
+      <li v-permission="'auth_flow_packet_management_view'">
+        <a href="traffic_package_manage.htm">{{lang.traffic_package_manage}}</a>
+      </li>
+    </ul>
+    <div class="box">
+      <div class="common-header">
+        <div class="left"></div>
+        <div class="client-search">
+          <t-input v-model="params.keywords" clearable
+            :placeholder="`${lang.traffic_package_name}、${lang.products_name}、${lang.user}`"></t-input>
+          <t-select v-model="params.status" :placeholder="lang.status" clearable>
+            <t-option value="Unpaid" :label="lang.Unpaid" key="Unpaid"></t-option>
+            <t-option value="Paid" :label="lang.Paid" key="Paid"></t-option>
+            <t-option value="Cancelled" :label="lang.Cancelled" key="Cancelled"></t-option>
+            <t-option value="Refunded" :label="lang.refunded" key="Refunded"></t-option>
+          </t-select>
+          <t-button @click="seacrh">{{lang.query}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="list" size="medium" :columns="typeColumns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #username="{row}">
+          <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">{{row.username}}</a>
+        </template>
+        <template #host_name="{row}">
+          <a :href="`${baseUrl}host_detail.htm?client_id=${row.client_id}&id=${row.host_id}`"
+            class="aHover">{{row.host_name}}
+          </a>
+        </template>
+        <template #status="{row}">
+          <t-tag theme="success" variant="light" v-if="row.status==='Paid'" class="order-paid">{{lang.Paid}}
+          </t-tag>
+          <t-tag theme="warning" variant="light" v-if="row.status==='Unpaid'" class="order-unpaid">{{lang.Unpaid}}
+          </t-tag>
+          <t-tag theme="default" variant="light" v-if="row.status==='Cancelled'"
+            class="canceled order-canceled">{{lang.canceled}}
+          </t-tag>
+          <t-tag theme="default" variant="light" v-if="row.status==='Refunded'"
+            class="canceled order-refunded">{{lang.refunded}}
+          </t-tag>
+        </template>
+        <template #amount="{row}">
+          {{currency_prefix}}{{row.amount | filterMoney}}
+        </template>
+        <template #create_time="{row}">
+          {{row.create_time ? moment(row.create_time * 1000).format('YYYY-MM-DD HH:mm:ss') : '--'}}
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.look" :show-arrow="false" theme="light">
+            <t-icon name="view-module" size="18px" @click="updateItem(row)" class="common-look" v-permission="'auth_flow_packet_order_check_order'"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" size="18px" @click="delteItem(row)" class="common-look" v-permission="'auth_flow_packet_order_delete_order'"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit" :page-size-options="pageSizeOptions"
+        :on-change="changePage" :current="params.page" />
+    </div>
+  </t-card>
+  <!-- 删除提示框 -->
+  <t-dialog theme="warning" :header="lang.sureDelete" :close-btn="false" :visible.sync="delVisible">
+    <template slot="footer">
+      <t-button theme="primary" @click="sureDelete" :loading="delLoading">{{lang.sure}}</t-button>
+      <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+    </template>
+  </t-dialog>
+ </com-config>
+</div>
+
+<script src="/plugins/addon/flow_packet/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/flow_packet/template/admin/api/traffic_packag.js"></script>
+<script src="/plugins/addon/flow_packet/template/admin/js/traffic_package_order.js"></script>

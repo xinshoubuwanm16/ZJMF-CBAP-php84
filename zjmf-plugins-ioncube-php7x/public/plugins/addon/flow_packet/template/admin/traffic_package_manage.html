@@ -1,0 +1,115 @@
+<link rel="stylesheet" href="/plugins/addon/flow_packet/template/admin/css/traffic_package.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template traffic_package_order traffic_package_manage" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_flow_packet_order_view'">
+          <a href="index.htm">{{lang.traffic_package_order}}</a>
+        </li>
+        <li class="active" v-permission="'auth_flow_packet_management_view'">
+          <a href="javascript:;">{{lang.traffic_package_manage}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <div class="common-header">
+          <div class="left">
+            <t-button @click="addPackage" v-permission="'auth_flow_packet_management_create_flow_packet'">{{lang.order_new}}{{lang.traffic_package}}</t-button>
+          </div>
+          <div class="client-search">
+            <t-input v-model="params.keywords" clearable :placeholder="`${lang.nickname}、${lang.notes}`"></t-input>
+            <t-select v-model="params.status" :placeholder="lang.status" clearable>
+              <t-option :value="1" :label="lang.open" :key="1"></t-option>
+              <t-option :value="0" :label="lang.close" :key="0"></t-option>
+            </t-select>
+            <t-button @click="seacrh">{{lang.query}}</t-button>
+          </div>
+        </div>
+        <t-table row-key="id" :data="list" size="medium" :columns="typeColumns" :hover="hover" :loading="loading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #product="{row}">
+            <span v-for="(item,index) in row.product" :key="index">
+              <template v-if="index >= 1">、</template>
+              <a :href="`${baseUrl}product_detail.htm?id=${item.id}`" class="aHover">{{item.name}}</a>
+            </span>
+          </template>
+          <template #price="{row}">
+            {{currency_prefix}}{{row.price | filterMoney}}
+          </template>
+          <template #status="{row}">
+            <t-switch size="small" :custom-value="[1,0]" :value="row.status" @change="changeStatus(row)"
+            :disabled="!$checkPermission('auth_flow_packet_management_flow_packet_on_off')">
+            </t-switch>
+          </template>
+          <template #stock="{row}">
+            {{row.stock_enable ? row.stock : '-'}}
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+              <t-icon name="edit" size="18px" @click="updateItem(row)" class="common-look" v-permission="'auth_flow_packet_management_update_flow_packet'"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" size="18px" @click="delteItem(row)" class="common-look" v-permission="'auth_flow_packet_management_delete_flow_packet'"></t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit"
+          :page-size-options="pageSizeOptions" :on-change="changePage" :current="params.page" />
+      </div>
+    </t-card>
+    <!-- 添加/编辑流量包 -->
+    <t-dialog :visible.sync="visible" :header="addTip" :footer="false" width="550" placement="center"
+      class="packageDialog">
+      <t-form :rules="rules" :data="formData" ref="userDialog" @submit="onSubmit">
+        <t-form-item :label="lang.nickname" name="name">
+          <t-input v-model="formData.name" :placeholder="lang.nickname"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.cloud_flow" class="flow" name="capacity">
+          <t-input-number v-model="formData.capacity" :placeholder="lang.cloud_flow" theme="normal" :decimal-places="0"
+            :min="0">
+          </t-input-number>
+          <span class="tag">G</span>
+        </t-form-item>
+        <t-form-item :label="lang.traffic_price" name="price">
+          <t-input-number :placeholder="lang.price" v-model="formData.price" :min="0" :decimal-places="2"
+            theme="normal">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item :label="lang.available_stock">
+          <t-input-number v-model="formData.stock" :placeholder="lang.available_stock" theme="normal"
+            :decimal-places="0" :min="formData.stock_enable ? 1 : 0">
+          </t-input-number>
+          <t-switch size="medium" :custom-value="[1,0]" v-model="formData.stock_enable" @change="changeStock">
+          </t-switch>
+        </t-form-item>
+        <t-form-item :label="lang.traffic_association" name="product_id">
+          <t-select v-model="formData.product_id" :placeholder="lang.traffic_association" filterable multiple
+            :min-collapsed-num="1" clearable>
+            <t-option v-for="item in filterPro" :value="item.id" :label="item.name" :key="item.id"></t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="lang.notes" name="notes">
+          <t-textarea :placeholder="lang.notes" v-model="formData.notes" />
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="visible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :close-btn="false" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/flow_packet/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/flow_packet/template/admin/api/traffic_packag.js"></script>
+<script src="/plugins/addon/flow_packet/template/admin/js/traffic_package_manage.js"></script>

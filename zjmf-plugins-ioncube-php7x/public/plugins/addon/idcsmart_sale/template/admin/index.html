@@ -1,0 +1,126 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_sale/template/admin/css/index.css" />
+<div id="content" class="admin sale-box" v-cloak>
+ <com-config>
+  <div class="content-box">
+    <t-row :gutter="[16, 16]" class="row-container fir-div">
+      <t-col :xs="6" :xl="3" v-for="(item, index) in panelList" :key="item.title">
+        <t-card :title="item.title" :style="{ height: '168px' }" :class="{ 'dashboard-item': true, 'dashboard-item--main-color': index == 0 }">
+          <div class="dashboard-item-top">
+            <span :style="{ fontSize: `${resizeTime * 36}px` }">
+              <span v-if="index ===2">{{item.number}}</span>
+              <span v-else>{{currency_prefix}}{{ thousandth(item.number)}}</span>
+            </span>
+          </div>
+          <div class="dashboard-item-left">
+            <div v-if="index === 0" id="moneyContainer" class="dashboard-chart-container" :style="{ width: `${resizeTime * 120}px`, height: `${resizeTime * 66}px` }"></div>
+            <div v-else-if="index === 1" id="refundContainer" class="dashboard-chart-container" :style="{ width: `${resizeTime * 120}px`, height: `${resizeTime * 42}px` }"></div>
+            <span v-else-if="index === 2" :style="{ marginTop: `-24px` }">
+              <svg fill="none" viewBox="0 0 16 16" width="1em" height="1em" class="t-icon t-icon-usergroup">
+                <path data-v-6543c289="" fill="currentColor" d="M6 1c.53 0 1.02.12 1.46.35l-.63.8a2.24 2.24 0 00-3.08 2.1c0 1.23.98 2.22 2.2 2.25v1A3.25 3.25 0 016 1zM.54 9.44c1.65-.78 3.48-1.21 5.41-1.22v1c-1.77 0-3.44.4-4.95 1.1V12h1.86v1H.5a.5.5 0 01-.5-.5v-2.2c0-.36.2-.7.54-.86z"></path>
+                <path data-v-6543c289="" fill="currentColor" d="M10 8.31a3.25 3.25 0 110-6.5 3.25 3.25 0 010 6.5zm0-1a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM16 11.52c0-.37-.2-.72-.54-.87a12.83 12.83 0 00-10.92 0 .96.96 0 00-.54.87V14c0 .28.22.5.5.5h11a.5.5 0 00.5-.5v-2.48zm-1 .01v1.97H5v-1.97a11.83 11.83 0 0110 0z"></path>
+              </svg>
+            </span>
+            <span v-else :style="{ marginTop: '-24px' }">
+              <svg data-v-6543c289="" fill="none" viewBox="0 0 16 16" width="1em" height="1em" class="t-icon t-icon-file">
+                <path data-v-6543c289="" fill="currentColor" d="M3.5 1c-.48 0-1 .34-1 .92v12.16c0 .58.52.92 1 .92h9c.48 0 1-.34 1-.92V5.7a1 1 0 00-.3-.71L9.5 1.3a1 1 0 00-.7-.3H3.5zm5 1v4.01h4V14h-9V2h5zm1 .7l2.3 2.31H9.5v-2.3z" fill-opacity="0.9"></path>
+              </svg>
+            </span>
+          </div>
+          <template #footer>
+            <div class="dashboard-item-bottom">
+              <div class="dashboard-item-block">
+                {{ item.bottomTitle}}
+                <span :class="index === 0 ? 'trend-container__reverse' : ''" class="trend-container trend-container__up">
+                  <span :class="['trend-icon-container']">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4.5 8L8 4.5L11.5 8" stroke="currentColor" stroke-width="1.5" />
+                      <path d="M8 5V12" stroke="currentColor" stroke-width="1.5" />
+                    </svg>
+                  </span>
+                  <span v-if="index ===2">{{item.bottomNumbder}}</span>
+                  <span v-else>{{currency_prefix}}{{ thousandth(item.bottomNumbder)}}</span>
+                </span>
+              </div>
+              <svg data-v-6543c289="" fill="none" viewBox="0 0 16 16" width="1em" height="1em" class="t-icon t-icon-chevron-right">
+                <path data-v-6543c289="" fill="currentColor" d="M6.46 12.46l-.92-.92L9.08 8 5.54 4.46l.92-.92L10.92 8l-4.46 4.46z" fill-opacity="0.9"></path>
+              </svg>
+            </div>
+          </template>
+        </t-card>
+      </t-col>
+    </t-row>
+    <t-row :gutter="[16, 16]" class="row-container sec-div ">
+      <t-col :xs="12" :xl="9">
+        <t-card :title="lang.sales_plugin_text4" :subtitle=`(${currency_suffix})` class="dashboard-chart-card">
+          <template #actions>
+            <div class="dashboard-chart-title-container">
+              <t-date-range-picker class="card-date-picker-container" :default-value="defaultDate" @change="selectTime" theme="primary" mode="date" />
+            </div>
+          </template>
+          <div id="monitorContainer" ref="monitorContainer" :style="{ width: '100%', height: `${resizeTime * 326}px` }"></div>
+        </t-card>
+      </t-col>
+      <t-col :xs="12" :xl="3">
+        <t-card :title="lang.sales_plugin_text5" :subtitle="currentMonth" class="dashboard-chart-card">
+          <div id="countContainer" ref="countContainer" :style="{ width: `${resizeTime * 326}px`, height: `${resizeTime * 326}px`, margin: '0 auto' }"></div>
+        </t-card>
+      </t-col>
+    </t-row>
+    <t-row :gutter="[16, 16]" class="row-container thre-div ">
+      <t-col :xs="12" :xl="6">
+        <t-card :title="lang.sales_plugin_text6" class="dashboard-rank-card">
+          <template #actions>
+            <t-radio-group default-value="dateVal">
+              <t-radio-button value="dateVal" @click="handelThisWeek('1')">{{lang.sales_plugin_text7}}</t-radio-button>
+              <t-radio-button value="monthVal" @click="handelThisWeek('2')">{{lang.sales_plugin_text8}}</t-radio-button>
+            </t-radio-group>
+          </template>
+          <t-table :data="saleTendList" :columns="saleColumns" row-key="productName">
+            <template #index="{ rowIndex }">
+              <span :class="getRankClass(rowIndex)">
+                {{ rowIndex + 1 }}
+              </span>
+            </template>
+
+            <template #amount="{ row }">
+              <span>{{currency_prefix}}{{thousandth(row.amount)}}</span>
+            </template>
+            <template #pay_time="{ row }">
+              <span>{{formatDate(row.pay_time)}}</span>
+            </template>
+          </t-table>
+        </t-card>
+      </t-col>
+      <t-col :xs="12" :xl="6">
+        <t-card :title="lang.sales_plugin_text9" class="dashboard-rank-card">
+          <template #actions>
+            <t-radio-group default-value="dateVal">
+              <t-radio-button value="dateVal" @click="handelMoneyWeek('1')">{{lang.sales_plugin_text10}}</t-radio-button>
+              <t-radio-button value="monthVal" @click="handelMoneyWeek('2')">{{lang.sales_plugin_text11}}</t-radio-button>
+            </t-radio-group>
+          </template>
+          <t-table :data="buyTendList" :columns="buyColumns" row-key="productName">
+            <template #index="{ rowIndex }">
+              <span :class="getRankClass(rowIndex)">
+                {{ rowIndex + 1 }}
+              </span>
+            </template>
+            <template #amount="{ row }">
+              <span>{{currency_prefix}}{{thousandth(row.amount)}}</span>
+            </template>
+            <template #register_duration="{ row }">
+              <span>{{row.register_duration}}{{lang.sales_plugin_text12}}</span>
+            </template>
+          </t-table>
+        </t-card>
+      </t-col>
+    </t-row>
+  </div>
+ </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/echarts.min.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/api/sales.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/index.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/utils/util.js"></script>

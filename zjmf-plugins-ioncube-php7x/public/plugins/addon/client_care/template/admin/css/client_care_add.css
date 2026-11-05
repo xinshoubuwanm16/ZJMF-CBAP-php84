@@ -1,0 +1,94 @@
+.client-care-add {
+  height: auto !important;
+}
+.client-care-add .list-card-container .title-line {
+  display: flex;
+  line-height: 1;
+  margin-top: 26px;
+}
+.client-care-add .list-card-container .title-line .title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+  white-space: nowrap;
+}
+.client-care-add .list-card-container .title-line .line {
+  width: 100%;
+  border-bottom: 1px solid #DCDCDC;
+}
+.client-care-add .list-card-container .main-form {
+  margin-top: 30px;
+}
+.client-care-add .list-card-container .main-form .email,
+.client-care-add .list-card-container .main-form .time {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.client-care-add .list-card-container .main-form .email .short,
+.client-care-add .list-card-container .main-form .time .short {
+  margin-right: 40px;
+}
+.client-care-add .list-card-container .main-form .target {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.client-care-add .list-card-container .main-form .target .short {
+  margin-right: 40px;
+}
+.client-care-add .list-card-container .main-form .target .short-4 {
+  width: 320px;
+  margin-right: 10px;
+}
+.client-care-add .list-card-container .main-form .target .date {
+  width: 100px;
+}
+.client-care-add .list-card-container .main-form .short {
+  width: 320px;
+}
+.client-care-add .list-card-container .main-form .long {
+  width: 680px;
+}
+.client-care-add .list-card-container .main-form .title-line-2 {
+  margin-top: 0;
+}
+.client-care-add .list-card-container .main-form .footer-operation {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.client-care-add .list-card-container .main-form .footer-operation .save-btn {
+  margin-right: 20px;
+}
+.client-care-add .list-card-container .main-form .footer-operation .see-btn {
+  margin-right: 20px;
+  background: var(--td-brand-color-1);
+  color: #333333;
+  border: 1px solid var(--td-brand-color-1);
+}
+.client-care-add .list-card-container .main-form .footer-operation .quit-btn {
+  background: #E7E7E7;
+  color: #333333;
+  border: 1px solid #E7E7E7;
+}
+.client-care-add .list-card-container .main-form .client-text {
+  margin-top: 12px;
+}
+.client-care-add .list-card-container .main-form .client-text span {
+  color: #0052d9;
+  cursor: pointer;
+}
+.preview-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.preview-footer .save-btn {
+  margin-right: 10px;
+}
+.t-select .t-is-disabled .t-tag--default {
+  color: var(--td-text-color-primary) !important;
+  background-color: var(--td-bg-color-component);
+}

@@ -1,0 +1,185 @@
+<link rel="stylesheet" href="/plugins/addon/wanyun_resource/template/admin/css/wanyun_resource.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="wanyun-ip fiber-manage" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <div class="flex left">
+          <t-input v-model="params.keywords"
+            :placeholder="`${lang.wy_num}、${lang.wy_core}、${lang.wy_open_unit}、${lang.wy_construction_unit}、${lang.wy_contact}、${lang.wy_project}、${lang.wy_price}、${lang.wy_notes}`"
+            clearable class="input-search">
+          </t-input>
+          <t-select v-model="params.owner" :placeholder="lang.wy_fiber_belong" clearable class="owner">
+            <t-option v-for="item in fiberBelong" :value="item" :label="item" :key="item"></t-option>
+          </t-select>
+          <t-select v-model="params.node_id" :placeholder="lang.wy_path_node" clearable>
+            <t-option v-for="item in calcNode" :value="item.id" :label="item.text" :key="item.id"></t-option>
+          </t-select>
+          <t-button @click="seacrh" class="search">{{lang.wy_search}}</t-button>
+        </div>
+        <div class="flex right">
+          <t-button @click="jumpNode"
+            v-permission="'auth_addon_wanyun_resource_node_manage_page'">{{lang.wy_node_manage}}</t-button>
+          <t-button @click="addFiber"
+            v-permission="'auth_addon_wanyun_resource_fiber_create'">{{lang.wy_add_fiber}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+        :hide-sort-tips="true">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #path="{row}">
+          <t-popup :content="calcDetail(row.path_node)" placement="top" overlay-class-name="node-pup">
+            <span class="over-hide">{{calcPath(row.path_node)}}</span>
+          </t-popup>
+        </template>
+        <template #open_unit="{row}">
+          {{row.open_unit || '--'}}
+        </template>
+        <template #construction_unit="{row}">
+          {{row.construction_unit || '--'}}
+        </template>
+        <template #contact="{row}">
+          {{row.contact || '--'}}
+        </template>
+        <template #project="{row}">
+          {{row.project || '--'}}
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+        <template #core_num="{row}">
+          <a class="common-look" @click="lookDetails(row)"
+            v-if="$checkPermission('auth_addon_wanyun_resource_fiber_core_detail')">{{row.core_num}}</a>
+          <span v-else>{{row.core_num}}</span>
+        </template>
+        <template #price="{row}">
+          {{currency_prefix}}{{row.price | filterMoney}}
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.wy_edit" :show-arrow="false" theme="light">
+            <t-icon name="edit-1" @click="editFiber(row)" class="common-look"
+              v-permission="'auth_addon_wanyun_resource_fiber_update'"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.wy_core_manage" :show-arrow="false" theme="light">
+            <svg class="common-look" style="width: 16px;height: 16px;" @click="jumpCore(row)"
+              v-permission="'auth_addon_wanyun_resource_fiber_core_manage_page'">
+              <use xlink:href="/plugins/addon/wanyun_resource/template/admin/img/icons.svg#cus-fiber"></use>
+            </svg>
+          </t-tooltip>
+          <t-tooltip :content="lang.wy_delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" @click="handlerDel(row)" class="common-look"
+              v-permission="'auth_addon_wanyun_resource_fiber_delete'"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination :total="total" :page-size="params.limit" :current="params.page" :page-size-options="pageSizeOptions"
+        @change="changePage" v-if="total" />
+    </t-card>
+    <!-- 光纤 -->
+    <t-dialog :header="optTitle" :visible.sync="fiberVisble" :footer="false" :width="isEn ? 900 : 750"
+    class="vlan-dialog" :class="{'en-dialog': isEn}">
+      <t-form :data="formData" :rules="rules" ref="valnDialog" @submit="submitFiber" v-if="fiberVisble">
+        <div class="item">
+          <t-form-item :label="lang.wy_fiber_num" name="fiber_num">
+            <t-input :placeholder="lang.wy_fiber_num" v-model="formData.fiber_num">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.wy_fiber_belong" name="owner">
+            <t-input :placeholder="lang.wy_fiber_belong" v-model="formData.owner"></t-input>
+          </t-form-item>
+        </div>
+        <div class="item">
+          <t-form-item :label="lang.wy_core" name="core_num">
+            <t-input-number :min="1" theme="normal" :decimal-places="0" :placeholder="lang.wy_core"
+              v-model="formData.core_num">
+            </t-input-number>
+          </t-form-item>
+          <t-form-item :label="lang.wy_open_unit" name="open_unit">
+            <t-input :placeholder="lang.wy_open_unit" v-model="formData.open_unit"></t-input>
+          </t-form-item>
+        </div>
+        <div class="item">
+          <t-form-item :label="lang.wy_construction_unit" name="construction_unit">
+            <t-input :placeholder="lang.wy_construction_unit" v-model="formData.construction_unit"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.wy_contact" name="contact">
+            <t-input :placeholder="lang.wy_contact" v-model="formData.contact"></t-input>
+          </t-form-item>
+        </div>
+        <div class="item">
+          <t-form-item :label="lang.wy_project" name="project">
+            <t-input :placeholder="lang.wy_project" v-model="formData.project"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.wy_price" name="price">
+            <t-input-number :min="0" theme="normal" :decimal-places="2" :placeholder="lang.wy_price"
+              v-model="formData.price"></t-input-number>
+          </t-form-item>
+        </div>
+        <t-form-item :label="lang.wy_path_node" name="node_id" class="dcim-server">
+          <t-select v-model="formData.node_id" :placeholder="lang.wy_path_node" :keys="{ label: 'text', value: 'id' }"
+            multiple @change="changeNode" :options="nodeList" :min-collapsed-num="1"></t-select>
+          <!-- 已选节点 -->
+          <div class="drag-box" v-if="nodeSelect.length > 0">
+            <t-table row-key="id" :columns="nodeColumns" :data="nodeSelect" :loading="loading" drag-sort="row-handler"
+              @drag-sort="onDragSort">
+              <template #drag="{row}">
+                <t-icon name="move"></t-icon>
+              </template>
+              <template #text="{row}">
+                <div class="node">
+                  <span class="item">{{row.text}}</span>
+                  <t-icon name="minus-circle" class="sub" @click="removeItem(row)"></t-icon>
+                </div>
+              </template>
+            </t-table>
+          </div>
+        </t-form-item>
+        <t-form-item :label="lang.wy_notes">
+          <t-textarea :placeholder="lang.wy_notes" v-model="formData.notes" :maxlength="200"></t-textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.wy_hold}}</t-button>
+          <t-button theme="default" @click="fiberVisble = false">{{lang.wy_cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 纤芯概览 -->
+    <t-dialog :header="`「${coreNum}」-${lang.wy_core_view}`" width="600" :visible.sync="viewVisible" :footer="false">
+      <t-table row-key="id" :data="fiberCoreData" size="medium" :columns="coreColumns" :hover="hover"
+        :loading="coreLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange"
+        display-type="fixed-width" :max-height="400" :hide-sort-tips="true" class="type-table" :hide-sort-tips="true">
+        <template #path="{row}">
+          <t-popup :content="calcDetail(row.path_node)" placement="top" overlay-class-name="node-pup"
+            v-if="row.path_node.length > 0">
+            <span class="over-hide">{{calcPath(row.path_node)}}</span>
+          </t-popup>
+          <span v-else>--</span>
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+      </t-table>
+      <div class="opt-btn">
+        <t-button theme="primary" @click="jumpCore({id: curId, fiber_num: coreNum})"
+          :loading="submitLoading">{{lang.wy_details}}</t-button>
+        <t-button theme="default" @click="viewVisible=false">{{lang.wy_close}}</t-button>
+      </div>
+    </t-dialog>
+    <!-- 删除 -->
+    <t-dialog theme="warning" :header="lang.wy_tip3" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/wanyun_resource/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/api/wanyun_resource.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/js/fiber_manage.js"></script>

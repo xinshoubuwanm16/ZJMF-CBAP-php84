@@ -1,0 +1,59 @@
+.msgdetail-box .page-title {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid #E6E7EB;
+}
+.msgdetail-box .page-title .back-btn {
+  cursor: pointer;
+  margin-right: 0.25rem;
+}
+.msgdetail-box .page-title .back-btn img {
+  width: 0.24rem;
+  height: 0.26rem;
+}
+.msgdetail-box .page-title .title {
+  font-size: 0.28rem;
+  color: #171725;
+}
+.msgdetail-box .msg-content {
+  margin-top: 0.76rem;
+  padding-bottom: 0.3rem;
+}
+.msgdetail-box .msg-content .msg-title {
+  font-size: 0.28rem;
+  font-weight: bold;
+  color: #1E2736;
+}
+.msgdetail-box .msg-content .msg-time {
+  margin-top: 0.14rem;
+  font-size: 0.14rem;
+  color: #8692B0;
+}
+.msgdetail-box .msg-content .msg-text {
+  margin-top: 0.42rem;
+}
+.msgdetail-box .msg-page {
+  padding-top: 0.3rem;
+  border-top: 1px solid #E6E7EB;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.14rem;
+  color: #4E5259;
+}
+.msgdetail-box .msg-page .page-left,
+.msgdetail-box .msg-page .page-right {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.msgdetail-box .msg-page .page-icon {
+  color: #8692B0;
+}
+.msgdetail-box .msg-page .page-next {
+  margin-left: 0.15rem;
+}
+.msgdetail-box .msg-page .page-next:hover {
+  color: #0058FF;
+}

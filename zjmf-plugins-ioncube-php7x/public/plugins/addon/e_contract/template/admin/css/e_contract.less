@@ -1,0 +1,227 @@
+/* 电子合同 */
+.e_contract,
+.contract_template {
+  .common-header {
+    margin: 0;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .client-search {
+    display: flex;
+    align-items: center;
+
+    .t-select__wrap,
+    .t-input__wrap {
+      width: 240px;
+      margin-right: 10px;
+    }
+  }
+
+  .table-product {
+    white-space: nowrap;
+  }
+
+  .t-icon-help-circle {
+    margin-left: 5px;
+  }
+
+  .base-info {
+    background: #F2F2F7;
+    padding: 8px 20px;
+    border-radius: 3px;
+
+    &.active {
+      margin-bottom: 40px;
+    }
+
+    .item {
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      margin: 12px 0;
+
+      span {
+        display: block;
+      }
+    }
+
+    .l-txt {
+      width: 100px;
+      white-space: nowrap;
+      overflow: hidden;
+      color: rgba(0, 0, 0, 0.4);
+    }
+
+    .r-txt {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .contract-status {
+    .t-table__ellipsis {
+      display: flex;
+      align-items: center;
+    }
+
+    .mail {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+  }
+
+  .t-popup__content {
+    white-space: pre-wrap;
+  }
+}
+
+/* contract_config */
+.contract_config {
+  .item {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .s-tip {
+    color: rgba(0, 0, 0, 0.60);
+    margin-left: 10px;
+  }
+
+  .t-input__wrap,
+  .t-select__wrap,
+  .t-form__label {
+    width: 320px;
+  }
+
+  .t-form__item {
+    margin-bottom: 0;
+    margin-right: 64px;
+    position: relative;
+
+    .day {
+      color: #333;
+      position: absolute;
+      left: 330px;
+    }
+  }
+
+  .s-tit {
+    color: rgba(0, 0, 0, 0.40);
+  }
+
+}
+
+/* contract-details */
+.contract-details {
+  .con {
+    max-width: 1216px;
+    width: 100%;
+  }
+
+  .top-info {
+    color: rgba(0, 0, 0, 0.90);
+    line-height: 1.5;
+    margin: 18px 0;
+    word-break: break-all;
+  }
+
+  .reason {
+    background: #F9D7D9;
+    padding: 17px 24px;
+    line-height: 1.5;
+    color: rgba(0, 0, 0, 0.90);
+    border-radius: 3px;
+    margin: 0 0 16px 0;
+  }
+
+  .detail {
+    width: 100%;
+    height: 617px;
+    overflow-y: auto;
+    border: 1px solid #DCDCDC;
+    border-radius: 1px;
+    padding: 10px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+  }
+
+  .opt {
+    margin: 30px 0;
+    display: flex;
+
+    .t-button {
+      margin-right: 20px;
+    }
+  }
+
+  .reject {
+    background: #C9353F;
+  }
+
+  .t-form__label {
+    display: none;
+  }
+
+  .t-dialog__body__icon {
+    padding-bottom: 0;
+    padding-left: 0;
+  }
+}
+
+.template-details {
+  .con {
+    max-width: 1460px;
+  }
+
+  textarea {
+    max-width: 100%;
+    width: 702px;
+  }
+
+  .emailTemp {
+    width: 100%;
+  }
+
+  .t-form__label {
+    display: block;
+  }
+
+  .tem-table {
+    margin-top: 24px;
+  }
+}
+
+.view-btn {
+  float: left;
+  margin: 0 !important;
+}
+
+.view-page {
+  margin-top: 50px;
+}
+
+@media screen and (max-width: 1300px) {
+  .contract_template {
+    .client-search {
+
+      .t-input__wrap,
+      .t-select__wrap {
+        width: 180px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1100px) {
+  .contract_template {
+    .client-search {
+
+      .t-input__wrap,
+      .t-select__wrap {
+        width: 150px;
+      }
+    }
+  }
+}

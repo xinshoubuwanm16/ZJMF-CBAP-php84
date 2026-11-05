@@ -1,0 +1,66 @@
+<!-- 独有 -->
+<link rel="stylesheet" href="/plugins/addon/idcsmart_invoice/template/admin/css/invoice_address.css" />
+<!-- 内容开始 -->
+<div id="content" class="invoice-address" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_invoice_management'">
+          <a href="index.htm">{{lang.invoice_tab1}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_title'">
+          <a href="invoice_title.htm">{{lang.invoice_tab2}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_invoice_address'">
+          <a href="javascript:;">{{lang.invoice_tab3}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_invoice_configuration'">
+          <a href="invoice_config.htm">{{lang.invoice_tab4}}</a>
+        </li>
+      </ul>
+      <div class="title-top" v-permission="'auth_idcsmart_invoice_address_delete'">
+        <t-button @click="delTitles">{{lang.invoice_btn4}}</t-button>
+      </div>
+      <t-table :data="data" display-type="fixed-width" :hide-sort-tips="true" :loading="loading" :columns="columns"
+        row-key="id" :selected-row-keys="selectedRowKeys" @select-change="rehandleSelectChange">
+        <template #username="{row}">
+          <div class="username-company">
+            <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">{{row.username}}</a>
+            <span class="company" v-if="row.company">({{row.company}})</span>
+            <div class="type" v-if="row.type && (row.type == 'after')">{{lang.invoice_type1}}</div>
+            <div class="type" v-if="row.type && (row.type == 'prev')">{{lang.invoice_type2}}</div>
+          </div>
+        </template>
+        <template #rec_type="{row}">
+          <span v-if="row.rec_type == 'email'">{{lang.invoice_text16}}</span>
+          <span v-if="row.rec_type == 'paper'">{{lang.invoice_text15}}</span>
+        </template>
+        <template #address="{row}">
+          <span v-if="row.rec_type == 'email'">{{row.email?row.email:'--'}}</span>
+          <span v-if="row.rec_type == 'paper'">{{row.address?row.address:'--'}}</span>
+        </template>
+        <template #operation="{row}">
+          <!-- 删除 -->
+          <t-popup :content="lang.invoice_text17" destroy-on-close>
+            <t-icon class="operation-icon" name="delete" @click="del(row)" v-permission="'auth_idcsmart_invoice_address_delete'"></t-icon>
+          </t-popup>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" :page-size="params.limit" :page-size-options="pageSizeOptions"
+        :on-change="changePage" :current="params.page" />
+    </t-card>
+    <!-- 删除确认框 -->
+    <t-dialog theme="warning" :header="lang.invoice_title13" :visible.sync="delVisible" :footer="false">
+      <div class="com-f-btn">
+        <t-button theme="primary" @click="delSubmit" :loading="submitLoading">{{lang.invoice_btn1}}</t-button>
+        <t-button theme="default" variant="base" @click="delVisible = false">{{lang.cancel}}</t-button>
+      </div>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- 内容结束 -->
+<!-- 独有 -->
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_invoice/template/admin/api/invoice.js"></script>
+<script src="/plugins/addon/idcsmart_invoice/template/admin/js/invoice_address.js"></script>

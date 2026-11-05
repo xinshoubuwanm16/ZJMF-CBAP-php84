@@ -1,0 +1,395 @@
+<!-- 统计图表 -->
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/server/direct_admin/template/clientarea/pc/default/css/cloudTop.css">
+<link rel="stylesheet" href="/plugins/server/direct_admin/template/clientarea/pc/default/css/cloudDetail.css">
+
+<div class="template" id="product_detail_cloud">
+  <div id="mainLoading" class="pro-des" v-if="initLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <!-- 自己的东西 -->
+  <div class="main-card">
+    <div class="card-top">
+      <div class="top-operation">
+        <div class="operation-row1">
+          <img @click="goBack" class="back-img"
+            src="/plugins/server/direct_admin/template/clientarea/pc/default/img/back.png" />
+          <span class="top-product-name">{{hostData.product_name}}</span>
+          <div class="host-status" @click="goPay" :class="hostData.status">{{hostData.status_name}}</div>
+          <span class="top-area">
+            <span class="country">{{cloudData.country_name}}</span>
+            <span class="city">{{cloudData.city}}</span>
+          </span>
+        </div>
+        <div class="operation-row2">
+          <div class="row2-left">
+            <span class="name">{{hostData.name}}</span>
+            <span class="ip">{{cloudData.second_domain}}</span>
+          </div>
+          <div class="row2-right" v-show="hostData.status == 'Active' && !initLoading">
+            <!-- 停用-->
+            {foreach $addons as $addon}
+            {if ($addon.name=='IdcsmartRefund')}
+            <span class="refund">
+              <span class="refund-status"
+                v-if="refundData && refundData.status != 'Cancelled' && refundData.status != 'Reject'">{{refundStatus[refundData.status]}}</span>
+              <span class="refund-stop-btn"
+                v-if="refundData && (refundData.status=='Pending' || refundData.status=='Suspend' || refundData.status=='Suspending')"
+                @click="quitRefund">{{lang.common_cloud_btn8}}</span>
+              <span class="refund-btn" @click="showRefund"
+                v-if="!refundData || (refundData && (refundData.status=='Reject')) || (refundData && (refundData.status=='Cancelled'))">{{lang.common_cloud_btn9}}</span>
+            </span>
+            {/if}
+            {/foreach}
+
+          </div>
+        </div>
+        <div class="operation-row3" v-show="hostData.status == 'Active'">
+          <!-- 有备注 -->
+          <span class="yes-notes" v-if="hostData.notes" @click="doEditNotes">
+            <i class="el-icon-edit notes-icon"></i>
+            <span class="notes-text">{{hostData.notes}}</span>
+          </span>
+          <!-- 无备注 -->
+          <span class="no-notes" v-else @click="doEditNotes">
+            {{lang.cloud_add_notes + ' +'}}
+          </span>
+
+        </div>
+      </div>
+      {foreach $addons as $addon}
+      {if ($addon.name=='IdcsmartRefund')}
+      <div class="refund-msg">
+        <!-- 停用成功 -->
+        <div class="refund-success" v-if="refundData && refundData.status == 'Suspending'">
+          ({{lang.common_cloud_tip6}}{{refundData.create_time | formateTime}}{{lang.common_cloud_tip7}}
+          {{refundData.type=='Expire'?lang.common_cloud_tip8:lang.common_cloud_tip9}}，{{lang.common_cloud_tip13}}<span
+            v-if="refundData.type=='Expire'">{{hostData.due_time | formateTime}}</span>{{refundData.type=='Expire'?
+          lang.common_cloud_tip10:lang.common_cloud_tip11}} {{lang.common_cloud_tip12}})
+        </div>
+        <!-- 停用失败 -->
+        <div class="refund-fail" v-if="refundData && refundData.status == 'Reject'">
+          ({{lang.common_cloud_tip6}}{{refundData.create_time | formateTime}}{{lang.common_cloud_tip7}}
+          {{refundData.type=='Expire'?lang.common_cloud_tip8:lang.common_cloud_tip9}} {{lang.common_cloud_tip14}}，
+          <el-popover placement="top-start" trigger="hover">
+            <span>{{refundData.reject_reason}}</span>
+            <span class="reason-text" slot="reference">{{lang.common_cloud_text15}}</span>
+          </el-popover>
+
+          )
+        </div>
+      </div>
+      {/if}
+      {/foreach}
+      <div class="top-msg">
+        <!-- 实例信息 -->
+        <div class="msg-l">
+          <div class="l-t">
+            <div class="l-t-l">
+              <span class="l-t-l-text">{{lang.appstore_text301}}</span>
+            </div>
+          </div>
+          <div class="l-b">
+            <div class="row">
+              <div class="row-l">
+                <div class="label">{{lang.da_disk}}:</div>
+                <div class="value">{{cloudData.disk}}{{cloudData.disk_unit}}</div>
+              </div>
+              <div class="row-m">
+                <div class="label">{{lang.mf_flow}}:</div>
+                <div class="value">{{cloudData.flow}}{{cloudData.flow_unit}}</div>
+              </div>
+              <div class="row-r">
+                <div class="label">{{lang.da_email}}:</div>
+                <div class="value">{{cloudData.email_num}}{{lang.common_cloud_title43}}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-l">
+                <div class="label">{{lang.domain}}{{lang.shoppingCar_goodsNums}}:</div>
+                <div class="value">{{cloudData.domain_num}}</div>
+              </div>
+              <div class="row-m">
+                <div class="label">{{lang.da_subdomains}}:</div>
+                <div class="value">{{cloudData.sub_domain_num}}</div>
+              </div>
+              <div class="row-r">
+                <div class="label">{{lang.da_admin}}:</div>
+                <div class="value">
+                  {{cloudData.username}}
+                  <i class="el-icon-document-copy"
+                    style="font-size: 14px; margin-left: 3px; cursor: pointer; color: #0052D9;"
+                    @click="copyPass(cloudData.username)"></i>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-l" style="width: 100%;">
+                <div class="label">{{lang.common_cloud_label7}}:</div>
+                <div class="value">
+                  <span v-show="isShowPass"> {{cloudData.password}} </span>
+                  <span v-show="!isShowPass"> {{passHidenCode}} </span>
+                  <img class="eyes"
+                    :src="isShowPass?'/plugins/server/direct_admin/template/clientarea/pc/default/img/cloud/pass-show.png':'/plugins/server/direct_admin/template/clientarea/pc/default/img/cloud/pass-hide.png'"
+                    @click="isShowPass=!isShowPass" />
+                  <i class="el-icon-document-copy"
+                    style="font-size: 14px; margin-left: 3px; cursor: pointer; color: #0052D9;"
+                    @click="copyPass(cloudData.password)"></i>
+                </div>
+              </div>
+            </div>
+            <div class="row jump-box">
+              <div class="jump" @click="getUrl" :loading="urlLoading">{{lang.jump_to_manage}}</div>
+              <div class="jump" @click="goDomain" v-if="cloudData.gift_domain && cloudData.buy_domain === 0">
+                {{lang.buy_discount_domain}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 付款信息 -->
+        <div class="msg-r">
+          <div class="r-t">
+            <div class="r-t-l">
+              <span class="r-t-l-text">{{lang.cloud_pay_title}}</span>
+              <span @click="applyCashback" class="common-cashback" v-if="isShowCashBtn">{{lang.apply_cashback}}</span>
+            </div>
+            <!-- 续费 -->
+            {foreach $addons as $addon}
+            {if ($addon.name=='IdcsmartRenew')}
+            <div class="r-t-r" v-show="hostData.status == 'Active'">
+              <span>{{lang.common_cloud_text16}}：</span>
+              <el-switch v-model="isShowPayMsg" active-color="#0052D9" @change="autoRenewChange">
+              </el-switch>
+              <el-popover placement="top" trigger="hover">
+                <div class="sure-remind">
+                  {{lang.common_cloud_tip15}}
+                </div>
+                <div class="help" slot="reference">?</div>
+              </el-popover>
+            </div>
+            {/if}
+            {/foreach}
+          </div>
+          <div class="r-b">
+            <div class="row">
+              <div class="row-l">
+                <div class="label">{{lang.cloud_due_time}}:</div>
+                <div class="value" :class="isRead?'red':''">{{hostData.due_time | formateTime}}</div>
+              </div>
+              <div class="row-r">
+                <div class="label">{{lang.cloud_creat_time}}:</div>
+                <div class="value">{{hostData.active_time | formateTime}}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-l">
+                <div class="label">{{lang.cloud_pay_style}}:</div>
+                <div class="value">{{hostData.billing_cycle_name + lang.common_cloud_text17}}</div>
+              </div>
+              <div class="row-r">
+                <div class="label">{{lang.cloud_first_pay}}:</div>
+                <div class="value">{{commonData.currency_prefix + hostData.first_payment_amount +
+                  commonData.currency_suffix}}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="row-l">
+                <div class="label">{{lang.cloud_re_text}}:</div>
+                <div class="value">{{commonData.currency_prefix + showRenewPrice + commonData.currency_suffix}}
+                </div>
+                {foreach $addons as $addon}
+                {if ($addon.name=='IdcsmartRenew')}
+                <!--  || 'Suspended' -->
+                <span v-show="hostData.status == 'Active' || hostData.status == 'Suspended'" v-loading="renewBtnLoading"
+                  class="renew-btn" @click="showRenew"
+                  v-if="!refundData || refundData || (refundData && refundData.status=='Cancelled') || (refundData && refundData.status=='Reject')">{{lang.cloud_re_btn}}</span>
+                <span v-show="hostData.status == 'Active'" class="renew-btn-disable" v-else>{{lang.cloud_re_btn}}</span>
+                {/if}
+                {/foreach}
+              </div>
+              <div class="row-r">
+                <div class="label">{{lang.cloud_code}}:</div>
+                <div class="value" :title="codeString">{{codeString?codeString:'--'}}</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- 修改备注弹窗 -->
+      <div class="notes-dialog">
+        <el-dialog width="6.2rem" :visible.sync="isShowNotesDialog" :show-close=false @close="notesDgClose">
+          <div class="dialog-title">
+            {{hostData.notes?lang.common_cloud_title7:lang.common_cloud_title8}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.common_cloud_label29}}</div>
+            <el-input class="notes-input" v-model="notesValue"></el-input>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subNotes">{{lang.common_cloud_btn28}}</div>
+            <div class="btn-no" @click="notesDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 续费弹窗 -->
+      <div class="renew-dialog">
+        <el-dialog width="6.9rem" :visible.sync="isShowRenew" :show-close=false @close="renewDgClose">
+          <div class="dialog-title">
+            {{lang.common_cloud_title10}}
+          </div>
+          <div class="dialog-main">
+            <div class="renew-content">
+              <div class="renew-item" :class="renewActiveId==item.id?'renew-active':''" v-for="item in renewPageData"
+                :key="item.id" @click="renewItemChange(item)">
+                <div class="item-top">{{item.billing_cycle}}</div>
+                <div class="item-bottom" v-if="isShowPromo && renewParams.isUseDiscountCode">
+                  {{commonData.currency_prefix + item.base_price}}
+                </div>
+                <div class="item-bottom" v-else>{{commonData.currency_prefix + item.price}}</div>
+                <div class="item-origin-price" v-if="item.price < item.base_price && !renewParams.isUseDiscountCode">
+                  {{commonData.currency_prefix + item.base_price}}
+                </div>
+                <i class="el-icon-check check" v-show="renewActiveId==item.id"></i>
+              </div>
+            </div>
+            <div class="pay-content">
+              <div class="pay-price">
+                <div class="money" v-loading="renewLoading">
+                  <span class="text">{{lang.common_cloud_label11}}:</span>
+                  <span>{{commonData.currency_prefix}}{{renewParams.totalPrice | filterMoney}}</span>
+                  <el-popover placement="top-start" width="200" trigger="hover"
+                    v-if="(isShowLevel && renewParams.clDiscount*1 > 0) || (isShowPromo && renewParams.isUseDiscountCode) || ( isShowCash && renewParams.customfield.voucher_get_id)">
+                    <div class="show-config-list">
+                      <p v-if="isShowLevel && renewParams.clDiscount*1 > 0">
+                        {{lang.shoppingCar_tip_text2}}：{{commonData.currency_prefix}} {{ renewParams.clDiscount |
+                        filterMoney}}
+                      </p>
+                      <p v-if="isShowPromo && renewParams.isUseDiscountCode">
+                        {{lang.shoppingCar_tip_text4}}：{{commonData.currency_prefix}} {{ renewParams.code_discount |
+                        filterMoney }}
+                      </p>
+                      <p v-if="isShowCash && renewParams.customfield.voucher_get_id">
+                        {{lang.common_cloud_text29}}：{{commonData.currency_prefix}} {{ renewParams.cash_discount |
+                        filterMoney}}
+                      </p>
+                    </div>
+                    <i class="el-icon-warning-outline total-icon" slot="reference"></i>
+                  </el-popover>
+                  <p class="original-price"
+                    v-if="renewParams.customfield.promo_code && renewParams.totalPrice != renewParams.base_price">
+                    {{commonData.currency_prefix}} {{ renewParams.base_price | filterMoney}}
+                  </p>
+                  <p class="original-price"
+                    v-if="!renewParams.customfield.promo_code && renewParams.totalPrice != renewParams.original_price">
+                    {{commonData.currency_prefix}} {{ renewParams.original_price | filterMoney}}
+                  </p>
+                  <div class="code-box">
+                    <!-- 代金券 -->
+                    <cash-coupon ref="cashRef" v-show="isShowCash && !cashObj.code"
+                      :currency_prefix="commonData.currency_prefix" @use-cash="reUseCash" scene='renew'
+                      :product_id="[product_id]" :price="renewParams.original_price"></cash-coupon>
+                    <!-- 优惠码 -->
+                    <discount-code v-show="isShowPromo && !renewParams.customfield.promo_code"
+                      @get-discount="getRenewDiscount(arguments)" scene='renew' :product_id="product_id"
+                      :amount="renewParams.base_price" :billing_cycle_time="renewParams.duration"></discount-code>
+                  </div>
+                  <div class="code-number-text">
+                    <div class="discount-codeNumber" v-show="renewParams.customfield.promo_code">{{
+                      renewParams.customfield.promo_code }}<i class="el-icon-circle-close remove-discountCode"
+                        @click="removeRenewDiscountCode()"></i></div>
+                    <div class="cash-codeNumber" v-show="cashObj.code">{{ cashObj.code }}<i
+                        class="el-icon-circle-close remove-discountCode" @click="reRemoveCashCode()"></i></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subRenew">{{lang.common_cloud_btn30}}</div>
+            <div class="btn-no" @click="renewDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 停用弹窗（删除实例） -->
+      <div class="refund-dialog">
+        <el-dialog width="6.8rem" :visible.sync="isShowRefund" :show-close=false @close="refundDgClose">
+          <div class="dialog-title">
+            {{refundPageData.allow_refund == 1?lang.common_cloud_title11:lang.common_cloud_title12}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.common_cloud_label35}}</div>
+            <div class="host-content">
+              <div class="host-item" v-if="cloudData.bw">
+                <div class="left">{{lang.common_cloud_label36}}:</div>
+                <div class="right">
+                  <div class="right-row">
+                    <div class="right-row-item">{{cloudData.bw}}M{{lang.mf_bw}}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="host-item">
+                <div class="left">{{lang.common_cloud_label37}}:</div>
+                <div class="right">{{refundPageData.host.create_time | formateTime}}</div>
+              </div>
+              <div class="host-item" v-if="refundPageData.allow_refund == 1">
+                <div class="left">{{lang.common_cloud_label38}}:</div>
+                <div class="right">{{commonData.currency_prefix + refundPageData.host.first_payment_amount}}</div>
+              </div>
+            </div>
+            <div class="label">{{lang.common_cloud_label39}}</div>
+            <el-select v-if="refundPageData.reason_custom == 0" v-model="refundParams.suspend_reason" multiple>
+              <el-option v-for="item in refundPageData.reasons" :key="item.id" :value="item.id"
+                :label="item.content"></el-option>
+            </el-select>
+            <el-input v-else v-model="refundParams.suspend_reason"></el-input>
+            <div class="label">{{lang.common_cloud_label40}}</div>
+            <el-select v-model="refundParams.type">
+              <el-option value="Expire" :label="lang.common_cloud_label41"></el-option>
+              <el-option value="Immediate" :label="lang.common_cloud_label42"></el-option>
+            </el-select>
+            <div class="label" v-if="refundPageData.allow_refund == 1">{{lang.common_cloud_label43}}</div>
+            <div class="amount-content" v-if="refundPageData.allow_refund == 1">
+              {{commonData.currency_prefix}}{{refundParams.type=='Immediate'?refundPageData.host.amount:'0.00'}}
+            </div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="subRefund">{{refundPageData.allow_refund == 1? lang.common_cloud_btn31:
+              lang.common_cloud_btn32}}</div>
+            <div class="btn-no" @click="refundDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 自动续费确认弹窗 -->
+      <div class="power-dialog">
+        <el-dialog width="6.2rem" :visible.sync="isShowAutoRenew" :show-close=false :close-on-click-modal=false>
+          <div class="dialog-title">
+            {{lang.common_cloud_text37}}{{isShowPayMsg? lang.common_cloud_text38 :
+            lang.common_cloud_text39}}{{lang.auto_renew}}
+          </div>
+          <div class="dialog-main">
+            <div class="label">{{lang.fin_host}}</div>
+            <div class="value">{{hostData.name}}</div>
+          </div>
+          <div class="dialog-footer">
+            <div class="btn-ok" @click="doAutoRenew">{{lang.common_cloud_btn28}}</div>
+            <div class="btn-no" @click="autoRenewDgClose">{{lang.common_cloud_btn29}}</div>
+          </div>
+        </el-dialog>
+      </div>
+      <!-- 安全验证 -->
+      <safe-confirm ref="safeRef" :password.sync="client_operate_password" @confirm="hadelSafeConfirm"></safe-confirm>
+      <pay-dialog ref="topPayDialog" @payok="paySuccess" @paycancel="payCancel"></pay-dialog>
+      <!-- 申请返现 -->
+      <cash-back :id="id" :show-cash="isShowCashDialog" @cancledialog="cancleDialog" @showbtn="showBtn"></cash-back>
+    </div>
+  </div>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/server/direct_admin/template/clientarea/pc/default/lang/index.js"></script>
+<script src="/plugins/server/direct_admin/template/clientarea/pc/default/api/cloud.js"></script>
+<script src="/plugins/server/direct_admin/template/clientarea/pc/default/js/cloudDetail.js"></script>

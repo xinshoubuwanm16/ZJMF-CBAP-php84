@@ -1,0 +1,338 @@
+<link rel="stylesheet" href="/web/mf101/controller/template/admin/css/template_controller.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template template_host_config" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="top-box">
+        <h2 class="top-back">{{lang.temp_controller}}
+          <a :href="backUrl" class="template-back">&lt;&lt;{{lang.temp_back}}</a>
+        </h2>
+        <div class="top-btn">
+          <t-button @click="handleUpgrade" v-if="themeInfo.upgrade === 1">{{lang.upgrade_plugin}}</t-button>
+          <t-button theme="danger" @click="handleDelete">{{lang.tem_delete}}</t-button>
+        </div>
+      </div>
+      <t-tabs v-model="tab" class="controller-tab" @change="changeTab">
+        <t-tab-panel v-for="item in tabList" :value="item.url" :key="item.name" :label="item.title">
+        </t-tab-panel>
+      </t-tabs>
+      <div class="box">
+        <p class="s-tip">{{lang.tem_tip10}}</p>
+        <div class="content">
+          <!-- 侧边栏 -->
+          <div class="slider">
+            <p class="item" :class="{ active: curValue === item.value }" @click="changeSlider(item.value)"
+              v-for="(item,index) in sliderArr" ::key="index">{{item.label}}</p>
+          </div>
+          <!-- 内容区 -->
+          <div class="con">
+            <!-- 合作伙伴table -->
+            <div class="banner-table" v-if="curValue === 'cloud' || curValue === 'dcim'">
+              <div class="common-header">
+                <div class="left">{{curValue === 'cloud' ? lang.cloud_partner : lang.dcim_partner}}</div>
+                <div class="client-search">
+                  <t-button @click="addBanner">{{lang.tem_add}}</t-button>
+                </div>
+              </div>
+              <t-table row-key="id" :columns="bannerColumns" :data="tempBanner" :loading="loading"
+                drag-sort="row-handler" @drag-sort="onDragSort">
+                <template #drag="{row}">
+                  <t-icon name="move"></t-icon>
+                </template>
+                <template #img="{row}">
+                  <img :src="row.img" alt="" class="b-img" v-if="!row.edit" />
+                  <t-upload v-model="editItem.img" :action="uploadUrl" :headers="uploadHeaders"
+                    :format-response="formatImgResponse" :placeholder="lang.upload_tip" theme="image" accept="image/*"
+                    :auto-upload="true" :allow-upload-duplicate-file="false" v-else>
+                  </t-upload>
+                </template>
+                <template #url="{row}">
+                  <span v-if="!row.edit">{{row.url}}</span>
+                  <t-input v-else v-model="editItem.url" :placeholder="lang.jump_link"></t-input>
+                </template>
+                <template #time="{row}">
+                  <template v-if="!row.edit">
+                    {{moment(row.start_time *
+                    1000).format('YYYY-MM-DD')}}&nbsp;{{lang.to}}&nbsp;{{moment(row.end_time *
+                    1000).format('YYYY-MM-DD')}}
+                  </template>
+                  <t-date-range-picker allow-input clearable v-else v-model="editItem.timeRange" format="YYYY-MM-DD" />
+                </template>
+                <template #show="{row}">
+                  <t-switch v-model="row.show" :custom-value="[1,0]" @change="changeShow($event,row)">
+                  </t-switch>
+                </template>
+                <template #notes="{row}">
+                  <span v-if="!row.edit">{{row.notes}}</span>
+                  <t-input v-else v-model="editItem.notes" :placeholder="lang.notes"></t-input>
+                </template>
+                <template #op="{row, rowIndex}">
+                  <template v-if="row.edit">
+                    <t-tooltip :content="lang.cancel" :show-arrow="false" theme="light">
+                      <t-icon name="close" class="common-look" @click="cancelItem(row, rowIndex)"></t-icon>
+                    </t-tooltip>
+                    <t-tooltip :content="lang.hold" :show-arrow="false" theme="light">
+                      <t-icon name="save" class="common-look" @click="saveBannerItem(row,rowIndex)"></t-icon>
+                    </t-tooltip>
+                  </template>
+                  <template v-else>
+                    <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                      <t-icon name="edit" size="18px" @click="handlerEdit(row)" class="common-look"></t-icon>
+                    </t-tooltip>
+                    <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                      <t-icon name="delete" class="common-look" @click="delBanner(row)"></t-icon>
+                    </t-tooltip>
+                  </template>
+                </template>
+              </t-table>
+            </div>
+            <template v-if="curValue === 'index' || curValue === 'active'">
+              <!-- 通用 -->
+              <div class="common-header">
+                <div class="left">{{calcTit}}</div>
+                <div class="client-search">
+                  <t-button @click="handleMoreAdd">{{lang.tem_add}}</t-button>
+                </div>
+              </div>
+              <!-- 基础表格 -->
+              <t-table row-key=" id" :data="baseList" size="medium" :hide-sort-tips="true" :columns="calcColumns"
+                :hover="hover" :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'">
+                <template #price="{row}">
+                  {{currency_prefix}}{{row.price | filterMoney}}
+                </template>
+                <template #op="{row}">
+                  <t-tooltip :content="lang.tem_edit" :show-arrow="false" theme="light">
+                    <t-icon name="edit-1" class="common-look" @click="editMore(row)">
+                    </t-icon>
+                  </t-tooltip>
+                  <t-tooltip :content="lang.tem_delete" :show-arrow="false" theme="light">
+                    <t-icon name="delete" class="common-look" @click="comMoreDel(curValue, row)">
+                    </t-icon>
+                  </t-tooltip>
+                </template>
+              </t-table>
+            </template>
+            <!-- 热销特惠 -->
+            <div class="common-header more">
+              <div class="left">
+                {{curValue === 'index' ? lang.mf_101_text4 : lang.mf_101_text2}}
+              </div>
+              <div class="client-search">
+                <t-button @click="handleBaseAdd">{{lang.tem_add}}</t-button>
+              </div>
+            </div>
+            <t-table row-key="id" :data="moreList" size="medium" :hide-sort-tips="true" :columns="moreColumns"
+              :hover="hover" :loading="moreLoadng" :table-layout="tableLayout ? 'auto' : 'fixed'">
+              <template #price="{row}">
+                {{currency_prefix}}{{row.price | filterMoney}}
+              </template>
+              <template #op="{row}">
+                <t-tooltip :content="lang.tem_edit" :show-arrow="false" theme="light">
+                  <t-icon name="edit-1" class="common-look" @click="editBase(row)">
+                  </t-icon>
+                </t-tooltip>
+                <t-tooltip :content="lang.tem_delete" :show-arrow="false" theme="light">
+                  <t-icon name="delete" class="common-look" @click="comDel(curValue, row)">
+                  </t-icon>
+                </t-tooltip>
+              </template>
+            </t-table>
+          </div>
+        </div>
+      </div>
+    </t-card>
+    <!-- 首页描述  新手秒杀弹窗 -->
+    <t-dialog :header="optTitle" :visible.sync="baseVisible" :footer="false"
+      :width="curValue === 'active' ? '800' : '500'" @closed="baseVisible = false" placement="center"
+      :class="{'host_dialog':curValue === 'active'}">
+      <t-form :rules="baseRules" ref="baseDialog" :data="baseFormData" @submit="baseSubmit" :label-width="120"
+        reset-type="initial" label-align="top">
+        <template v-if="curValue === 'index'">
+          <t-form-item :label="lang.mf_101_text6" name="summary">
+            <t-input v-model="baseFormData.summary" :placeholder="lang.mf_101_text6">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.mf_101_text7" name="description">
+            <t-textarea v-model="baseFormData.description" :autosize="{ minRows: 3, maxRows: 5 }"
+              :placeholder="lang.mf_101_text7">
+            </t-textarea>
+          </t-form-item>
+        </template>
+        <template v-if="curValue === 'active'">
+          <t-form-item :label="lang.temp_title" name="title">
+            <t-input v-model="baseFormData.title" :placeholder="lang.tem_input" :maxlength="15" show-limit-number>
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.description" name="description">
+            <t-input v-model="baseFormData.description" :placeholder="lang.tem_input" :maxlength="30"
+              show-limit-number></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.temp_cpu" name="cpu">
+            <t-input v-model="baseFormData.cpu" :placeholder="lang.tem_input">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.temp_memory" name="memory">
+            <t-input v-model="baseFormData.memory" :placeholder="lang.temp_memory">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.temp_disk" name="disk">
+            <t-input v-model="baseFormData.disk" :placeholder="lang.temp_disk">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.temp_bw" name="bandwidth">
+            <t-input v-model="baseFormData.bandwidth" :placeholder="lang.temp_bw">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.mf_101_text9" name="image">
+            <t-input v-model="baseFormData.image" :placeholder="lang.mf_101_text9">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.mf_101_text10" name="duration">
+            <t-input v-model="baseFormData.duration" :placeholder="lang.mf_101_text10">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.mf_101_text11" name="data_center">
+            <t-input v-model="baseFormData.data_center" :placeholder="lang.tem_tip13">
+            </t-input>
+          </t-form-item>
+          <t-form-item :label="lang.temp_sell_price" name="price" class="price_item">
+            <t-input-number v-model="baseFormData.price" theme="normal" @blur="changePrice" :min="0"
+              :decimal-places="2">
+            </t-input-number>
+            <t-select class="unit" :borderless="true" v-model="baseFormData.price_unit">
+              <t-option v-for="item in unitSelect" :value="item.value" :label="item.label" :key="item.value">
+              </t-option>
+            </t-select>
+          </t-form-item>
+          <t-form-item :label="lang.temp_product" name="product_id">
+            <t-select v-model="baseFormData.product_id" :placeholder="lang.tem_tip12">
+              <t-option v-for="item in hostList" :value="item.id" :label="item.name" :key="item.id">
+              </t-option>
+            </t-select>
+          </t-form-item>
+        </template>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="baseVisible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!--热销推荐弹窗 -->
+    <t-dialog :header="optTitle" :visible.sync="hostVisible" :footer="false" width="800" @closed="hostVisible = false"
+      placement="center" class="host_dialog">
+      <t-form :rules="baseRules" ref="hostDialog" :data="hostFormData" @submit="hostSubmit" :label-width="120"
+        reset-type="initial" label-align="top">
+        <t-form-item :label="lang.temp_title" name="title">
+          <t-input v-model="hostFormData.title" :placeholder="lang.tem_input" :maxlength="15" show-limit-number>
+          </t-input>
+        </t-form-item>
+        <t-form-item :label="lang.description" name="description">
+          <t-input v-model="hostFormData.description" :placeholder="lang.tem_input" :maxlength="30"
+            show-limit-number></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_cpu" name="cpu" v-if="curValue !== 'index'">
+          <t-input v-model="hostFormData.cpu" :placeholder="lang.tem_input">
+          </t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_memory" name="memory" v-if="curValue !== 'index'">
+          <t-input v-model="hostFormData.memory" :placeholder="lang.temp_memory">
+          </t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_disk" name="disk" v-if="curValue === 'dcim' || curValue === 'active'">
+          <t-input v-model="hostFormData.disk" :placeholder="lang.temp_disk">
+          </t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_ip_num" name="ip_num" v-if="curValue === 'dcim' || curValue === 'active'">
+          <t-input v-model="hostFormData.ip_num" :placeholder="lang.temp_ip_num"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_bw" name="bandwidth" v-if="curValue !== 'index'">
+          <t-input v-model="hostFormData.bandwidth" :placeholder="lang.temp_bw">
+          </t-input>
+        </t-form-item>
+        <t-form-item :label="lang.temp_sell_price" name="price" class="price_item">
+          <t-input-number v-model="hostFormData.price" theme="normal" @blur="changePrice" :min="0" :decimal-places="2">
+          </t-input-number>
+          <t-select class="unit" :borderless="true" v-model="hostFormData.price_unit" v-if="curValue !== 'index'">
+            <t-option v-for="item in unitSelect" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="lang.temp_product" name="product_id">
+          <t-select v-model="hostFormData.product_id" :placeholder="lang.tem_tip12">
+            <t-option v-for="item in hostList" :value="item.id" :label="item.name" :key="item.id">
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item name="icon" :label="lang.mf_101_text8" :required-mark="false" v-if="curValue === 'index'"
+          class="template_side_manage">
+          <t-upload ref="uploadRef3" :size-limit="{ size: 2, unit: 'MB' }" :action="uploadUrl" v-model="iconArr"
+            :auto-upload="true" theme="custom" :headers="uploadHeaders" accept="image/*"
+            :format-response="formatImgResponse">
+            <div class="upload">
+              <t-icon name="upload"></t-icon>
+              <span class="txt">{{lang.tem_upload_icon}}</span>
+            </div>
+            <div class="up-tip">
+              <p>{{lang.tem_tip3}}32px；{{lang.temp_height}}32px</p>
+              <p>{{lang.tem_tip4}}</p>
+            </div>
+          </t-upload>
+          <div class="logo tab" v-if="iconArr[0]?.url">
+            <div class="box">
+              <img :src="iconArr[0]?.url" alt="">
+              <div class="hover" @click="deleteTabLogo" v-if="iconArr[0]?.url">
+                <t-icon name="delete"></t-icon>
+              </div>
+            </div>
+            <span class="name">{{iconArr[0]?.url.split('^')[1]}}</span>
+          </div>
+        </t-form-item>
+
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="hostVisible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.temp_sure_delete" :close-btn="false" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="delLoading">{{lang.tem_sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.tem_cancel}}</t-button>
+      </template>
+    </t-dialog>
+
+    <!-- 删除主题弹窗 -->
+    <t-dialog theme="warning" :header="lang.tem_tip14" :close-btn="false" :visible.sync="delDialog">
+      <div class="del-tip">
+        <div class="del-tip-text">
+          <h3>{{lang.tem_tip15}} <span style="color: var(--td-brand-color);"> {{theme}} </span></h3>
+          <p>{{lang.tem_tip16}}</p>
+        </div>
+      </div>
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel" :loading="delLoading">{{lang.tem_sure}}</t-button>
+        <t-button theme="default" @click="delDialog=false">{{lang.tem_cancel}}</t-button>
+      </template>
+    </t-dialog>
+
+    <!-- 升级主题弹窗 -->
+    <t-dialog :header="lang.tem_tip17" :visible.sync="upgradeDialog" :footer="false" width="500"
+      @closed="upgradeDialog = false" placement="center">
+      <div class="tem-upgrade-box" style="padding-left: 120px;">
+        <p>{{lang.tem_tip18}}：{{themeInfo.old_version}}</p>
+        <p>{{lang.tem_tip19}}：{{themeInfo.version}}</p>
+        <p>{{lang.tem_tip20}}: {{themeInfo.description || '--'}}</p>
+      </div>
+      <div class="com-f-btn">
+        <t-button theme="primary" @click="sureUpgrade" :loading="submitLoading">{{lang.tem_sure}}</t-button>
+        <t-button theme="default" variant="base" @click="upgradeDialog = false">{{lang.cancel}}</t-button>
+      </div>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+
+<script src="/web/mf101/controller/template/admin/api/template_controller.js"></script>
+<script src="/web/mf101/controller/template/admin/js/default_page.js"></script>

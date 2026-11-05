@@ -1,0 +1,64 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_domain/template/admin/css/domain.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="domain_setting" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_domain_list_view'">
+          <a href="index.htm">{{lang.domain_list}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_domain_template_view'">
+          <a href="template_mangment.htm">{{lang.domain_template}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_domain_server_view'">
+          <a href="domain_template.htm">{{lang.domain_module}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_domain_configuration_view'">
+          <a href="javascript:;">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <t-form :data="formData" ref="userInfo" @submit="onSubmit" :label-width="180" :rules="rules">
+        <div class="item">
+          <t-form-item :label="lang.domain_agree_adress" name="domain_register_agreement_url">
+            <t-input v-model="formData.domain_register_agreement_url" :placeholder="lang.domain_agree_adress"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.domain_service_adress" name="domain_information_service_agreement_url">
+            <t-input v-model="formData.domain_information_service_agreement_url" :placeholder="lang.domain_service_adress"></t-input>
+          </t-form-item>
+          <!-- <t-form-item :label="lang.domain_tip8" name="phone">
+            <t-input v-model="formData.phone" :placeholder="`${lang.input}${lang.phone}`"></t-input>
+          </t-form-item> -->
+          <t-form-item :label="lang.default_domain" name="default_search_domain">
+            <t-select v-model="formData.default_search_domain" :placeholder="lang.default_domain" filterable>
+              <t-option v-for="item in suffixList" :value="item.suffix" :label="item.suffix" :key="item.suffix">
+              </t-option>
+            </t-select>
+            <span class="s-tip">{{lang.domain_tip1}}</span>
+          </t-form-item>
+          <t-form-item :label="lang.appoint_domain" name="specify_search_domain">
+            <t-select v-model="formData.specify_search_domain" :placeholder="lang.appoint_domain" multiple :min-collapsed-num="1" clearable filterable>
+              <t-option v-for="item in suffixList" :value="item.suffix" :label="item.suffix" :key="item.suffix">
+              </t-option>
+            </t-select>
+            <span class="s-tip">{{lang.domain_tip2}}</span>
+          </t-form-item>
+          <t-form-item :label="lang.number_limit" name="number_limit">
+            <t-input-number v-model="formData.number_limit" :placeholder="lang.number_limit" theme="normal" :min="0" :decimal-places="0"></t-input-number>
+            <span class="s-tip">{{lang.domain_tip3}}</span>
+          </t-form-item>
+          <t-form-item>
+            <template slot="label">
+              <t-button theme="primary" type="submit" :loading="submitLoading" v-permission="'auth_idcsmart_domain_configuration_save_configuration'">{{lang.hold}}</t-button>
+            </template>
+          </t-form-item>
+        </div>
+      </t-form>
+    </t-card>
+  </com-config>
+
+</div>
+
+<script src="/plugins/addon/idcsmart_domain/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/idcsmart_domain/template/admin/api/domain.js"></script>
+<script src="/plugins/addon/idcsmart_domain/template/admin/js/domain_setting.js"></script>

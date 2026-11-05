@@ -1,0 +1,95 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/admin/css/e_contract.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template contract_config template-details" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="box">
+        <p class="com-tit">{{id ? lang.edit_template : lang.create_template}}</p>
+        <div class="con">
+          <t-form :data="infoParams" @submit="submit" :rules="typeRules" class="info-form" ref="userDialog"
+            label-align="top">
+            <div class="item">
+              <t-form-item :label="lang.contract_template_name" name="name">
+                <t-input v-model="infoParams.name" :placeholder="`${lang.contract_template_name}`" :maxlength="20">
+                </t-input>
+              </t-form-item>
+              <t-form-item :label="lang.template_status" name="status">
+                <t-select v-model="infoParams.status" :placeholder="lang.template_status">
+                  <t-option :value="0" :label="lang.deactivate" :key="0"></t-option>
+                  <t-option :value="1" :label="lang.enable" :key="1"></t-option>
+                </t-select>
+              </t-form-item>
+            </div>
+            <div class="item">
+              <t-form-item :label="lang.force_sign" name="force_sign">
+                <t-switch size="medium" :custom-value="[1,0]" v-model="infoParams.force_sign">
+                </t-switch>
+                <span class="s-tip">{{lang.contract_tip4}}</span>
+              </t-form-item>
+              <template v-if="infoParams.force_sign">
+                <t-form-item :label="lang.sign_day_out" name="sign_day_out">
+                  <t-input-number v-model="infoParams.sign_day_out" :min="1" :max="1000" theme="normal"
+                    :placeholder="`${lang.sign_day_out}`">
+                  </t-input-number>
+                  <span class="day">{{lang.day}}</span>
+                </t-form-item>
+                <t-form-item :label="lang.contract_tip5" name="timeout_act">
+                  <t-select v-model="infoParams.timeout_act" :placeholder="lang.select">
+                    <t-option value="suspend" :label="lang.suspend_product" key="suspend"></t-option>
+                    <t-option value="unable_access" :label="lang.unable_access" key="unable_access"></t-option>
+                  </t-select>
+                </t-form-item>
+              </template>
+            </div>
+            <div class="item">
+              <t-form-item :label="lang.base_contract" name="base_contract">
+                <t-popup :content="lang.contract_tip7" :disabled="!baseContract" placement="top-left">
+                  <t-switch size="medium" :custom-value="[1,0]" v-model="infoParams.base_contract"
+                    :disabled="baseContract">
+                  </t-switch>
+                </t-popup>
+                <span class="s-tip">{{lang.contract_tip6}}</span>
+              </t-form-item>
+            </div>
+            <div class="item" v-if="infoParams.base_contract === 0">
+              <t-form-item :label="`${lang.connect}${lang.product}`" name="product_id">
+                <!-- <t-tree-select v-model="infoParams.product_id" :data="productList" multiple clearable filterable
+                  :tree-props="treeProps" :min-collapsed-num="1" :placeholder="`${lang.product}`">
+                </t-tree-select> -->
+                <com-tree-select :multiple="true" :value="infoParams.product_id" @choosepro="choosePro" :pre-placeholder="`${lang.product}`"></com-tree-select>
+              </t-form-item>
+            </div>
+            <div class="item">
+              <t-form-item :label="lang.notes" name="notes">
+                <t-textarea v-model="infoParams.notes" :placeholder="`${lang.notes}`" :maxlength="200"
+                  :autosize="{ minRows: 3, maxRows: 3 }"></t-textarea>
+              </t-form-item>
+            </div>
+            <div class="item">
+              <t-form-item :label="`${lang.contract}${lang.detail}`" name="detail" class="emailTemp">
+                <com-tinymce ref="comTinymce" :pre-placeholder="`${lang.contract}${lang.detail}`"></com-tinymce>
+              </t-form-item>
+            </div>
+            <div class="com-f-btn">
+              <t-button theme="primary" class="view-btn" @click="goView">{{lang.order_view}}</t-button>
+              <t-button theme="primary" type="submit" class="info-btn" :loading="submitLoading">{{lang.hold}}</t-button>
+              <t-button theme="default" class="info-btn" @click="back">{{lang.cancel}}</t-button>
+            </div>
+          </t-form>
+          <!-- 模板变量 -->
+          <t-table row-key="id" :data="temArr" size="medium" :columns="temColumns" :hover="hover" bordered
+            class="tem-table" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+            :hide-sort-tips="true">
+          </t-table>
+        </div>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+<script src="/plugins/addon/e_contract/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comTinymce/comTinymce.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/tinymce/tinymce.min.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/api/e_contract.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/js/create_contract_template.js"></script>

@@ -1,0 +1,13 @@
+.webhook-box .table-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 20px 0;
+}
+.webhook-box .table-add {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.webhook-box .table-add .table-tips {
+  color: var(--td-text-color-placeholder);
+}

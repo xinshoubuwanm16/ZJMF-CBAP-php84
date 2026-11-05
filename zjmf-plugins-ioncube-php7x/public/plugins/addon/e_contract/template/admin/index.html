@@ -1,0 +1,145 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/admin/css/e_contract.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template e_contract" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active" v-permission="'auth_e_contract_list_view'">
+          <a href="javascript:;">{{lang.contract_list}}</a>
+        </li>
+        <li v-permission="'auth_e_contract_template_view'">
+          <a href="contract_template.htm">{{lang.template_manage}}</a>
+        </li>
+        <li v-permission="'auth_e_contract_configuration_view'">
+          <a href="contract_config.htm">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <div class="common-header">
+          <div></div>
+          <div class="client-search">
+            <t-input v-model="params.keywords"
+              :placeholder="`${lang.contract}ID、${lang.user}、${lang.tailorism}${lang.content}`" clearable
+              @keyup.enter.native="seacrh" @clear="clearSearch">
+            </t-input>
+            <t-select v-model="params.status" :placeholder="lang.contract_status" clearable>
+              <t-option v-for="item in statusList" :value="item.value" :label="item.label" :key="item.value">
+              </t-option>
+            </t-select>
+            <t-button @click="seacrh">{{lang.query}}</t-button>
+          </div>
+        </div>
+        <t-table row-key="id" :data="list" size="medium" :columns="typeColumns" :hover="hover" :loading="loading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #username="{row}">
+            <a :href="`${baseUrl}client_detail.htm?id=${row.client_id}`" class="aHover">{{row.username}}</a>
+          </template>
+          <template #tailorism="{row}">
+            <template v-if="row.base_contract">{{lang.base_contract}}</template>
+            <span v-for="(item,index) in row.host" :key="index" v-else>
+              <span v-if="index !== 0" v-html="wrap"></span>
+              <a class="aHover"
+                :href="`${baseUrl}host_detail.htm?client_id=${row.client_id}&id=${item.id}`">{{item.product_name}}<template
+                  v-if="item.name">+&nbsp;{{item.name}}</template>
+                <template v-if="item.status">+&nbsp;{{calcPayStatus(item.status)}}</template>
+              </a>
+            </span>
+          </template>
+          <template #pay_time="{row}">
+            {{row.pay_time ? moment(row.pay_time * 1000).format('YYYY-MM-DD HH:mm:ss') : '--'}}
+          </template>
+          <template #status="{row}">
+            <t-tag v-if="row.status === 'no_sign'">{{lang.no_sign}}</t-tag>
+            <t-tag theme="success" v-if="row.status === 'complete'">{{lang.complete}}</t-tag>
+            <t-tag theme="danger" v-if="row.status === 'reject'">{{lang.invoice_status5}}</t-tag>
+            <t-tag theme="primary" v-if="row.status === 'review'">{{lang.review}}</t-tag>
+            <t-tag theme="warning" v-if="row.status === 'wait_mail'">{{lang.wait_mail}}</t-tag>
+            <t-tag v-if="row.status === 'cancel'">{{lang.invoice_status6}}</t-tag>
+            <!-- 驳回原因 -->
+            <template v-if="row.status === 'reject' || row.status === 'cancel'">
+              <t-popup :content="row.reason">
+                <t-icon name="help-circle"></t-icon>
+              </t-popup>
+            </template>
+            <!-- 快递信息 -->
+            <template v-if="row.status === 'complete' && row.post_number && $checkPermission('auth_e_contract_list_post_contract')">
+              <img src="/plugins/addon/e_contract/template/admin/img/mail.png" alt="" class="mail"
+                @click="mailContract(row,false)">
+            </template>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.mail" :show-arrow="false" theme="light">
+              <t-icon name="jump" size="18px" @click="mailContract(row,true)" class="common-look"
+                v-if="row.status === 'wait_mail' && $checkPermission('auth_e_contract_list_post_contract')"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.detail" :show-arrow="false" theme="light" v-if="row.status !== 'no_sign' && $checkPermission('auth_e_contract_list_check_contract')">
+              <t-icon name="view-module" size="18px" @click="lookDetail(row)" class="common-look"></t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit"
+          :page-size-options="pageSizeOptions" :on-change="changePage" :current="params.page" />
+      </div>
+    </t-card>
+    <!-- 邮寄弹窗 -->
+    <t-dialog :header="mailTitle" :visible.sync="mailVisible" :footer="false" width="500px">
+      <t-form :data="mailParams" ref="classForm" @submit="submitInfo" :rules="mailRules" v-if="mailVisible"
+        label-align="left" :label-width="80">
+        <div class="base-info" :class="{active: isMail}">
+          <p class="item">
+            <span class="l-txt">{{lang.recipient_name}}</span>
+            <span class="r-txt">{{mailParams.rec_person}}</span>
+          </p>
+          <p class="item">
+            <span class="l-txt">{{lang.contact_phone}}</span>
+            <span class="r-txt">{{mailParams.rec_phone}}</span>
+          </p>
+          <p class="item">
+            <span class="l-txt">{{lang.mail_address}}</span>
+            <span class="r-txt">{{mailParams.rec_address}}</span>
+          </p>
+          <template v-if="!isMail">
+            <p class="item">
+              <span class="l-txt">{{lang.courier_company}}</span>
+              <span class="r-txt">{{mailParams.courier_company}}</span>
+            </p>
+            <p class="item">
+              <span class="l-txt">{{lang.post_number}}</span>
+              <span class="r-txt">{{mailParams.post_number}}</span>
+            </p>
+            <p class="item">
+              <span class="l-txt">{{lang.mail}}{{lang.status}}</span>
+              <span class="r-txt">{{lang.mailed}}</span>
+            </p>
+          </template>
+        </div>
+        <template v-if="isMail">
+          <t-form-item :label="lang.courier_company" name="courier_company">
+            <t-input v-model="mailParams.courier_company" :placeholder="`${lang.courier_company}`"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.post_number" name="post_number">
+            <t-input v-model="mailParams.post_number" :placeholder="`${lang.post_number}`"></t-input>
+          </t-form-item>
+          <t-form-item :label="`${lang.mail}${lang.status}`" name="status">
+            <t-select v-model="mailParams.status" :placeholder="`${lang.select}${lang.status}`">
+              <t-option key="wait_mail" :label="lang.wait_mail" value="wait_mail"></t-option>
+              <t-option key="complete" :label="lang.mailed" value="complete"></t-option>
+            </t-select>
+          </t-form-item>
+          <div class="com-f-btn">
+            <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+            <t-button theme="default" variant="base" type="reset" @click="mailVisible = false">{{lang.cancel}}
+            </t-button>
+          </div>
+        </template>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/e_contract/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/api/e_contract.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/js/e_contract.js"></script>

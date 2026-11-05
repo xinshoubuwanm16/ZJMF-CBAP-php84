@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="/plugins/server/direct_admin/template/admin/css/host_config.css">
+
+<div class="common_config" v-cloak v-if="configForm.name">
+  <com-config>
+    <t-form :data="configForm" :rules="configRules" ref="userInfo" label-align="top" @submit="submitConfig">
+      <p class="com-tit"><span>{{lang.product_info}}</span></p>
+      <p class="s-tip">{{lang.da_tip8}}</p>
+      <div class="config-item">
+        <t-form-item :label="lang.mf_package_name">
+          <t-input v-model="configForm.name" disabled></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.disk_space" name="disk" class="unit-box">
+          <t-form-item class="number">
+            <t-input-number v-model="configForm.disk" theme="normal" :min="0" :decimal-places="2"
+              :placeholder="`${lang.input}${lang.disk_space}`">
+            </t-input-number>
+          </t-form-item>
+          <t-form-item class="unit">
+            <t-select v-model="configForm.disk_unit" class="flow-type" :borderless="true" :popup-props="popupPropsUnit">
+              <t-option :key="item.value" :value="item.value" :label="item.lable" v-for="item in unitArr">
+              </t-option>
+            </t-select>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="lang.cloud_flow" class="unit-box" style="margin-right: 0;" name="flow">
+          <t-form-item :required-mark="false" class="number">
+            <t-input-number v-model="configForm.flow" theme="normal" :min="0" :decimal-places="2"
+              :placeholder="`${lang.input}${lang.cloud_flow}`">
+            </t-input-number>
+          </t-form-item>
+          <t-form-item class="unit">
+            <t-select v-model="configForm.flow_unit" class="flow-type" :borderless="true" :popup-props="popupPropsUnit">
+              <t-option :key="item.value" :value="item.value" :label="item.lable" v-for="item in unitArr">
+              </t-option>
+            </t-select>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="lang.da_email" name="email">
+          <t-input v-model="configForm.email"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.domain_num" name="domain_num">
+          <t-input-number v-model="configForm.domain_num" theme="normal" :min="0" :decimal-places="0"
+            :placeholder="`${lang.da_tip6}`">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item :label="lang.sub_domain_num" name="sub_domain_num">
+          <t-input-number v-model="configForm.sub_domain_num" theme="normal" :min="0" :decimal-places="0"
+            :placeholder="lang.da_tip6">
+          </t-input-number>
+        </t-form-item>
+      </div>
+      <div class="com-f-btn">
+        <t-button theme="primary" type="submit" :loading="isLoading">{{lang.hold}}</t-button>
+      </div>
+    </t-form>
+  </com-config>
+</div>
+
+<script src="/plugins/server/direct_admin/template/admin/lang/index.js"></script>
+<script src="/plugins/server/direct_admin/template/admin/api/direct_admin.js"></script>
+<script src="/plugins/server/direct_admin/template/admin/js/host_config.js"></script>

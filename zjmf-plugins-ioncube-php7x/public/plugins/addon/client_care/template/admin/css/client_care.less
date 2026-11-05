@@ -1,0 +1,76 @@
+.client-care {
+  tbody {
+    tr {
+      cursor: pointer;
+    }
+  }
+  .top-right{
+    display: flex;
+    .t-select__wrap{
+      margin-right: 10px;
+    }
+  }
+
+  .list-card-container {
+    .top-search {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      margin-bottom: 40px;
+
+      .add-btn {
+        display: inline;
+        padding: 6px 16px;
+        background: var(--td-brand-color);
+        border-radius: 3px;
+        font-size: 14px;
+        color: #FFFFFF;
+        cursor: pointer;
+      }
+
+      .search-input {
+        width: 320px;
+      }
+    }
+
+    .status {
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .active {
+      background: rgba(3, 177, 147, 0.2);
+      color: #03B193;
+    }
+
+    .unactive {
+      background: rgba(153, 153, 153, 0.2);
+      color: #666666;
+    }
+
+    .icon {
+      font-size: 16px;
+      margin-right: 20px;
+      cursor: pointer;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+
+    .open-icon {
+      color: var(--td-brand-color);
+    }
+
+    .stop-icon {
+      color: #FF0000;
+    }
+
+    .del-icon {
+      color: var(--td-brand-color);
+    }
+
+
+  }
+}

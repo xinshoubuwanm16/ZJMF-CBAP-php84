@@ -1,0 +1,4 @@
+<?php
+return ["module_name" => ["title" => "名称", "type" => "text", "value" => "OCGC支付", "tip" => "friendly name", "size" => 200], "merch_id" => ["title" => "MERCH_ID", "type" => "text", "value" => "", "tip" => "15位客户号,于平台方分配", "size" => 200], "cert_private_key" => ["title" => "RSA私钥", "type" => "text", "value" => "", "tip" => "APMP1.0开发包内已提供windows下生成RSA公私钥对的工具包，执行批处理文件startme.bat即可,填入私钥", "size" => 200], "cert_public_key" => ["title" => "RSA公钥", "type" => "text", "value" => "", "tip" => "APMP1.0开发包内已提供windows下生成RSA公私钥对的工具包，执行批处理文件startme.bat即可,填入公钥", "size" => 200], "operator" => ["title" => "操作员", "type" => "text", "value" => "01", "tip" => "操作员,平台方分配,默认01", "size" => 200], "login_pwd" => ["title" => "操作员密码", "type" => "text", "value" => "111111", "tip" => "操作员密码,平台方分配,默认111111", "size" => 200]];
+
+?>

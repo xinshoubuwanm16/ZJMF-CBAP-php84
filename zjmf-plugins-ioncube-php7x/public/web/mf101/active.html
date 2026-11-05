@@ -1,0 +1,466 @@
+{include file="header"}
+
+</head>
+
+<body class="event-page">
+    <header>{include file="conf/header"}</header>
+    <section class="section event-banner">
+        <div class="banner-text">
+            <h1 class="banner-title">新客上云特惠优选</h1>
+            <p class="banner-des">新手上云一折起</p>
+        </div>
+        <div class="banner-bg">
+            <img src="/web/mf101/assets/img/active-banner.svg" alt="">
+        </div>
+    </section>
+
+    <section class="section event-adv">
+        <div class="adv-item">
+            <div class="adv-title">新手秒杀</div>
+            <div class="adv-des">通用计算￥9.49起，限时闪销！</div>
+        </div>
+        <div class="adv-item">
+            <div class="adv-title">新用户专项折扣</div>
+            <div class="adv-des">高规格计算产品2.4折起</div>
+        </div>
+        <div class="adv-item">
+            <div class="adv-title">一对一专家服务</div>
+            <div class="adv-des">咨询即得满￥200减￥100上云补贴</div>
+        </div>
+        <div class="adv-item">
+            <div class="adv-title">免费试用</div>
+            <div class="adv-des">30+特色云产品</div>
+        </div>
+    </section>
+
+    <section class="section common-section flash-sale">
+        <div class="section-title">新手秒杀￥9.49起</div>
+        <div class="section-des">计算类产品全年最低价，每人限购一单！</div>
+        <div class="section-main flash-list">
+            {if ( isset($data.flash_sale) ) }
+            {foreach $data.flash_sale as $key=>$value}
+            <div class="flash-item">
+                <div class="flash-name">{$value.title}</div>
+                <div class="flash-des">{$value.description}</div>
+                <div class="flash-config">
+                    <div class="config-item">
+                        <span class="config-name">规格</span>
+                        <span class="config-value">{$value.cpu} | {$value.memory}</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">固定带宽</span>
+                        <span class="config-value">{$value.bandwidth}</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">系统盘</span>
+                        <span class="config-value">{$value.disk}</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">镜像</span>
+                        <span class="config-value">{$value.image}</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">数据中心</span>
+                        <span class="config-value">
+                            {foreach $value.data_center as $k=>$v}
+                            {if ( $k == 0 ) }
+                            <a href="javascript:void(0);" dropdown-toggle role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                {$v}
+                                <img src="/web/mf101/assets/img/chevron-down.svg" alt="">
+                            </a>
+                            {/if}
+                            {/foreach}
+                            <ul class="dropdown-menu">
+                                {foreach $value.data_center as $k=>$v}
+                                <li><a class="dropdown-item" href="javascript:void(0);">{$v}</a></li>
+                                {/foreach}
+                            </ul>
+                        </span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">时长</span>
+                        <span class="config-value">{:implode(' / ', $value.duration)}</span>
+                    </div>
+                </div>
+                <div class="flash-price">
+                    <span class="flash-price-num">{$value.price}</span>{$data.currency_suffix}/{$value.price_unit}
+                </div>
+                <a href="/{$value.product_type}-buy.html?id={$value.product_id}" class="btn btn-pri block-btn" data-id="{$value.product_id}">立即购买</a>
+            </div>
+            {/foreach}
+            {else /}
+            <div class="flash-item">
+                <div class="flash-name">通用入门型</div>
+                <div class="flash-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                <div class="flash-config">
+                    <div class="config-item">
+                        <span class="config-name">规格</span>
+                        <span class="config-value">1vCPUS | 2GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">固定带宽</span>
+                        <span class="config-value">2Mbps</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">系统盘</span>
+                        <span class="config-value">40GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">镜像</span>
+                        <span class="config-value">Linux</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">数据中心</span>
+                        <span class="config-value">
+                            <a href="javascript:void(0);" dropdown-toggle role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                中国-重庆
+                                <img src="/web/mf101/assets/img/chevron-down.svg" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-上海</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                            </ul>
+                        </span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">时长</span>
+                        <span class="config-value">1个月</span>
+                    </div>
+                </div>
+                <div class="flash-price">
+                    <span class="flash-price-num">698</span>元/月
+                </div>
+                <a href="/cloud-buy.html" class="btn btn-pri block-btn" data-id="123456">立即购买</a>
+            </div>
+            <div class="flash-item">
+                <div class="flash-name">通用入门型</div>
+                <div class="flash-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                <div class="flash-config">
+                    <div class="config-item">
+                        <span class="config-name">规格</span>
+                        <span class="config-value">1vCPUS | 2GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">固定带宽</span>
+                        <span class="config-value">2Mbps</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">系统盘</span>
+                        <span class="config-value">40GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">镜像</span>
+                        <span class="config-value">Linux</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">数据中心</span>
+                        <span class="config-value">
+                            <a href="javascript:void(0);" dropdown-toggle role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                中国-重庆
+                                <img src="/web/mf101/assets/img/chevron-down.svg" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-上海</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                            </ul>
+                        </span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">时长</span>
+                        <span class="config-value">1个月</span>
+                    </div>
+                </div>
+                <div class="flash-price">
+                    <span class="flash-price-num">698</span>元/月
+                </div>
+                <a href="/cloud-buy.html" class="btn btn-pri block-btn" data-id="123456">立即购买</a>
+            </div>
+            <div class="flash-item">
+                <div class="flash-name">通用入门型</div>
+                <div class="flash-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                <div class="flash-config">
+                    <div class="config-item">
+                        <span class="config-name">规格</span>
+                        <span class="config-value">1vCPUS | 2GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">固定带宽</span>
+                        <span class="config-value">2Mbps</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">系统盘</span>
+                        <span class="config-value">40GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">镜像</span>
+                        <span class="config-value">Linux</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">数据中心</span>
+                        <span class="config-value">
+                            <a href="javascript:void(0);" dropdown-toggle role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                中国-重庆
+                                <img src="/web/mf101/assets/img/chevron-down.svg" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-上海</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                            </ul>
+                        </span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">时长</span>
+                        <span class="config-value">1个月</span>
+                    </div>
+                </div>
+                <div class="flash-price">
+                    <span class="flash-price-num">698</span>元/月
+                </div>
+                <a href="/cloud-buy.html" class="btn btn-pri block-btn" data-id="123456">立即购买</a>
+            </div>
+            <div class="flash-item">
+                <div class="flash-name">通用入门型</div>
+                <div class="flash-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                <div class="flash-config">
+                    <div class="config-item">
+                        <span class="config-name">规格</span>
+                        <span class="config-value">1vCPUS | 2GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">固定带宽</span>
+                        <span class="config-value">2Mbps</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">系统盘</span>
+                        <span class="config-value">40GB</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">镜像</span>
+                        <span class="config-value">Linux</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">数据中心</span>
+                        <span class="config-value">
+                            <a href="javascript:void(0);" dropdown-toggle role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                中国-重庆
+                                <img src="/web/mf101/assets/img/chevron-down.svg" alt="">
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-上海</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">中国-北京</a></li>
+                            </ul>
+                        </span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-name">时长</span>
+                        <span class="config-value">1个月</span>
+                    </div>
+                </div>
+                <div class="flash-price">
+                    <span class="flash-price-num">698</span>元/月
+                </div>
+                <a href="/cloud-buy.html" class="btn btn-pri block-btn" data-id="123456">立即购买</a>
+            </div>
+            {/if}
+        </div>
+
+    </section>
+
+    <!-- 热销特惠推荐 -->
+    <section class="section recommend-section mar-top-164">
+        <div class="section-title">热销特惠推荐</div>
+        <div class="section-des">为您精挑细选了热门产品和特别折扣产品，超划算！</div>
+        <div class="section-main">
+            <ul class="section-list">
+                {if ( isset($data.hot_sale) ) }
+                {foreach $data.hot_sale as $key=>$value}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">{$value.title}</div>
+                        <div class="goods-des">{$value.description}</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">{$value.cpu}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.memory)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.disk)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.ip_num)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.bandwidth)}</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            {$value.price}<span class="price-num-unit">{$data.currency_suffix}/{$value.price_unit}</span>
+                        </div>
+                        <a href="/{$value.product_type}-buy.html?id={$value.product_id}" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/foreach}
+                {else /}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">通用计算型</div>
+                        <div class="goods-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            298<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">高性能型</div>
+                        <div class="goods-des">适用于深度学习、科学计算、影视渲染、多媒体编解码、无人驾驶等GPU计算负载极高的业务场景。</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            399<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">存储IO型</div>
+                        <div class="goods-des">适用于高性能数据库、NoSQL数据库、群集化数据库、OLTP系统、Elastic Search 搜索等需要低时延的 I/O 密集型应用。
+                        </div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            459<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">大数据计算型</div>
+                        <div class="goods-des">适用于Hadoop MapReduce/HDFS/Hive/HBase
+                            等分布式计算、Elasticsearch、日志处理和大型数据仓库等业务场景。</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            499<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/cloud-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/if}
+            </ul>
+        </div>
+
+    </section>
+
+    {include file="footer"}

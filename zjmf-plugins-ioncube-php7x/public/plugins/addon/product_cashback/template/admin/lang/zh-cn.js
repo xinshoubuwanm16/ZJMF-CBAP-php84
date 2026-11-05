@@ -1,0 +1,31 @@
+const plugin_lang = {
+  /* 商品返现 */
+  product_cashback: "商品返现",
+  cashback: "返现",
+  cashback_type: "返现类型",
+  cashback_money: "返现金额",
+  fixed_money: "固定金额",
+  period: "可返现期限",
+  after_purchase: "购买后",
+  within_days: "天内",
+  permanent: "永久",
+  order_new: "新增",
+  edit: "编辑",
+  delete: "删除",
+  sure: "确定",
+  cancel: "取消",
+  product: "商品",
+  status: "状态",
+  hold: "保存",
+  add: "添加",
+  input: "请输入",
+  select: "请选择",
+  operation: "操作",
+  product_name: "商品名称",
+  sureDelete: "确认删除？",
+  product_cashback_tip: "此处设定系统中可以购买后可返现的商品，金额将返现到账户余额",
+  product_cashback_tip1: "0视为永久",
+  product_cashback_tip2: "返现金额若超过购买金额，则按购买金额返现",
+};
+
+window.plugin_lang = plugin_lang;

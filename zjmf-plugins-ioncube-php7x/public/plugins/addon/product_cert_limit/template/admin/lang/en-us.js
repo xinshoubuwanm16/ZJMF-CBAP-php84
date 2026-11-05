@@ -1,0 +1,38 @@
+const plugin_lang = {
+  /* Merchandise purchase limit */
+  single_product_text1: "Single product real name requirement",
+  single_product_text2: "Set the products that need to be purchased by real name in the system here. If the real name authentication plug-in is set to 'cannot be purchased without authentication', the products that are not added here cannot be purchased either.",
+  single_product_text3: "Add",
+  single_product_text4: "Individual/business",
+  single_product_text5: "Personal Authentication",
+  single_product_text6: "Enterprise Certification",
+  single_product_text7: "Are you sure to remove the real name restriction for this product?" ,
+  single_product_text8: "Edit Product",
+  single_product_text9: "New item",
+  single_product_text10: "Product",
+  single_product_text11: "Type Requirement",
+  single_product_text12: "Save",
+  single_product_text13: "Cancel",
+  single_product_text14: "Product name",
+  single_product_text15: "Restricted status",
+  single_product_text16: "Commodity periodic purchase limit",
+  single_product_text17: "This sets the maximum amount of an item in the user's account that can be owned during the set period. If the status is 「Deleted」 or 「cancelled」, it does not count. All other states count",
+  single_product_text18: "Permanent",
+  single_product_text19: "day",
+  single_product_text20: "Are you sure to remove the periodic limit for this item?" ,
+  single_product_text21: "Edit Limit",
+  single_product_text22: "New limit",
+  single_product_text23: "Limit quantity",
+  single_product_text24: "Limit period",
+  single_product_text25: "Input 0 is considered permanent limit",
+  single_product_text26: "Modifying the period affects the period being restricted",
+  single_product_text27: "The limit period start time is calculated based on the time of the first order that the user does not place within the limit",
+  single_product_text28: "Item quantity limit",
+  single_product_text29: "Set the maximum quantity of an item that can be owned in the user account here. If the status is 「Deleted」 or 「cancelled」, it does not count. All other states count.",
+  single_product_text30: "Are you sure to remove the quantity limit for this item?" ,
+  single_product_text31: "OK",
+  single_product_text32: "Operation",
+  single_product_text33: "Required"
+  };
+
+  window.plugin_lang = plugin_lang;

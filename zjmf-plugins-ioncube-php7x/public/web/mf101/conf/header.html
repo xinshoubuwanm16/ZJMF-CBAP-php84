@@ -1,0 +1,75 @@
+<div class="header-box">
+    <section class="section">
+        <a class="header-logo" href="{$data.header_nav[0]['file_address'] ?? '/index.html'}">
+            <img src="{$data.config['official_website_logo'] ?? ''}" alt="" />
+        </a>
+        <div class="header-menu">
+            <ul class="header-menu-list">
+                {if ( isset($data.header_nav) ) }
+                    {foreach $data.header_nav as $key=>$value}
+                    <li class="header-menu-item"><a href="{$value.file_address}">{$value.name}</a></li>
+                    {/foreach}
+                {else /}
+                <li class="header-menu-item"><a href="/index.html">首页</a></li>
+                <li class="header-menu-item"><a href="/active.html">最新活动</a></li>
+                <li class="header-menu-item"><a href="/cloud.html">云服务器</a></li>
+                <li class="header-menu-item"><a href="/dcim.html">物理服务器</a></li>
+                <li class="header-menu-item"><a href="/cloud-buy.html">订购</a></li>
+                <li class="header-menu-item"><a href="/about.html">联系我们</a></li>
+                {/if}
+            </ul>
+        </div>
+        <div class="header-login">
+            <ul class="header-login-list">
+                <li class="header-login-item"><a href="/plugin/26/source.htm" target="_blank">文档</a></li>
+                <!-- <li class="header-login-item"><a href="javascript:;">备案</a></li> -->
+                <li class="header-login-item"><a href="/home.htm" target="_blank">控制台</a></li>
+                <li class="un-login"><a class="btn btn-login" href="/login.htm" target="_blank">登录/注册</a></li>
+                <li class="login-in" id="loginIng">
+                    <div id="headImg" class="head-img"></div>
+                </li>
+                <li class="menu-icon" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><img
+                        src="/web/mf101/assets/img/menu.svg" alt="">
+                </li>
+
+            </ul>
+
+        </div>
+    </section>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            {if ( isset($data.header_nav) ) }
+                {foreach $data.header_nav as $key=>$value}
+                {if ( $key >= 1) }
+                <li class="nav-item">
+                    <a class="nav-link" href="{$value.file_address}">{$value.name}</a>
+                </li>
+                {/if}
+                {/foreach}
+            {else /}
+            <li class="nav-item">
+                <a class="nav-link" href="/active.html">最新活动</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/cloud.html">云服务器</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/dcim.html">物理服务器</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/cloud-buy.html">订购</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/about.html">联系我们</a>
+            </li>
+            {/if}
+            <li class="nav-item right-nav">
+                <a class="nav-link" href="/plugin/26/source.htm" target="_blank">文档</a>
+            </li>
+            <!-- <li class="nav-item right-nav">
+                <a class="nav-link" href="javascript:;">备案</a>
+            </li> -->
+        </ul>
+    </div>
+</div>

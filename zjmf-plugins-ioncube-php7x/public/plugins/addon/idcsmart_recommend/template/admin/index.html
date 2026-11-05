@@ -1,0 +1,227 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_recommend/template/admin/css/recommend.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="recommend table" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active" v-permission="'auth_idcsmart_recommend_award_record'">
+          <a href="javascript:;">{{lang.reward_record}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_recommend_configuration'">
+          <a :href="`recommend_config.htm`">{{lang.recommend_config}}</a>
+        </li>
+      </ul>
+      <div class="common-header">
+        <div class="client-search">
+          <com-choose-user :pre-placeholder="lang.promoter_user" @changeuser="changeUser"></com-choose-user>
+          <com-tree-select @choosepro="choosePro"></com-tree-select>
+          <t-select v-model="params.status" :placeholder="lang.status" clearable>
+            <t-option v-for="item in statusList" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+          <t-button @click="seacrh">{{lang.query}}</t-button>
+        </div>
+        <t-button @click="presets">{{lang.default_invalid_reply}}</t-button>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :key="new Date().getTime()"
+        :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange"
+        display-type="fixed-width" :hide-sort-tips="true">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #promoter="{row}">
+          <a class="jump" @click="jumpUser(row.promoter_client_id)">{{row.promoter}}</a>
+        </template>
+        <template #username="{row}">
+          <a class="jump" @click="jumpUser(row.promoted_client_id)">{{row.username}}</a>
+        </template>
+        <template #product_name="{row}">
+          <a class="jump" @click="jumpProduct(row.product_id,row.upstream)">{{row.product_name}}</a>
+        </template>
+        <template #type="{row}">
+          <span v-if="row.type === 'new'">{{lang.recommend_text9 }}</span>
+          <span v-else>{{ lang.recommend_text10}}
+            <t-tooltip :content="lang.recommend_text11" :show-arrow="false" theme="light">
+              <t-icon name="link" class="common-look" @click="filterTable(row)"></t-icon>
+            </t-tooltip>
+          </span>
+        </template>
+
+        <template #awards_amount="{row}">
+          <div v-show="row.isEdit">
+            <t-input-number :min="0" v-model="row.awards_amount" theme="normal" :decimal-places="2"
+              :label="currency_prefix">
+            </t-input-number>
+            <t-tooltip :content="lang.hold" :show-arrow="false" theme="light">
+              <t-icon name="save" class="common-look" @click="saveItem(row)">
+              </t-icon>
+            </t-tooltip>
+          </div>
+          <div v-show="!row.isEdit">
+            <span>{{currency_prefix}}{{(row.awards_amount*1).toFixed(2)}}</span>
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+              <t-icon name="edit" class="common-look" @click="eidtItem(row)"
+                v-permission="'auth_idcsmart_recommend_award_record_update_recommend_amount'">
+              </t-icon>
+            </t-tooltip>
+          </div>
+        </template>
+        <template #ratio="{row}">
+          <span>{{row.ratio}}%</span>
+        </template>
+        <template #buy_amount="{row}">
+          {{currency_prefix}}{{row.buy_amount}}
+        </template>
+        <template #surplus_time="{row}">
+          {{row.surplus_time | formatSecondsToMin(row.surplus_time)}}
+        </template>
+        <template #status="{row}">
+          <t-tag theme="warning" class="com-status" v-if="row.status === 'Pending'" variant="light">
+            {{lang.confirming}}
+          </t-tag>
+          <t-tag theme="success" class="com-status" v-if="row.status === 'Active'" variant="light">
+            {{lang.confirmed}}
+          </t-tag>
+          <t-tag theme="danger" class="com-status" v-if="row.status === 'Frozen'" variant="light">
+            {{lang.frozen_in}}
+          </t-tag>
+          <t-tag theme="default" class="com-status" v-if="row.status === 'Invalid'" variant="light">
+            {{lang.invalid_promotion}}
+          </t-tag>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.confirm_now" :show-arrow="false" theme="light">
+            <a class="common-look" v-if="row.status === 'Pending'" @click="optItem(row, 'sure')">
+              <svg class="common-look">
+                <use xlink:href="/plugins/addon/idcsmart_recommend/template/admin/img/icons.svg#cus-enable">
+                </use>
+              </svg>
+            </a>
+          </t-tooltip>
+          <!-- 无效推介 -->
+          <t-tooltip :content="lang.invalid_promotion" :show-arrow="false" theme="light">
+            <a class="common-look"
+              v-if="(row.status === 'Pending' || row.status === 'Frozen') && $checkPermission('auth_idcsmart_recommend_award_record_invalid_recommend')"
+              @click="invalidOpt(row)">
+              <svg class="common-look">
+                <use xlink:href="/plugins/addon/idcsmart_recommend/template/admin/img/icons.svg#cus-invalid">
+                </use>
+              </svg>
+            </a>
+          </t-tooltip>
+          <t-tooltip :content="lang.frozen" :show-arrow="false" theme="light">
+            <a class="common-look"
+              v-if="!row.frozen && row.status !== 'Invalid' && $checkPermission('auth_idcsmart_recommend_award_record_freeze_recommend')"
+              @click="optItem(row, 'frozen')">
+              <svg class="common-look">
+                <use xlink:href="/plugins/addon/idcsmart_recommend/template/admin/img/icons.svg#cus-on">
+                </use>
+              </svg>
+            </a>
+          </t-tooltip>
+          <t-tooltip :content="lang.thaw" :show-arrow="false" theme="light">
+            <a class="common-look"
+              v-if="row.frozen && row.status !== 'Invalid' && $checkPermission('auth_idcsmart_recommend_award_record_freeze_recommend')"
+              @click="optItem(row, 'unfrozen')">
+              <svg class="common-look">
+                <use xlink:href="/plugins/addon/idcsmart_recommend/template/admin/img/icons.svg#cus-off">
+                </use>
+              </svg>
+            </a>
+          </t-tooltip>
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" class="common-look" @click="optItem(row, 'delete')"
+              v-if="row.status !== 'Active' && $checkPermission('auth_idcsmart_recommend_award_record_delete_recommend')">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" @change="changePage" />
+    </t-card>
+
+    <!-- 无效推介 -->
+    <t-dialog :header="lang.invalid_promotion" :visible.sync="recommendVisible" width="600" :footer="false">
+      <t-form :rules="rules" :data="formData" ref="userDialog" @submit="invaliSubmit" v-if="recommendVisible">
+        <t-form-item :label="lang.recommend_users">
+          <t-input :placeholder="lang.recommend_users" v-model="formData.promoter" disabled />
+        </t-form-item>
+        <t-form-item :label="lang.promoted_users">
+          <t-input :placeholder="lang.recommend_users" v-model="formData.username" disabled />
+        </t-form-item>
+        <t-form-item :label="lang.product_name">
+          <t-input :placeholder="lang.product_name" v-model="formData.product_name" disabled />
+        </t-form-item>
+        <t-form-item :label="lang.purchase_amount">
+          <t-input :placeholder="lang.product_name" v-model="formData.buy_amount" disabled :label="currency_prefix" />
+        </t-form-item>
+        <t-form-item :label="lang.reward_money">
+          <t-input :placeholder="lang.reward_money" v-model="formData.ratio" disabled :label="currency_prefix" />
+        </t-form-item>
+        <t-form-item :label="lang.surplus_time">
+          <t-input :placeholder="lang.surplus_time" v-model="formData.surplus_time" disabled />
+        </t-form-item>
+        <t-form-item :label="lang.invalid_reason" name="invalid_reason">
+          <t-select v-model="formData.invalid_reason" :placeholder="lang.invalid_reason">
+            <t-option :key="item.id" :label="item.content" :value="item.id" v-for="item in replayList"></t-option>
+            <t-option :key="0" :label="lang.custom_reason" :value="0"></t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item label=" " v-if="formData.invalid_reason === 0" name="custom_reason" style="margin-top: -20px;"
+          :required-mark="false">
+          <textarea :placeholder="lang.invalid_reason" class="t-textarea__inner"
+            v-model.lazy="formData.custom_reason"></textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">
+            {{lang.confirm}}{{lang.invalid_promotion}}
+          </t-button>
+          <t-button theme="default" @click="recommendVisible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 预设回复弹窗 -->
+    <t-dialog :header="lang.default_invalid_reply" :visible.sync="replayDialog" width="1290" :footer="false"
+      :close-on-overlay-click="false">
+      <t-table row-key="id" :data="replayList" size="medium" :columns="replayColumns" :hover="hover"
+        :loading="replayLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+        :hide-sort-tips="true" :max-height="300" bordered class="replay-dialog">
+        <template #op="{row}">
+          <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+            <t-icon name="edit" class="common-look" @click="eidtReplay(row)" v-if="row.status !== 'Active'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" class="common-look" @click="optItem(row, 'deleteReplay')"
+              v-if="row.status !== 'Active'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-form :rules="replayRules" :data="replayParams" @submit="replaySubmit" class="replay-form">
+        <t-form-item label=" " :required-mark="false">
+          <textarea class="t-textarea__inner" :placeholder="lang.input + lang.reply_content"
+            v-model.lazy="replayParams.content"></textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.save_preset_reply}}</t-button>
+          <t-button theme="default" @click="replayDialog = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 确认/冻结/取消冻结/删除弹窗 -->
+    <t-dialog theme="warning" :header="optTitle" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureOpt" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible = false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/idcsmart_recommend/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/idcsmart_recommend/template/admin/api/recommend.js"></script>
+<script src="/plugins/addon/idcsmart_recommend/template/admin/js/recommend.js"></script>

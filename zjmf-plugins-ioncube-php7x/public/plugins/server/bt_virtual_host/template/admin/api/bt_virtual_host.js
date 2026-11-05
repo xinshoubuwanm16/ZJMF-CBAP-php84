@@ -1,0 +1,161 @@
+/*
+* DA
+*/
+const base = 'bt_virtual_host'
+
+/* 周期 */
+function getDuration (params) {
+  return Axios.get(`/${base}/duration`, { params })
+}
+function createAndUpdateDuration (type, params) {
+  if (type === 'add') {
+    return Axios.post(`/${base}/duration`, params)
+  } else if (type === 'update') {
+    return Axios.put(`/${base}/duration/${params.id}`, params)
+  }
+}
+function delDuration (params) {
+  return Axios.delete(`/${base}/duration/${params.id}`)
+}
+// 获取周期比例
+function getDurationRatio (params) {
+  return Axios.get(`/${base}/duration_ratio`, { params })
+}
+function saveDurationRatio (params) {
+  return Axios.put(`/${base}/duration_ratio`, params)
+}
+// 周期比例填充
+function fillDurationRatio (params) {
+  return Axios.post(`/${base}/duration_ratio/fill`, params)
+}
+/* 主机配置 */
+function getArea (params) {
+  return Axios.get(`/${base}/region`, { params })
+}
+// 创建/修改
+function createOrUpdateArea (type, params) {
+  if (type === 'add') {
+    return Axios.post(`/${base}/region`, params)
+  } else if (type === 'update') {
+    return Axios.put(`/${base}/region/${params.id}`, params)
+  }
+}
+// 删除
+function deleteArea (params) {
+  return Axios.delete(`/${base}/region/${params.id}`)
+}
+function getHost (params) {
+  return Axios.get(`/${base}/server`, { params })
+}
+// 创建/修改
+function createOrUpdateHost (type, params) {
+  if (type === 'add') {
+    return Axios.post(`/${base}/server`, params)
+  } else if (type === 'update') {
+    return Axios.put(`/${base}/server/${params.id}`, params)
+  }
+}
+// 删除
+function deleteHost (params) {
+  return Axios.delete(`/${base}/server/${params.id}`)
+}
+
+/* 套餐配置 */
+function getDataCenter (params) {
+  return Axios.get(`/${base}/package`, { params })
+}
+function getDataCenterDetails (params) {
+  return Axios.get(`/${base}/data_center/${params.id}`, { params })
+}
+function getCountry () {
+  return Axios.get(`/country`)
+}
+
+// 获取商品主机配置中所有国家及其城市
+function getExistCountry (params) {
+  return Axios.get(`/${base}/server/city/list`, { params})
+}
+
+// 获取套餐已有区域
+function getExistArea (params) {
+  return Axios.get(`/${base}/region`, { params})
+}
+// 获取区域下主机
+function getAreaHost (params) {
+  return Axios.get(`/${base}/meal/city/server`, { params})
+}
+
+function getPackageDetails (params) {
+  return Axios.get(`/${base}/package/${params.id}`)
+}
+// 创建/修改
+function createOrUpdateDataCenter (type, params) {
+  if (type === 'add') {
+    return Axios.post(`/${base}/package`, params)
+  } else if (type === 'update') {
+    return Axios.put(`/${base}/package/${params.id}`, params)
+  }
+}
+// 删除
+function deleteDataCenter (params) {
+  return Axios.delete(`/${base}/package/${params.id}`)
+}
+// 根据主机id获取远程套餐
+function getRemotePackage (params) {
+  return Axios.get(`/${base}/meal/server/${params.id}`, { params})
+}
+
+
+// 获取IP价格
+function getIpPrice( params) {
+  return Axios.get(`/${base}/data_center/${params.id}/ip_price`, { params })
+}
+function saveIpPrice( params) {
+  return Axios.put(`/${base}/data_center/ip_price`, params)
+}
+
+// 获取独立带宽
+function getAloneBw (params) {
+  return Axios.get(`/${base}/data_center/${params.id}/bw`, { params })
+}
+function getAloneBwDetails (params) {
+  return Axios.get(`/${base}/data_center_bw/${params.id}`, { params })
+}
+function createAndUpdateAloneBw (type, params) {
+  if (type === 'add') {
+    return Axios.post(`/${base}/data_center/${params.id}/bw`, params)
+  } else if (type === 'update') {
+    return Axios.put(`/${base}/data_center_bw/${params.id}`, params)
+  }
+}
+function delAloneBw (params) {
+  return Axios.delete(`/${base}/data_center_bw/${params.id}`)
+}
+
+
+
+/* 其他设置 */
+function getCloudConfig (params) {
+  return Axios.get(`/${base}/config`, { params })
+}
+function saveCloudConfig (params) {
+  return Axios.post(`/${base}/config`, params)
+}
+// 所有后缀
+function getAllSuffix() {
+  return Axios.get(`/idcsmart_domain/suffix`)
+}
+
+// 获取插件列表
+function getPluginList () {
+  return Axios.get(`/plugin/addon`)
+}
+
+/* 产品详情页 */
+function getDaHostDetails (params) {
+  return Axios.get(`/${base}/host/${params.id}`)
+}
+
+function saveDaHostDetails (params) {
+  return Axios.put(`/${base}/host/${params.id}`, params)
+}

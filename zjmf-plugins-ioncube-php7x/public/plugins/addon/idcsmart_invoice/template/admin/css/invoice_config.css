@@ -1,0 +1,123 @@
+.invoice-config .common-tab {
+  margin-bottom: 31px;
+}
+.invoice-config .title-line {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  line-height: 1;
+  margin-bottom: 30px;
+}
+.invoice-config .title-line .title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333333;
+  white-space: nowrap;
+}
+.invoice-config .title-line .line {
+  width: 100%;
+  border-bottom: 1px solid #DCDCDC;
+}
+.invoice-config .base-main {
+  display: flex;
+  flex-direction: column;
+}
+.invoice-config .base-main .base-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.invoice-config .base-main .base-row .label {
+  font-size: 14px;
+  color: #333333;
+  margin-right: 28px;
+  min-width: 60px;
+}
+.invoice-config .base-main .base-row .value {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.invoice-config .base-main .base-row .value .t-switch {
+  margin-right: 30px;
+}
+.invoice-config .base-main .base-row .value .base-input {
+  width: 120px;
+}
+.invoice-config .base-main .base-row .value .description {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 14px;
+  margin-left: 10px;
+}
+.invoice-config .base-main .base-row .value .input-pre {
+  color: #333333;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.invoice-config .base-main .base-row .value .input-next {
+  margin-left: 8px;
+}
+.invoice-config .parcel-table {
+  max-width: 584px;
+}
+.invoice-config .parcel-table .operation-icon {
+  font-size: 18px;
+  color: var(--td-brand-color);
+  cursor: pointer;
+  margin-right: 15px;
+}
+.invoice-config .parcel-table .t-input-number {
+  width: 100%;
+}
+.invoice-config .parcel-table .add {
+  height: 42px;
+  border-bottom: 1px solid #E7E7E7;
+  border-left: 1px solid #E7E7E7;
+  border-right: 1px solid #E7E7E7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.invoice-config .parcel-table .add .add-btn {
+  color: var(--td-brand-color);
+  cursor: pointer;
+}
+.invoice-config .parcel-table .add .add-btn .add-icon {
+  color: var(--td-brand-color);
+}
+.invoice-config .submit-btn {
+  margin-top: 20px;
+}
+.invoice-config .project-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.invoice-config .project-table {
+  margin: 0 0 30px;
+  max-width: 1000px;
+}
+.project-dialog .t-input-number {
+  width: 100%;
+}
+.project-dialog .t-switch {
+  margin-left: 5px;
+}
+.project-dialog .title-line .title {
+  font-weight: normal;
+  font-size: 15px;
+}
+.project-dialog .percent-item .t-input {
+  position: relative;
+  padding-right: 25px;
+}
+.project-dialog .percent-item .t-input::after {
+  content: '%';
+  position: absolute;
+  z-index: 5;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+}

@@ -1,0 +1,31 @@
+const plugin_lang = {
+  /* 商品返現 */
+  product_cashback: "商品返現",
+  cashback: "返現",
+  cashback_type: "返現類型",
+  cashback_money: "返現金額",
+  fixed_money: "固定金額",
+  period: "可返現期限",
+  after_purchase: "購買後",
+  within_days: "天內",
+  permanent: "永久",
+  order_new: "新增",
+  edit: "編輯",
+  delete: "刪除",
+  sure: "確定",
+  cancel: "取消",
+  product: "商品",
+  status: "狀態",
+  hold: "保存",
+  add: "添加",
+  input: "請輸入",
+  select: "請選擇",
+  operation: "操作",
+  product_name: "商品名稱",
+  sureDelete: "確認刪除？",
+  product_cashback_tip: "此處設定系統中可以購買後可返現的商品，金額將返現到賬戶余額",
+  product_cashback_tip1: "0視為永久",
+  product_cashback_tip2: "返現金額若超過購買金額，則按購買金額返現",
+};
+
+window.plugin_lang = plugin_lang;

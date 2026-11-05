@@ -1,0 +1,268 @@
+[
+    {
+        "key": "addon/abnormal_inspection_records",
+        "rel": "public/plugins/addon/abnormal_inspection_records",
+        "files": 26,
+        "php": 12,
+        "encoded": 12
+    },
+    {
+        "key": "addon/client_care",
+        "rel": "public/plugins/addon/client_care",
+        "files": 36,
+        "php": 12,
+        "encoded": 12
+    },
+    {
+        "key": "addon/client_custom_field",
+        "rel": "public/plugins/addon/client_custom_field",
+        "files": 20,
+        "php": 11,
+        "encoded": 11
+    },
+    {
+        "key": "addon/cost_pay",
+        "rel": "public/plugins/addon/cost_pay",
+        "files": 23,
+        "php": 16,
+        "encoded": 16
+    },
+    {
+        "key": "addon/credit_limit",
+        "rel": "public/plugins/addon/credit_limit",
+        "files": 40,
+        "php": 17,
+        "encoded": 17
+    },
+    {
+        "key": "addon/cycle_artificial_order",
+        "rel": "public/plugins/addon/cycle_artificial_order",
+        "files": 26,
+        "php": 10,
+        "encoded": 10
+    },
+    {
+        "key": "addon/e_contract",
+        "rel": "public/plugins/addon/e_contract",
+        "files": 164,
+        "php": 42,
+        "encoded": 42
+    },
+    {
+        "key": "addon/email_notice_admin",
+        "rel": "public/plugins/addon/email_notice_admin",
+        "files": 21,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/event_promotion",
+        "rel": "public/plugins/addon/event_promotion",
+        "files": 25,
+        "php": 13,
+        "encoded": 13
+    },
+    {
+        "key": "addon/flow_packet",
+        "rel": "public/plugins/addon/flow_packet",
+        "files": 23,
+        "php": 12,
+        "encoded": 12
+    },
+    {
+        "key": "addon/host_transfer",
+        "rel": "public/plugins/addon/host_transfer",
+        "files": 19,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/idcsmart_client_level",
+        "rel": "public/plugins/addon/idcsmart_client_level",
+        "files": 27,
+        "php": 14,
+        "encoded": 14
+    },
+    {
+        "key": "addon/idcsmart_domain",
+        "rel": "public/plugins/addon/idcsmart_domain",
+        "files": 79,
+        "php": 31,
+        "encoded": 31
+    },
+    {
+        "key": "addon/idcsmart_invoice",
+        "rel": "public/plugins/addon/idcsmart_invoice",
+        "files": 60,
+        "php": 22,
+        "encoded": 22
+    },
+    {
+        "key": "addon/idcsmart_recommend",
+        "rel": "public/plugins/addon/idcsmart_recommend",
+        "files": 49,
+        "php": 23,
+        "encoded": 23
+    },
+    {
+        "key": "addon/idcsmart_sale",
+        "rel": "public/plugins/addon/idcsmart_sale",
+        "files": 56,
+        "php": 24,
+        "encoded": 24
+    },
+    {
+        "key": "addon/idcsmart_statistics",
+        "rel": "public/plugins/addon/idcsmart_statistics",
+        "files": 28,
+        "php": 8,
+        "encoded": 8
+    },
+    {
+        "key": "addon/idcsmart_voucher",
+        "rel": "public/plugins/addon/idcsmart_voucher",
+        "files": 27,
+        "php": 15,
+        "encoded": 15
+    },
+    {
+        "key": "addon/idcsmart_webhook",
+        "rel": "public/plugins/addon/idcsmart_webhook",
+        "files": 20,
+        "php": 12,
+        "encoded": 12
+    },
+    {
+        "key": "addon/manual_resource",
+        "rel": "public/plugins/addon/manual_resource",
+        "files": 232,
+        "php": 16,
+        "encoded": 16
+    },
+    {
+        "key": "addon/notice_send_merge",
+        "rel": "public/plugins/addon/notice_send_merge",
+        "files": 11,
+        "php": 6,
+        "encoded": 6
+    },
+    {
+        "key": "addon/product_cashback",
+        "rel": "public/plugins/addon/product_cashback",
+        "files": 24,
+        "php": 11,
+        "encoded": 11
+    },
+    {
+        "key": "addon/product_cert_limit",
+        "rel": "public/plugins/addon/product_cert_limit",
+        "files": 23,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/product_cycle_limit",
+        "rel": "public/plugins/addon/product_cycle_limit",
+        "files": 23,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/product_drop_down_select",
+        "rel": "public/plugins/addon/product_drop_down_select",
+        "files": 20,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/product_num_limit",
+        "rel": "public/plugins/addon/product_num_limit",
+        "files": 20,
+        "php": 9,
+        "encoded": 9
+    },
+    {
+        "key": "addon/product_related_limit",
+        "rel": "public/plugins/addon/product_related_limit",
+        "files": 20,
+        "php": 11,
+        "encoded": 11
+    },
+    {
+        "key": "addon/ticket_internal_premium",
+        "rel": "public/plugins/addon/ticket_internal_premium",
+        "files": 89,
+        "php": 35,
+        "encoded": 35
+    },
+    {
+        "key": "addon/ticket_premium",
+        "rel": "public/plugins/addon/ticket_premium",
+        "files": 206,
+        "php": 33,
+        "encoded": 33
+    },
+    {
+        "key": "addon/wanyun_resource",
+        "rel": "public/plugins/addon/wanyun_resource",
+        "files": 47,
+        "php": 29,
+        "encoded": 29
+    },
+    {
+        "key": "server/bt_virtual_host",
+        "rel": "public/plugins/server/bt_virtual_host",
+        "files": 150,
+        "php": 27,
+        "encoded": 27
+    },
+    {
+        "key": "server/direct_admin",
+        "rel": "public/plugins/server/direct_admin",
+        "files": 84,
+        "php": 26,
+        "encoded": 26
+    },
+    {
+        "key": "server/mf_cloud_disk",
+        "rel": "public/plugins/server/mf_cloud_disk",
+        "files": 139,
+        "php": 27,
+        "encoded": 27
+    },
+    {
+        "key": "server/mf_cloud_ip",
+        "rel": "public/plugins/server/mf_cloud_ip",
+        "files": 137,
+        "php": 25,
+        "encoded": 25
+    },
+    {
+        "key": "server/mf_dcim_cabinet",
+        "rel": "public/plugins/server/mf_dcim_cabinet",
+        "files": 162,
+        "php": 36,
+        "encoded": 36
+    },
+    {
+        "key": "server/west_domain",
+        "rel": "public/plugins/server/west_domain",
+        "files": 44,
+        "php": 8,
+        "encoded": 8
+    },
+    {
+        "key": "server/zgsj_domain",
+        "rel": "public/plugins/server/zgsj_domain",
+        "files": 42,
+        "php": 8,
+        "encoded": 8
+    },
+    {
+        "key": "template/web",
+        "rel": "public/web/mf101",
+        "files": 226,
+        "php": 29,
+        "encoded": 29
+    }
+]

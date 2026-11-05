@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/clientarea/css/index.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <el-main>
+          <div class="apply-contract">
+            <div class="apply-title">
+              <div class="back-btn" @click="goBack">
+                <img src="/plugins/addon/e_contract/template/clientarea/img/back_icon.png" alt="">
+              </div>
+              <div class="title-text">{{lang.contract_text1}}</div>
+            </div>
+            <div class="apply-des">{{lang.contract_text2}}</div>
+            <el-table v-loading="loading" :data="dataList" style="width: 100%;margin-top: .2rem;margin-bottom: 0.2rem;">
+              <el-table-column prop="id" :label="lang.contract_text3" width="120" align="left">
+              </el-table-column>
+              <el-table-column :label="lang.contract_text4" width="200" align="left">
+                <template slot-scope="scope">
+                  {{scope.row.create_time | formateTime}}
+                </template>
+              </el-table-column>
+              <el-table-column :label="lang.contract_text5" align="left" :show-overflow-tooltip="true">
+                <template slot-scope="scope">
+                  {{handelHostName(scope.row.product_names)}}
+                </template>
+              </el-table-column>
+              <el-table-column :label="lang.contract_text6" width="200" align="left">
+                <template slot-scope="scope">
+                  {{commonData.currency_prefix}}{{scope.row.amount}}
+                </template>
+              </el-table-column>
+              <el-table-column :label="lang.contract_text7" width="200" align="left">
+                <template slot-scope="scope">
+                  <div style="display: flex; align-items: center;">
+                    <span class="contract-status"
+                      :style="{'color':statusObj[scope.row.status].color,'background':statusObj[scope.row.status].background}">{{statusObj[scope.row.status].label}}</span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column :label="lang.finance_label6" width="120" align="left">
+                <template slot-scope="scope">
+                  <span class="op-text" @click="handelSign(scope.row.id)">{{lang.contract_text8}}</span>
+                </template>
+              </el-table-column>
+            </el-table>
+            <pagination :page-data="params" @sizechange="sizeChange" @currentchange="currentChange"></pagination>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/e_contract/template/clientarea/api/index.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/pagination/pagination.js"></script>
+  <script src="/plugins/addon/e_contract/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/e_contract/template/clientarea/js/applyContract.js"></script>

@@ -1,0 +1,154 @@
+.apply-contract {
+  font-size: 0.14rem;
+}
+.apply-contract .apply-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.apply-contract .apply-title .back-btn {
+  width: 0.24rem;
+  height: 0.26rem;
+  cursor: pointer;
+}
+.apply-contract .apply-title .back-btn img {
+  width: 100%;
+  height: 100%;
+}
+.apply-contract .apply-title .title-text {
+  margin-left: 0.25rem;
+  font-size: 0.28rem;
+  color: #171725;
+}
+.apply-contract .apply-des {
+  font-size: 0.16rem;
+  color: #171725;
+}
+.apply-contract .contract-status {
+  display: inline-block;
+  padding: 0.04rem 0.1rem;
+  border-radius: 0.03rem;
+}
+.apply-contract .op-text {
+  font-size: 0.14rem;
+  color: #0058FF;
+  cursor: pointer;
+}
+.apply-contract .sign-info {
+  margin-top: 0.4rem;
+  border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+  border: 0.01rem solid #E6E7EB;
+  padding: 0.24rem 0.3rem;
+}
+.apply-contract .sign-info .sign-title {
+  font-weight: 500;
+  color: #1E2736;
+  font-size: 0.18rem;
+  margin-bottom: 0.24rem;
+}
+.apply-contract .sign-info .info-label {
+  display: inline-block;
+  color: #1E2736;
+  font-size: 0.14rem;
+  min-width: 0.8rem;
+}
+.apply-contract .sign-info .info-value {
+  margin-left: 0.2rem;
+  font-size: 0.14rem;
+  color: #1E2736;
+}
+.apply-contract .fingerprint-info {
+  margin-top: 0.3rem;
+  font-size: 0.14rem;
+  color: #171725;
+}
+.apply-contract .signtem-box {
+  margin-top: 0.6rem;
+}
+.apply-contract .contract-info {
+  background: #FAFBFF;
+  border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+  height: 3.59rem;
+  border: 0.01rem solid #E6E7EB;
+  padding: 0.24rem 0.3rem;
+  overflow: auto;
+}
+.apply-contract .contract-info::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width: 0.04rem;
+  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 0.04rem;
+}
+.apply-contract .contract-info::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius: 0.05rem 0.05rem 0.05rem 0.05rem;
+  background: #E6E9F4;
+}
+.apply-contract .contract-info::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  border-radius: 0.05rem;
+  background: #ededed;
+}
+.apply-contract .sign-btn {
+  margin-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.apply-contract .sign-btn .el-button {
+  margin-top: 0.2rem;
+  width: 1.44rem;
+  height: 0.46rem;
+  background: #0058FF;
+  border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+  font-size: 0.16rem;
+  color: rgba(255, 255, 255, 0.9);
+  border: none;
+}
+.sign-dialog .dialog-title {
+  font-size: 0.24rem;
+  font-weight: 400;
+  color: #171725;
+}
+.sign-dialog .dialog-dec {
+  font-size: 0.14rem;
+  margin-top: 0.4rem;
+  color: #171725;
+}
+.sign-dialog .el-dialog__body {
+  padding: 0.3rem 0.8rem 0.6rem 0.8rem;
+  font-size: 0.16rem;
+}
+.sign-dialog #signature-canvas {
+  margin-top: 0.1rem;
+  width: 5.5rem;
+  height: 2.57rem;
+  background: #FAFBFF;
+  border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+  border: 0.01rem solid #E6E7EB;
+}
+.sign-dialog .dialog-fotter {
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+.sign-dialog .save-btn,
+.sign-dialog .cancel-btn {
+  width: 1.12rem;
+  height: 0.46rem;
+  font-size: 0.16rem;
+  border-radius: 0.03rem;
+  border: none;
+}
+.sign-dialog .save-btn {
+  background: #0058FF;
+  color: rgba(255, 255, 255, 0.9);
+}
+.sign-dialog .cancel-btn {
+  margin-left: 0.12rem;
+  background: #E7E7E7;
+  color: #1E2736;
+}

@@ -1,0 +1,498 @@
+<link rel="stylesheet" href="/plugins/server/direct_admin/template/admin/css/direct_admin.css">
+<!-- =======内容区域======= -->
+<div class="common_config">
+  <com-config>
+    <div class="t-card">
+      <t-tabs v-model="tabs" @change="changeTab">
+        <!-- 周期设置 -->
+        <t-tab-panel value="duration" :label="lang.mf_duration">
+          <div class="box limit-table">
+            <div class="com-top">
+              <p class="tit">{{lang.mf_duration}}</p>
+              <div class="right">
+                <div class="add-btn" @click='changeRadio'>{{lang.cycle_ratio}}</div>
+                <div class="add-btn" @click='addCycle'>{{lang.add_cycle}}</div>
+              </div>
+            </div>
+            <p class="s-tip" style="line-height: 1;margin-top: -10px;">{{lang.mf_tip30}}</p>
+            <t-table row-key="id" :data="cycleData" size="medium" :columns="cycleColumns" :hover="hover"
+              :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+              :hide-sort-tips="true">
+              <template slot="sortIcon">
+                <t-icon name="caret-down-small"></t-icon>
+              </template>
+              <template #price_factor="{row}">
+                {{row.price_factor.toFixed(2)}}
+              </template>
+              <template #unit="{row}">
+                <span v-if="row.num">{{row.num}}</span>{{lang[row.unit]}}
+              </template>
+              <template #price="{row}">
+                <span>{{currency_prefix}}{{(row.price*1).toFixed(2)}}</span>
+              </template>
+              <template #ratio="{row}">
+                <span>{{row.ratio || '--'}}</span>
+              </template>
+              <template #op="{row}">
+                <div class="com-opt">
+                  <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                    <t-icon name="edit-1" @click="editCycle(row)"></t-icon>
+                  </t-tooltip>
+                  <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                    <t-icon name="delete" @click="comDel('cycle',row)"></t-icon>
+                  </t-tooltip>
+                </div>
+              </template>
+            </t-table>
+          </div>
+        </t-tab-panel>
+        <!-- 主机配置 -->
+        <t-tab-panel value="host" :label="lang.da_host_config">
+          <div class="box data-box limit-table1">
+            <div class="com-top">
+              <div></div>
+              <div class="r-btn">
+                <div class="add-btn" @click='addHost'>{{lang.invoice_btn6}}{{lang.da_host}}</div>
+              </div>
+            </div>
+            <t-table row-key="id" :data="hostData" size="medium" :columns="hostColumns" :hover="hover"
+              :loading="hostLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+              :hide-sort-tips="true">
+              <template slot="sortIcon">
+                <t-icon name="caret-down-small"></t-icon>
+              </template>
+              <template #da_area="{row}">
+                {{row.name_zh}}-{{row.city}}
+              </template>
+              <template #ssl="{row}">
+                <t-switch size="medium" :value="row.ssl" :custom-value="[1,0]"
+                  @change="changeSsl($event, row)"></t-switch>
+              </template>
+              <template #port="{row}">
+                <t-icon v-if="row.port_status === null" name="loading"></t-icon>
+                <span @click="getSingleStatus('port',row)" style="cursor: pointer;" v-else>
+                  <t-icon v-if="row.port_status === 200" name="check-circle-filled" style="color:#00a870;"></t-icon>
+                  <template v-else>
+                    <t-tooltip :content="row.port_reason" theme="light" :show-arrow="false"
+                      :disabled="!row.port_reason">
+                      <t-icon name="close-circle-filled" class="icon-error" style="color: #e34d59;"></t-icon>
+                    </t-tooltip>
+                  </template>
+                </span>
+                {{row.port}}
+              </template>
+              <template #ftp_port="{row}">
+                <t-icon v-if="row.ftp_port_status === null" name="loading"></t-icon>
+                <span @click="getSingleStatus('ftp_port',row)" style="cursor: pointer;" v-else>
+                  <t-icon v-if="row.ftp_port_status === 200" name="check-circle-filled" style="color:#00a870;"></t-icon>
+                  <template v-else>
+                    <t-tooltip :content="row.ftp_port_reason" theme="light" :show-arrow="false"
+                      :disabled="!row.ftp_port_reason">
+                      <t-icon name="close-circle-filled" class="icon-error" style="color: #e34d59;"></t-icon>
+                    </t-tooltip>
+                  </template>
+                </span>
+                {{row.ftp_port}}
+              </template>
+              <template #op="{row}">
+                <div class="com-opt">
+                  <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                    <t-icon name="edit-1" @click="editHost(row)"></t-icon>
+                  </t-tooltip>
+                  <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                    <t-icon name="delete" @click="comDel('host',row)"></t-icon>
+                  </t-tooltip>
+                </div>
+              </template>
+            </t-table>
+          </div>
+        </t-tab-panel>
+        <!-- 套餐配置 -->
+        <t-tab-panel value="data_center" :label="lang.package_config">
+          <div class="box data-box">
+            <div class="com-top">
+              <p class="tit">{{lang.package_config}}</p>
+              <div class="r-btn">
+                <div class="add-btn" @click='addData'>{{lang.invoice_btn6}}{{lang.package}}</div>
+              </div>
+            </div>
+            <t-table row-key="id" :data="dataList" size="medium" :columns="dataColumns" :hover="hover"
+              :loading="dataLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+              :hide-sort-tips="true">
+              <template slot="sortIcon">
+                <t-icon name="caret-down-small"></t-icon>
+              </template>
+              <template #area="{row}">
+                {{row.area || '--'}}
+                <span v-if="row.product_name">({{row.product_name}})</span>
+              </template>
+              <template #price="{row}">
+                {{currency_prefix}}{{row.price}}<template v-if="row.duration_name">/{{row.duration_name}}</template>
+                {{lang.rise}}
+              </template>
+              <template #op="{row}">
+                <div class="com-opt">
+                  <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                    <t-icon name="edit-1" @click="editPackage(row)"></t-icon>
+                  </t-tooltip>
+                  <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                    <t-icon name="delete" @click="comDel('package',row)"></t-icon>
+                  </t-tooltip>
+                </div>
+              </template>
+            </t-table>
+          </div>
+        </t-tab-panel>
+        <!-- 赠送域名 -->
+        <t-tab-panel value="other" :label="lang.da_domain" v-if="isShowDomain">
+          <div class="box other-box">
+            <t-form :data="otherForm" ref="otherConfig" @submit="submitConfig" :rules="dataRules" class="other-form">
+              <t-form-item :label="lang.da_max_value" label-align="top" name="gift_domain_value">
+                <t-input-number v-model="otherForm.gift_domain_value" theme="normal" :min="0" :decimal-places="2"
+                  :placeholder="lang.da_max_value"></t-input-number>
+              </t-form-item>
+              <t-form-item :label="lang.da_domain_suffix" label-align="top" name="gift_domain_suffix">
+                <t-select v-model="otherForm.gift_domain_suffix" :placeholder="lang.da_domain_suffix" multiple clearable
+                  :min-collapsed-num="1">
+                  <t-option v-for="item in allSuffixs" :value="item.suffix" :label="item.suffix"
+                    :key="item.id"></t-option>
+                </t-select>
+              </t-form-item>
+              <p class="other-tip">
+                {{lang.da_tip1}}<br>
+                {{lang.da_tip2}}<br>
+                {{lang.da_tip3}}
+              </p>
+              <t-button theme="primary" type="submit" :loading="submitLoading" class="submit">{{lang.hold}}
+              </t-button>
+            </t-form>
+          </div>
+        </t-tab-panel>
+      </t-tabs>
+    </div>
+    <!-- 新增/修改 周期 -->
+    <t-dialog :header="comTitle" :visible.sync="cycleModel" :footer="false" width="600" @close="closeData"
+      :close-on-overlay-click="false">
+      <t-form :data="cycleForm" ref="cycleForm" @submit="submitCycle" :rules="cycleRules" class="cycle-form"
+        v-if="cycleModel">
+        <t-form-item :label="lang.cycle_name" name="name">
+          <t-input v-model="cycleForm.name" :placeholder="lang.input+lang.cycle_name"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.cycle_time" class="required">
+          <t-form-item class="cycle_time" name="num" style="margin-bottom: 0;" :required-mark="false">
+            <t-input v-model="cycleForm.num" :placeholder="lang.input+lang.cycle_time"></t-input>
+          </t-form-item>
+          <t-form-item :required-mark="false">
+            <t-select v-model="cycleForm.unit">
+              <t-option :key="item.value" :value="item.value" :label="item.label" v-for="item in cycleTime">
+              </t-option>
+            </t-select>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="lang.price_factor" name="price_factor">
+          <t-input-number v-model="cycleForm.price_factor" :placeholder="lang.input+lang.factor" theme="normal"
+            :decimal-places="2" :min="0" :max="9999">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item label=" " class="empty-item">
+          <span>{{lang.mf_tip39}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.cycle_price">
+          <t-input-number v-model="cycleForm.price" :placeholder="lang.input+lang.price" theme="normal"
+            :decimal-places="2" :min="0">
+          </t-input-number>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}
+          </t-button>
+          <t-button theme="default" variant="base" @click="cycleModel=false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 周期比例 -->
+    <t-dialog :header="lang.cycle_ratio" :visible.sync="ratioModel" :footer="false" width="600"
+      :close-on-overlay-click="false">
+      <t-table row-key="id" :data="ratioData" size="medium" :columns="ratioColumns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+        <template #unit="{row}">
+          <span>{{row.num}}{{lang[row.unit]}}</span>
+        </template>
+        <template #ratio="{row}">
+          <t-input-number v-model="row.ratio" :placeholder="lang.input+lang.mf_ratio" theme="normal" :decimal-places="2"
+            :min="0.01">
+          </t-input-number>
+        </template>
+      </t-table>
+      <div class="ratio-tip">
+        <p>*{{lang.mf_notes}}</p>
+        <p>{{lang.mf_ratio_tip1}}</p>
+        <p>{{lang.mf_ratio_tip2}}</p>
+        <p>{{lang.mf_ratio_tip3}}</p>
+        <p>{{lang.mf_ratio_tip4}}</p>
+      </div>
+      <div class="com-f-btn">
+        <t-button theme="primary" @click="saveRatio" :loading="submitLoading">{{lang.hold}}
+        </t-button>
+        <t-button theme="default" variant="base" @click="ratioModel=false">{{lang.cancel}}</t-button>
+      </div>
+    </t-dialog>
+    <!-- 新增/修改 主机配置 -->
+    <t-dialog :header="comTitle" :visible.sync="hostaModel" :footer="false" width="635" @close="closeData">
+      <t-form :data="hostForm" ref="hostForm" @submit="submitHost" :rules="dataRules" class="data-form cpuDialog"
+        autocomplete="off" v-if="hostaModel">
+        <t-form-item :label="lang.da_host_name" name="name">
+          <t-input v-model="hostForm.name" :placeholder="`${lang.input}${lang.area}${lang.nickname}`"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.country_area" class="required">
+          <t-form-item name="country_id" class="configs" :required-mark="false">
+            <t-select v-model="hostForm.country_id" class="flow-type" :placeholder="lang.select+lang.country_area"
+              filterable
+              :popup-props="{ overlayClassName: `custom-data`, overlayInnerStyle: (trigger) => ({ width: `${trigger.offsetWidth}px` })}">
+              <img class="s-icon" :class="{'noIcon': !hostForm.country_id }" slot="prefixIcon" :src="calcIcon" />
+              <t-option :key="item.id" :value="item.id" :label="calcCountryName(item)" v-for="item in countryList"
+                class="custom-icon">
+                <img :src="`${host}/upload/common/country/${item.iso}.png`" alt="" class="icon">
+                {{calcCountryName(item)}}
+              </t-option>
+            </t-select>
+          </t-form-item>
+          <t-form-item  name="city" class="configs" :required-mark="false" :rules="[
+        { required: true, message: lang.input + lang.city, type: 'error' }]">
+            <t-input v-model="hostForm.city" :placeholder="lang.input+lang.city"></t-input>
+          </t-form-item>
+        </t-form-item>
+        <!-- <t-form-item :label="`${lang.area}${lang.nickname}`" name="area">
+        <t-input v-model="hostForm.area" :placeholder="`${lang.input}${lang.area}${lang.nickname}`"></t-input>
+      </t-form-item> -->
+        <t-form-item :label="lang.da_host_address" name="url">
+          <t-input v-model="hostForm.url" :placeholder="`${lang.input}${lang.da_host_address}`"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.username" name="username">
+          <t-input v-model="hostForm.username" :placeholder="`${lang.input}${lang.username}`"
+            autocomplete="off"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.password" name="password">
+          <t-input v-model="hostForm.password" :type="hostForm.password ? 'password' : 'text'"
+            :placeholder="`${lang.input}${lang.password}`" autocomplete="off"></t-input>
+        </t-form-item>
+        <t-form-item :label="`DA${lang.auth_port}`" name="port">
+          <t-input-number v-model="hostForm.port" theme="normal" :placeholder="`${lang.default}2222`" :min="0"
+            :decimal-places="0"></t-input-number>
+        </t-form-item>
+        <t-form-item :label="`FTP${lang.auth_port}`" name="ftp_port">
+          <t-input-number v-model="hostForm.ftp_port" theme="normal" :placeholder="`${lang.default}21`" :min="0"
+            :decimal-places="0"></t-input-number>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}
+          </t-button>
+          <t-button theme="default" variant="base" @click="closeData">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 新增/修改 套餐配置 -->
+    <t-dialog :header="comTitle" :visible.sync="dataModel" :footer="false" width="1460" @close="closeData">
+      <t-form :data="dataForm" ref="dataForm" @submit="submitData" :rules="dataRules"
+        class="data-form cpuDialog package-form" v-if="dataModel" label-align="top">
+        <div class="form-item">
+          <p class="com-tit">{{lang.package_info}}</p>
+          <div class="short-item">
+            <t-form-item name="country_id" :label="lang.da_area">
+              <t-select v-model="dataForm.country_id" class="flow-type" :placeholder="lang.select+lang.da_area"
+                filterable @change="changeCurCountry"
+                :popup-props="{ overlayClassName: `custom-data`, overlayInnerStyle: (trigger) => ({ width: `${trigger.offsetWidth}px` })}">
+                <img class="s-icon" :class="{'noIcon': !dataForm.country_id }" slot="prefixIcon" :src="calcIcon1" />
+                <t-option :key="item.country_id" :value="item.country_id" :label="calcCountryName(item)"
+                  v-for="item in existCountries" class="custom-icon">
+                  <img :src="`${host}/upload/common/country/${item.iso}.png`" alt="" class="icon">
+                  {{calcCountryName(item)}}
+                </t-option>
+              </t-select>
+            </t-form-item>
+            <t-form-item label=" " name="city" class="configs" :required-mark="false">
+              <t-select v-model="dataForm.city" :placeholder="lang.select+lang.city">
+                <t-option v-for="(item, index) in calcCity('dataForm')" :value="item" :label="item" :key="index">
+                </t-option>
+              </t-select>
+            </t-form-item>
+          </div>
+          <div class="short-item">
+            <t-form-item :label="lang.area" name="area">
+              <t-select v-model="dataForm.area" creatable filterable :placeholder="`${lang.select}${lang.area}`"
+                :options="countrySelect" @create="createOptions"></t-select>
+            </t-form-item>
+            <t-form-item :label="lang.mf_package_name" name="name">
+              <t-input v-model="dataForm.name" :placeholder="lang.input+lang.mf_package_name"></t-input>
+            </t-form-item>
+          </div>
+          <t-form-item :label="lang.description">
+            <t-input v-model="dataForm.description" :placeholder="lang.input+lang.description">
+            </t-input>
+          </t-form-item>
+          <div class="short-item">
+            <!-- 选择套餐 -->
+            <t-form-item name="direct_admin_server_id" :label="lang.choose_package">
+              <t-select v-model="dataForm.direct_admin_server_id" class="flow-type"
+                :placeholder="`${lang.select}${lang.da_host}`">
+                <t-option :key="item.id" :value="item.id" :label="item.name" v-for="item in hostList">
+                </t-option>
+              </t-select>
+            </t-form-item>
+            <!-- name="remote_meal"  -->
+            <t-form-item class="configs" :required-mark="false" label=" ">
+              <t-select v-model="dataForm.remote_meal" class="flow-type" :placeholder="`${lang.select}${lang.package}`"
+                :loading="packageLoading">
+                <t-option :key="item.package" :value="item.package" :label="item.package" v-for="item in packageList">
+                </t-option>
+              </t-select>
+            </t-form-item>
+          </div>
+          <p class="com-tit">{{lang.disk_email}}</p>
+          <div class="short-item">
+            <t-form-item :label="lang.disk_space" name="disk" class="unit-box">
+              <t-form-item class="number">
+                <t-input-number v-model="dataForm.disk" theme="normal" :min="0" :decimal-places="2"
+                  :placeholder="`${lang.input}${lang.disk_space}`">
+                </t-input-number>
+              </t-form-item>
+              <t-form-item class="unit">
+                <t-select v-model="dataForm.disk_unit" class="flow-type" :borderless="true"
+                  :popup-props="popupPropsUnit">
+                  <t-option :key="item.value" :value="item.value" :label="item.lable" v-for="item in unitArr">
+                  </t-option>
+                </t-select>
+              </t-form-item>
+            </t-form-item>
+            <t-form-item :label="lang.email_num" name="email_num">
+              <t-input-number v-model="dataForm.email_num" theme="normal" :min="0" :decimal-places="0"
+                :placeholder="`${lang.input}${lang.email_num}`">
+              </t-input-number>
+            </t-form-item>
+          </div>
+        </div>
+        <div class="form-item">
+          <p class="com-tit">{{lang.basic_info}}</p>
+          <div class="short-item">
+            <t-form-item :label="lang.domain_num" name="domain_num">
+              <t-input-number v-model="dataForm.domain_num" theme="normal" :min="0" :decimal-places="0"
+                :placeholder="lang.da_tip6">
+              </t-input-number>
+            </t-form-item>
+            <t-form-item :label="lang.sub_domain_num" name="sub_domain_num">
+              <t-input-number v-model="dataForm.sub_domain_num" theme="normal" :min="0" :decimal-places="0"
+                :placeholder="lang.da_tip6">
+              </t-input-number>
+            </t-form-item>
+          </div>
+          <div class="short-item">
+            <t-form-item :label="lang.cloud_flow" class="unit-box" style="margin-right: 0;">
+              <t-form-item :required-mark="false" name="flow" class="number">
+                <t-input-number v-model="dataForm.flow" theme="normal" :min="0" :decimal-places="2"
+                  :placeholder="`${lang.input}${lang.cloud_flow}`">
+                </t-input-number>
+              </t-form-item>
+              <t-form-item class="unit">
+                <t-select v-model="dataForm.flow_unit" class="flow-type" :borderless="true"
+                  :popup-props="popupPropsUnit">
+                  <t-option :key="item.value" :value="item.value" :label="item.lable" v-for="item in unitArr">
+                  </t-option>
+                </t-select>
+              </t-form-item>
+            </t-form-item>
+            <!-- <t-form-item :label="lang.sub_domain">
+            <t-select v-model="dataForm.second_domain" class="flow-type">
+              <t-option :key="item.value" :value="item.value" :label="item.lable" v-for="item in second_domains">
+              </t-option>
+            </t-select>
+            <p class="s-tip">{{lang.da_tip5}}</p>
+          </t-form-item> -->
+          </div>
+          <div class="short-item switch">
+            <t-form-item v-if="isShowDomain">
+              <div class="switch-item">
+                {{lang.da_domain}} <t-switch size="small" v-model="dataForm.gift_domain"
+                  :custom-value="[1,0]"></t-switch>
+              </div>
+              <span class="form-tip">{{lang.da_tip4}}</span>
+            </t-form-item>
+            <t-form-item>
+              <div class="switch-item">
+                {{lang.independent_ip}} <t-switch size="small" v-model="dataForm.independent_ip"
+                  :custom-value="[1,0]"></t-switch>
+              </div>
+            </t-form-item>
+          </div>
+          <p class="com-tit">{{lang.system_upgrade}}</p>
+          <div class="short-item store-config">
+            <div class="short-item">
+              <!-- 操作系统 -->
+              <t-form-item name="os" class="configs" :label="lang.opt_system" :required-mark="false">
+                <t-select v-model="dataForm.os" class="flow-type">
+                  <t-option key="Linux" value="Linux" label="Linux"></t-option>
+                  <t-option key="Windows" value="Windows" label="Windows"></t-option>
+                </t-select>
+              </t-form-item>
+              <t-form-item name="os_detail" class="configs" label=" " :required-mark="false">
+                <t-input v-model="dataForm.os_detail" :placeholder="lang.input" class="flow"></t-input>
+              </t-form-item>
+            </div>
+            <div class="short-item">
+              <t-form-item name="php_version_low" class="configs" :label="`PHP${lang.version}`" :required-mark="false"
+                style="margin-right: 0 !important;">
+                <t-input-number v-model="dataForm.php_version_low" class="flow-type" :min="0" :decimal-places="1"
+                  theme="normal" :placeholder="`${lang.input}${lang.version}`" @change="changeLow">
+                </t-input-number>
+              </t-form-item>
+              <span style="margin: 30px 2px 0 0;">-</span>
+              <t-form-item name="php_version_high" class="configs" label=" " :required-mark="false">
+                <t-input-number v-model="dataForm.php_version_high" @change="changeHigh"
+                  :placeholder="`${lang.input}${lang.version}`" theme="normal" class="flow" :min="0"
+                  :decimal-places="1">
+                </t-input-number>
+              </t-form-item>
+            </div>
+          </div>
+          <p class="com-tit">{{lang.price_config}}</p>
+          <t-form-item :label="lang.price">
+            <div class="price-box">
+              <div class="item" v-for="(item,index) in dataForm.price" :key="item.id">
+                <p class="txt">{{item.name}}</p>
+                <p class="num">
+                  <!-- 循环验证 -->
+                  <t-form-item :name="`price[${index}].price`" label-align="left"
+                    :ruels="[ item.price * 1 ? calcRules.price : {required: true} ]">
+                    <t-input v-model="item.price" :placeholder="lang.input+lang.money"
+                      @blur="blurPrice($event,index)"></t-input>
+                  </t-form-item>
+                </p>
+              </div>
+              <!-- 自动填充 -->
+              <div class="item">
+                <p class="txt"></p>
+                <p class="num"><t-button size="small" :disabled="isShowFill(dataForm.price)"
+                    @click="autoFill('dataForm',dataForm.price)">{{lang.autofill}}</t-button>
+                </p>
+              </div>
+            </div>
+          </t-form-item>
+          <div class="com-f-btn">
+            <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}
+            </t-button>
+            <t-button theme="default" variant="base" @click="closeData">{{lang.cancel}}</t-button>
+          </div>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="delTit" :close-btn="false" :visible.sync="delVisible" class="deleteDialog">
+      <p class="des" v-if="delType==='cycle'">{{lang.delete_tip}}</p>
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+<script src="/plugins/server/direct_admin/template/admin/lang/index.js"></script>
+<script src="/plugins/server/direct_admin/template/admin/api/direct_admin.js"></script>
+<script src="/plugins/server/direct_admin/template/admin/js/direct_admin.js"></script>

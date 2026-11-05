@@ -1,0 +1,188 @@
+.apply-contract {
+  font-size: .14rem;
+
+  .apply-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.4rem;
+
+    .back-btn {
+      width: 0.24rem;
+      height: 0.26rem;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .title-text {
+      margin-left: 0.25rem;
+      font-size: 0.28rem;
+      color: #171725;
+    }
+  }
+
+  .apply-des {
+    font-size: 0.16rem;
+    color: #171725;
+  }
+
+  .contract-status {
+    display: inline-block;
+    padding: 0.04rem 0.1rem;
+    border-radius: 0.03rem;
+  }
+
+  .op-text {
+    font-size: 0.14rem;
+    color: #0058FF;
+    cursor: pointer;
+  }
+
+  .sign-info {
+    margin-top: 0.4rem;
+    border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+    border: 0.01rem solid #E6E7EB;
+    padding: 0.24rem 0.3rem;
+
+    .sign-title {
+      font-weight: 500;
+      color: #1E2736;
+      font-size: 0.18rem;
+      margin-bottom: 0.24rem;
+    }
+
+    .info-label {
+      display: inline-block;
+      color: #1E2736;
+      font-size: 0.14rem;
+      min-width: 0.8rem;
+    }
+
+    .info-value {
+      margin-left: 0.2rem;
+      font-size: 0.14rem;
+      color: #1E2736;
+    }
+  }
+
+  .fingerprint-info {
+    margin-top: 0.3rem;
+    font-size: 0.14rem;
+    color: #171725;
+  }
+
+  .signtem-box {
+    margin-top: 0.6rem;
+  }
+
+  .contract-info {
+    background: #FAFBFF;
+    border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+    height: 3.59rem;
+    border: 0.01rem solid #E6E7EB;
+    padding: 0.24rem 0.3rem;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 0.04rem;
+      /*高宽分别对应横竖滚动条的尺寸*/
+      height: 0.04rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
+      border-radius: 0.05rem 0.05rem 0.05rem 0.05rem;
+      background: #E6E9F4;
+    }
+
+    &::-webkit-scrollbar-track {
+      /*滚动条里面轨道*/
+      border-radius: 0.05rem;
+      background: #ededed;
+    }
+
+  }
+
+  .sign-btn {
+    margin-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    .el-button {
+      margin-top: 0.2rem;
+      width: 1.44rem;
+      height: 0.46rem;
+      background: #0058FF;
+      border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+      font-size: 0.16rem;
+      color: rgba(255, 255, 255, 0.9);
+      border: none;
+    }
+  }
+
+}
+
+// 申请纸质合同
+.sign-dialog {
+  .dialog-title {
+    font-size: 0.24rem;
+    font-weight: 400;
+    color: #171725;
+  }
+
+
+  .dialog-dec {
+    font-size: 0.14rem;
+    margin-top: 0.4rem;
+    color: #171725;
+  }
+
+  .el-dialog__body {
+    padding: 0.3rem 0.8rem 0.6rem 0.8rem;
+    font-size: 0.16rem;
+  }
+
+  #signature-canvas {
+    margin-top: 0.1rem;
+    width: 5.5rem;
+    height: 2.57rem;
+    background: #FAFBFF;
+    border-radius: 0.03rem 0.03rem 0.03rem 0.03rem;
+    border: 0.01rem solid #E6E7EB;
+  }
+
+
+  .dialog-fotter {
+    margin-top: 0.4rem;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+  }
+
+  .save-btn,
+  .cancel-btn {
+    width: 1.12rem;
+    height: 0.46rem;
+    font-size: 0.16rem;
+    border-radius: 0.03rem;
+    border: none;
+  }
+
+  .save-btn {
+    background: #0058FF;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .cancel-btn {
+    margin-left: 0.12rem;
+    background: #E7E7E7;
+    color: #1E2736;
+  }
+}

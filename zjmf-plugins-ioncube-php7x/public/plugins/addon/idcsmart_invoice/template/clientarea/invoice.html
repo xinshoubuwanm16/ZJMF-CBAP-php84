@@ -1,0 +1,533 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_invoice/template/clientarea/css/invoiceList.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <el-main>
+          <!-- 自己的东西 -->
+          <div class="main-card">
+            <h2>{{lang.invoice_text1}}</h2>
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+              <!-- 发票列表 -->
+              <el-tab-pane :label="lang.invoice_text2" name="invoiceList">
+                <div class="invoiceList-content">
+                  <button class="invoice-btn" @click="openInvoiceBtn">{{lang.invoice_text3}}</button>
+
+                  <div>
+                    <el-table :data="tableList">
+                      <el-table-column :label="lang.invoice_text4" prop="title_type">
+                        <template slot-scope="{row}">
+                          {{ row.title_type === 'company' ? lang.invoice_text5 : lang.invoice_text6 }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text7" prop="title"></el-table-column>
+                      <el-table-column :label="lang.invoice_text144" prop="invoice_format">
+                        <template slot-scope="{row}">{{row.invoice_format || '--'}}</template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text140" prop="invoice_project" min-width="100px">
+                        <template slot-scope="{row}">{{row.invoice_project || '--'}}</template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text8" prop="price">
+                        <template slot-scope="{row}">
+                          {{commonData.currency_prefix}}{{ row.price }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text9" prop="address" width="280px">
+                        <template slot-scope="{row}">
+                          {{ row.address || row.email || row.rec_url }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text10" prop="create_time" width="180px">
+                        <template slot-scope="{row}">
+                          {{ row.create_time | formateTime }}
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text11" width="100px">
+                        <template slot-scope="{row}">
+                          <div v-if="row.text !== lang.invoice_text12" :class="[ 'state-text', row.classTypeName]">
+                            <el-tooltip class="item" effect="dark" placement="top" v-show="row.review_notes">
+                              <div slot="content">
+                                {{ row.review_notes }}
+                              </div>
+                              <div>
+                                {{ row.text }}
+                              </div>
+                            </el-tooltip>
+                            <div v-show="!row.review_notes">
+                              {{ row.text }}
+                            </div>
+                          </div>
+                          <template v-else>
+                            <el-tooltip class="item" effect="dark" placement="top">
+                              <div slot="content">
+                                {{ row.reject_reason }}
+                              </div>
+                              <div class="state-text state-text-error">
+                                {{ row.text }}
+                              </div>
+                            </el-tooltip>
+                          </template>
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="lang.invoice_text13" width="120px" align="center">
+                        <template slot-scope="{row}">
+                          <div class="caozuo">
+                            <el-popover placement="top-start" trigger="hover">
+                              <div class="operation-box">
+                                <div slot="reference" class="operation-item" @click="handleDetail(row.id)">
+                                  {{lang.invoice_text14}}
+                                </div>
+                                <div class="operation-item" v-show="row.status ==='unpaid' " @click="goPay(row)">
+                                  {{lang.invoice_text15}}
+                                </div>
+                                <div class="operation-item" v-show="row.status ==='unpaid' || row.status ==='pending' "
+                                  @click="handleDelete(row.id)">
+                                  {{lang.invoice_text16}}
+                                </div>
+                                <div class="operation-item"
+                                  v-show="(row.status ==='wait_send' || row.status ==='sent') && row.invoice_file_upload "
+                                  @click="handleDown(row.id)">
+                                  {{lang.invoice_text145}}
+                                </div>
+                              </div>
+                              <i slot="reference" style="width: 100%;color: #0058FF;" class="el-icon-more"></i>
+                            </el-popover>
+                          </div>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                    <pagination :page-data="params" @sizechange="sizeChange" @currentchange="currentChange">
+                    </pagination>
+                  </div>
+
+                  <el-dialog :visible.sync="detaliVisible" class="invoice-dialog" width="11.84rem">
+                    <div class="deail-content">
+                      <header>
+                        <!-- <div class="title-bg" style="{backgroundImage: 'url('+backgroudImg+')'}"></div> -->
+                        <img :src="backgroudImg" alt="">
+                      </header>
+                      <div class="title-text">
+                        <p>
+                          {{lang.invoice_text17}}
+                          <span>{{lang.invoice_text18}}{{invoiceDetails.invoice_type == 'normal' ? lang.invoice_text19 :  lang.invoice_text20 }}{{lang.invoice_text21}}</span>
+                        </p>
+                        <p>
+                          {{lang.invoice_text22}}
+                          <span>{{ invoiceDetails.title_type ==='company' ? lang.invoice_text5 : lang.invoice_text6}}</span>
+                        </p>
+                        <p>
+                          {{lang.invoice_text23}}
+                          <span>{{ invoiceDetails.title || ' '}}</span>
+                        </p>
+                      </div>
+                      <main>
+                        <div class="main-box">
+                          <div class="main-top">
+                            <div class="main-top-item1">
+                              {{lang.invoice_text24}}
+                            </div>
+                            <div class="main-top-item2">
+                              <p>
+                                <strong>{{lang.invoice_text25}}<i></i></strong>
+                                <span> {{invoiceDetails.title || ' '}}</span>
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text26}}<i></i></strong>
+                                <span> {{invoiceDetails.company_address || ' '}}</span>
+
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text27}}<i></i></strong>
+                                <span> {{ invoiceDetails.tax || ' '}}</span>
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text28}}<i></i></strong>
+                                <span> {{invoiceDetails.bank || ' '}}</span>
+                              </p>
+
+                              <p>
+                                <strong>{{lang.invoice_text29}}<i></i></strong>
+                                <span> {{invoiceDetails.bank_user || ' '}}</span>
+                              </p>
+
+                            </div>
+                            <div class="main-top-item3">
+                              {{lang.invoice_text30}}
+                            </div>
+                            <div class="main-top-item4">
+                              <p>
+                                <strong>{{lang.invoice_text31}}<i></i></strong>
+                                <span>
+                                  {{invoiceDetails.rec_type === 'paper' ? lang.invoice_text32 : lang.invoice_text33}}
+                                </span>
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text34}}<i></i></strong>
+                                <span> {{invoiceDetails.address || ' '}}</span>
+                              </p>
+                            </div>
+                          </div>
+                          <div class="main-mid">
+                            <div class="main-mid-item1">
+                              {{lang.invoice_text35}}
+                            </div>
+                            <div class="main-mid-item2">
+                              <p v-for="(item,index) in invoiceDetails.order" :key="index">
+                                <template v-if="item.host.length > 0">
+                                  <template v-for="itmes in item.host">
+                                    {{itmes.product_name || '--'}}
+                                    ({{item.create_time | formateTime}} - <span
+                                      style="margin: 0; color: red;">{{commonData.currency_prefix}}{{ item.amount || ' '}}</span>)
+                                  </template>
+                                </template>
+                                <template v-else>
+                                  {{item.product_name || '--'}}
+                                  ({{item.create_time | formateTime}} - <span
+                                    style="margin: 0; color: red;">{{commonData.currency_prefix}}{{ item.amount || ' '}}</span>)
+                                </template>
+                              </p>
+                            </div>
+                            <div class="main-mid-item3">
+                              {{lang.invoice_text36}}
+                            </div>
+                            <div class="main-mid-item4">
+                              <p>{{commonData.currency_prefix}}{{ invoiceDetails.price && invoiceDetails.price}}</p>
+                              <p>{{lang.invoice_text37}}</p>
+                              <p>{{invoiceDetails.tax_show}}</p>
+                              <p>{{lang.invoice_text38}}</p>
+                              <p>{{commonData.currency_prefix}}{{invoiceDetails.tax_price}}</p>
+                            </div>
+                          </div>
+                          <div class="main-bom">
+                            <div class="main-bom-item1">
+                              {{lang.invoice_text39}}
+                            </div>
+                            <div class="main-bom-item2">
+                              <p>
+                                <strong>{{lang.invoice_text39}}<i></i></strong>
+                                <span> {{invoiceDetails.parcel}}</span>
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text40}}<i></i></strong>
+                                <span> {{invoiceDetails.parcel_number}}</span>
+                                <el-tag type="" effect="dark" v-if="invoiceDetails.filename"
+                                  @click="showImgBtn(invoiceDetails.filename)">{{lang.invoice_text41}}</el-tag>
+
+                              </p>
+                              <p>
+                                <strong>{{lang.invoice_text42}}<i></i></strong>
+                                <span>{{commonData.currency_prefix}}{{ invoiceDetails.parcel_price || ' ' }}</span>
+                              </p>
+                            </div>
+                            <div class="main-bom-item3">
+                              {{lang.invoice_text43}}
+                            </div>
+                            <div class="main-bom-item4">
+                              <p>{{commonData.currency_prefix}}{{ invoiceDetails.total && invoiceDetails.total}}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                      </main>
+                      <footer>
+                        <button @click="detaliVisible = false">{{lang.invoice_text44}}</button>
+                      </footer>
+                    </div>
+                  </el-dialog>
+                </div>
+              </el-tab-pane>
+
+              <!-- 发票设置 -->
+              <el-tab-pane :label="lang.invoice_text45" name="invoiceSet">
+                <div class="invoiceSet-content">
+
+                  <!-- 发票抬头表格 -->
+
+                  <div class="invoiceSet-top">
+                    <h2>{{lang.invoice_text46}}</h2>
+                    <button class="add-button" @click="invoiceTitleVisible = true">{{lang.invoice_text47}}</button>
+                  </div>
+
+                  <el-dialog :visible.sync="invoiceTitleVisible" width="680px">
+                    <div class="add-Invoice-title">
+                      <h3>{{ isEditInvoiceTitle ? lang.invoice_text48 : lang.invoice_text49}}</h3>
+                      <el-form label-position="top" label-width="80px" :model="addInvoiceForm" ref="addInvoiceFormRef">
+                        <el-form-item :label="lang.invoice_text50" prop="title_type"
+                          :rules="{required: true, message: lang.invoice_text51, trigger: ['blur', 'change']}">
+                          <el-radio v-model="addInvoiceForm.title_type" @change="titleTypeChange" label="company">
+                            {{lang.invoice_text52}}
+                          </el-radio>
+                          <el-radio v-model="addInvoiceForm.title_type" @change="titleTypeChange" label="person">
+                            {{lang.invoice_text53}}
+                          </el-radio>
+                        </el-form-item>
+                        <el-form-item :label="lang.invoice_text54" prop="invoice_type"
+                          :rules="{required: true, message: lang.invoice_text55, trigger:  'change'}">
+                          <el-select v-model="addInvoiceForm.invoice_type" :placeholder="lang.invoice_text56"
+                            @change="selectChange" style="width:100%">
+                            <el-option :label="lang.invoice_text57" value="special"
+                              :disabled="addInvoiceForm.title_type == 'person' "></el-option>
+                            <el-option :label="lang.invoice_text58" value="normal">
+                            </el-option>
+                          </el-select>
+                        </el-form-item>
+                        <!-- 15330363220 1234567 -->
+                        <el-form-item :label="lang.invoice_text59" prop="title"
+                          :rules=" {required: true, message: lang.invoice_text60, trigger:  'change'}">
+                          <el-input v-model="addInvoiceForm.title" :placeholder="lang.invoice_text61">
+                          </el-input>
+                        </el-form-item>
+
+                        <el-form-item :label="lang.invoice_text62" prop="company_address"
+                          v-if="addInvoiceForm.title_type === 'company' "
+                          :rules=" addInvoiceForm.invoice_type == 'special' ? {required: true, message: lang.invoice_text63, trigger:  'change'} : {}">
+                          <el-input v-model="addInvoiceForm.company_address"
+                            :placeholder="lang.invoice_text61"></el-input>
+                        </el-form-item>
+
+                        <el-form-item :label="lang.invoice_text64" prop="tax"
+                          v-if="addInvoiceForm.title_type === 'company' "
+                          :rules="{required: true, message: lang.invoice_text65, trigger:  'change'}">
+                          <el-input v-model="addInvoiceForm.tax" :placeholder="lang.invoice_text61"></el-input>
+                        </el-form-item>
+
+                        <el-form-item :label="lang.invoice_text66" prop="bank"
+                          v-if="addInvoiceForm.title_type === 'company' "
+                          :rules=" addInvoiceForm.invoice_type == 'special' ? {required: true, message: lang.invoice_text67, trigger:  'change'} : {}">
+                          <el-input v-model="addInvoiceForm.bank" :placeholder="lang.invoice_text61">
+                          </el-input>
+                        </el-form-item>
+
+                        <el-form-item :label="lang.invoice_text68" prop="bank_user"
+                          v-if="addInvoiceForm.title_type === 'company' "
+                          :rules=" addInvoiceForm.invoice_type == 'special' ? {required: true, message: lang.invoice_text69, trigger:  'change'} : {}">
+                          <el-input v-model="addInvoiceForm.bank_user" :placeholder="lang.invoice_text61">
+                          </el-input>
+                        </el-form-item>
+
+                      </el-form>
+                      <footer>
+                        <el-button @click="handleSave">{{lang.invoice_text70}}</el-button>
+                        <el-button @click="invoiceTitleVisible = false ">{{lang.invoice_text71}}</el-button>
+                      </footer>
+                    </div>
+                  </el-dialog>
+
+                  <el-table class="invoiceSet-topTable" :data="invoicelTitleIist">
+                    <el-table-column label="ID" width="120" prop="id"></el-table-column>
+                    <el-table-column :label="lang.invoice_text72" prop="title_type">
+                      <template slot-scope="{row}">
+                        {{ row.title_type === 'company' ? lang.invoice_text52 : lang.invoice_text53 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text73" prop="title"></el-table-column>
+                    <el-table-column :label="lang.invoice_text54" prop="invoice_type">
+                      <template slot-scope="{row}">
+                        {{ row.invoice_type === 'normal' ? lang.invoice_text74 : lang.invoice_text75 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text76" prop="tax">
+                      <template slot-scope="{row}">
+                        {{row.tax || '--'}}
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text13" width="120px" align="center">
+                      <template slot-scope="{row}">
+                        <div class="caozuo" style=" cursor: pointer;">
+                          <el-popover placement="top-start" trigger="hover">
+                            <div class="operation-box">
+                              <div slot="reference" class="operation-item" @click="editInvoicelTitle(row)">
+                                {{lang.invoice_text48}}
+                              </div>
+                              <div class="operation-item" @click="delInvoicelTitle(row)">
+                                {{lang.invoice_text77}}
+                              </div>
+                            </div>
+                            <i slot="reference" style="color: #0058FF;" class="el-icon-more"></i>
+                          </el-popover>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                  </el-table>
+
+                  <!-- 发票收件地址表格 -->
+                  <div class="invoiceSet-bom">
+                    <h2>{{lang.invoice_text78}}</h2>
+                    <button class="add-button" @click="invoiceAddressVisible = true">{{lang.invoice_text47}}</button>
+                  </div>
+
+                  <el-table class="invoiceSet-bomTable" :data="addressList">
+                    <el-table-column label="ID" width="120" prop="id"></el-table-column>
+                    <el-table-column :label="lang.invoice_text79" prop="rec_type" width="120px">
+                      <template slot-scope="{row}">
+                        {{ row.rec_type === 'paper' ? lang.invoice_text32 : lang.invoice_text33 }}
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text80" prop="address">
+                      <template slot-scope="{row}">
+                        <div v-if="row.email || row.rec_url">
+                          {{row.email || row.rec_url }}
+                        </div>
+                        <div v-else>
+                          {{row.rec_name &&row.rec_name+'/' }}
+                          {{row.province&&row.province+'/' }}
+                          {{ row.city&&row.city+'/' }}
+                          {{ row.region&&row.region+'/'}}
+                          {{ row.address&&row.address+'/' }}
+                          {{ row.phone&&row.phone}}
+                        </div>
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text139">
+                      <template slot-scope="{row}">
+                        {{row.notes || '--'}}
+                      </template>
+                    </el-table-column>
+                    <el-table-column :label="lang.invoice_text13" width="120px" align="center">
+                      <template slot-scope="{row}">
+                        <div class="caozuo" style=" cursor: pointer;">
+                          <el-popover placement="top-start" trigger="hover">
+                            <div class="operation-box">
+                              <div slot="reference" class="operation-item" @click="editInvoiceAddress(row)">
+                                {{lang.invoice_text48}}
+                              </div>
+                              <div class="operation-item" @click="delInvoiceAddress(row)">
+                                {{lang.invoice_text77}}
+                              </div>
+                            </div>
+                            <i slot="reference" style="color: #0058FF;" class="el-icon-more"></i>
+                          </el-popover>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                  </el-table>
+
+                  <el-dialog :visible.sync="invoiceAddressVisible" width="680px">
+                    <div class="add-Invoice-address">
+                      <h3>{{ isEditInvoiceAddress ? lang.invoice_text48 : lang.invoice_text49 }}</h3>
+                      <el-form label-position="top" label-width="80px" :model="addInvoiceAddressForm"
+                        ref="addInvoiceAddressFormRef">
+                        <el-form-item :label="lang.invoice_text79" prop="rec_type"
+                          :rules="{required: true, message: lang.invoice_text81, trigger: ['blur', 'change']}">
+                          <el-radio v-model="addInvoiceAddressForm.rec_type" label="paper" @change="changeAddressType">
+                            {{lang.invoice_text32}}
+                          </el-radio>
+                          <el-radio v-model="addInvoiceAddressForm.rec_type" label="email" @change="changeAddressType">
+                            {{lang.invoice_text33}}
+                          </el-radio>
+                        </el-form-item>
+
+                        <template v-if="addInvoiceAddressForm.rec_type == 'paper' ">
+                          <el-form-item :label="lang.finance_text78" prop="rec_name"
+                            :rules="{required: true, message: lang.finance_text111, trigger:  'change'}">
+                            <el-input v-model="addInvoiceAddressForm.rec_name" :placeholder="lang.invoice_text61">
+                            </el-input>
+                          </el-form-item>
+
+                          <el-form-item :label="lang.invoice_text80" prop="cityArr"
+                            :rules="{required: true, message: lang.invoice_text82, trigger:  'change'}">
+                            <el-cascader v-model="addInvoiceAddressForm.cityArr" style="width: 100%;" :options="citys"
+                              clearable>
+                            </el-cascader>
+                          </el-form-item>
+
+
+                          <el-form-item :label="lang.invoice_text83" prop="address"
+                            :rules="{required: true, message: lang.invoice_text84, trigger:  'change'}">
+                            <el-input v-model="addInvoiceAddressForm.address" :placeholder="lang.invoice_text61">
+                            </el-input>
+                            </el-input>
+                          </el-form-item>
+
+                          <el-form-item :label="lang.invoice_text85" prop="phone"
+                            :rules="{required: true, message: lang.invoice_text86, trigger:  'change'}">
+                            <el-input v-model="addInvoiceAddressForm.phone" :placeholder="lang.invoice_text61">
+                            </el-input>
+                          </el-form-item>
+                        </template>
+
+                        <template v-else>
+                          <el-form-item :label="lang.invoice_text87" prop="email"
+                            :rules=" addInvoiceAddressForm.rec_url ? {} : {required: true,validator: validateEmail, message: lang.invoice_text88, trigger:  'blur'}">
+                            <el-input v-model="addInvoiceAddressForm.email" :placeholder="lang.invoice_text61">
+                            </el-input>
+                          </el-form-item>
+
+                          <el-form-item :label="lang.invoice_text89" prop="rec_url" v-if="false"
+                            :rules="addInvoiceAddressForm.email? {} : {required: true,validator: validateUrl, message: lang.invoice_text90, trigger:  'blur'}">
+                            <el-input v-model="addInvoiceAddressForm.rec_url" :placeholder="lang.invoice_text61">
+                            </el-input>
+                          </el-form-item>
+                        </template>
+
+                        <el-form-item :label="lang.invoice_text139">
+                          <el-input v-model="addInvoiceAddressForm.notes" :placeholder="lang.invoice_text61">
+                          </el-input>
+                        </el-form-item>
+                        <p>
+                          <el-checkbox v-model="addInvoiceAddressForm.is_default">
+                            {{lang.invoive_text91}}
+                          </el-checkbox>
+                        </p>
+                      </el-form>
+                      <footer>
+                        <el-button @click="handleSaveAddress">{{lang.invoice_text92}}</el-button>
+                        <el-button @click="invoiceAddressVisible = false">{{lang.invoice_text93}}</el-button>
+                      </footer>
+                    </div>
+                  </el-dialog>
+
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+
+
+            <el-dialog :visible.sync="dialogVisible" width="3.96rem">
+              <div class="box">
+                <h2>
+                  <img src="/plugins/addon/idcsmart_invoice/template/clientarea/img/invoice/warning.png" alt="">
+                  <span>{{lang.invoice_text94}}</span>
+                </h2>
+                <p>{{lang.invoice_text95}}</p>
+                <div class="footer">
+                  <el-button @click="dialogVisible = false">{{lang.invoice_text96}}</el-button>
+                  <el-button @click="dialogVisible = false">{{lang.invoice_text97}}</el-button>
+                </div>
+              </div>
+            </el-dialog>
+          </div>
+          <!-- <el-dialog :visible.sync="showImg" width="4rem" >
+                        <h3 >快递单号</h3>
+                        <div class="img-box">
+                            <img :src="imgUrl" alt="快递单号" style={width:100%}>
+                        </div>
+                    </el-dialog> -->
+          <el-dialog :visible.sync="showImg">
+            <img width="100%" :src="imgUrl" alt="">
+          </el-dialog>
+        </el-main>
+      </el-container>
+      <pay-dialog ref="payDialog" @payok="paySuccess" @paycancel="payCancel" />
+    </el-container>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/idcsmart_invoice/template/clientarea/api/invoice.js"></script>
+  <script src="/plugins/addon/idcsmart_invoice/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/idcsmart_invoice/template/clientarea/js/citys/citys.js"></script>
+  <script src="/plugins/addon/idcsmart_invoice/template/clientarea/js/invoiceList.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/pagination/pagination.js"></script>
+  <script src="/{$template_catalog}/template/{$themes}/components/payDialog/payDialog.js"></script>

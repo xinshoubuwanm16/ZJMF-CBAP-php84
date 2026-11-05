@@ -1,0 +1,571 @@
+h2 {
+  font-size: 0.28rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.25rem;
+  color: #171725;
+  padding: 0.4rem 0;
+}
+.invoiceList-content .invoice-btn {
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  color: rgba(255, 255, 255, 0.9);
+  background: #0058ff;
+  opacity: 1;
+  border-radius: 0.03rem;
+  padding: 0.12rem 0.24rem;
+  border: none;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  margin-bottom: 0.2rem;
+}
+.invoiceList-content .myPage {
+  margin-bottom: 0;
+  padding: 0.26rem 0;
+}
+.invoiceList-content .myPage .el-pagination .page-total {
+  margin: 0 auto 0 3px;
+}
+.invoiceList-content .state-text {
+  display: inline-block;
+  border-radius: 0.03rem;
+  padding: 0.04rem 0.1rem;
+  font-size: 0.13rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+}
+.invoiceList-content .state-text-error {
+  background: #feecee;
+  color: #f0142f;
+}
+.invoiceList-content .state-text-success {
+  background: #e7faf3;
+  color: #3dd598;
+}
+.invoiceList-content .state-text-primary {
+  background: #e6f3ff;
+  color: #3699ff;
+}
+.invoiceList-content .state-text-warning {
+  background: #fff2e0;
+  color: #f99600;
+}
+.invoiceList-content .state-text-info {
+  background: #eeeeee;
+  color: #757575;
+}
+.invoiceList-content .flushed-text-info {
+  background: #999;
+  color: #fff;
+}
+.invoiceList-content .state-text-cancel {
+  background: #efefef;
+  color: #848586;
+}
+.invoiceList-content .caozuo {
+  cursor: pointer;
+}
+.invoiceList-content .deail-content {
+  box-sizing: border-box;
+  opacity: 1;
+  border-radius: 0.03rem;
+}
+.invoiceList-content .deail-content div {
+  box-sizing: border-box;
+}
+.invoiceList-content .deail-content header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 0.7rem;
+}
+.invoiceList-content .deail-content .title-text {
+  padding: 0 0.8rem;
+  margin-top: 0.18rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.invoiceList-content .deail-content .title-text p {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #8692b0;
+}
+.invoiceList-content .deail-content .title-text p span {
+  font-size: 0.15rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #1e2736;
+}
+.invoiceList-content .deail-content main {
+  padding: 0 0.8rem;
+  margin-top: 0.1rem;
+}
+.invoiceList-content .deail-content main .main-box {
+  border: 0.01rem solid #e6e7eb;
+  opacity: 1;
+  border-radius: 0.03rem;
+  display: flex;
+  flex-direction: column;
+}
+.invoiceList-content .deail-content main .main-box .main-top {
+  display: grid;
+  grid-template-columns: 0fr 4fr 0fr 4fr;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item1,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item3 {
+  height: 100%;
+  width: 0.45rem;
+  padding: 0.17rem 0.16rem;
+  font-size: 0.13rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 0.4rem;
+  color: #8692b0;
+  letter-spacing: 1rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item2,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.2rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item2 p,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 p {
+  margin-bottom: 0.06rem;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item2 p strong,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 p strong {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #999999;
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.21rem;
+  text-align: justify;
+  overflow: hidden;
+  vertical-align: top;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item2 p strong i,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 p strong i {
+  display: inline-block;
+  width: 100%;
+  height: 0;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item2 p span,
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 p span {
+  font-size: 0.15rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #1e2736;
+  margin-left: 0.3rem;
+}
+.invoiceList-content .deail-content main .main-box .main-top .main-top-item4 {
+  border-right: none;
+}
+.invoiceList-content .deail-content main .main-box .main-mid {
+  display: grid;
+  grid-template-columns: 0fr 4fr 0fr 4fr;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item1,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item3 {
+  height: 100%;
+  width: 0.45rem;
+  padding: 0.17rem 0.16rem;
+  font-size: 0.13rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 0.4rem;
+  color: #8692b0;
+  letter-spacing: 1rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item2,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.2rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item2 p,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p {
+  margin-bottom: 0.06rem;
+  display: flex;
+  align-items: center;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item2 p strong,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p strong {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #999999;
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.21rem;
+  text-align: justify;
+  overflow: hidden;
+  vertical-align: top;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item2 p strong i,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p strong i {
+  display: inline-block;
+  width: 100%;
+  height: 0;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item2 p span,
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p span {
+  font-size: 0.15rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #1e2736;
+  margin-left: 0.3rem;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 {
+  border-right: none;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 {
+  display: grid;
+  grid-template-columns: 5fr 0fr 0fr 0fr 5fr;
+  padding: 0;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p {
+  height: 100%;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  border-right: 0.01rem solid #e6e7eb;
+  display: flex;
+  align-items: center;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:nth-child(2),
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:nth-child(4) {
+  width: 0.45rem;
+  padding: 0.17rem 0.16rem;
+  font-size: 0.13rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 0.4rem;
+  color: #8692b0;
+  letter-spacing: 1rem;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:nth-child(3) {
+  width: 0.8rem;
+  padding: 0.17rem 0.12rem;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:last-child {
+  border-right: none;
+}
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:nth-child(1),
+.invoiceList-content .deail-content main .main-box .main-mid .main-mid-item4 p:nth-child(5) {
+  padding-left: 0.22rem;
+}
+.invoiceList-content .deail-content main .main-box .main-bom {
+  display: grid;
+  grid-template-columns: 0fr 4fr 0fr 4fr;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item1,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item3 {
+  height: 100%;
+  width: 0.45rem;
+  padding: 0.17rem 0.16rem;
+  font-size: 0.13rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 0.4rem;
+  color: #8692b0;
+  letter-spacing: 1rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.2rem;
+  border-right: 0.01rem solid #e6e7eb;
+  border-bottom: 0.01rem solid #e6e7eb;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2 p,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 p {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.06rem;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2 p strong,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 p strong {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #999999;
+  display: inline-block;
+  width: 0.8rem;
+  height: 0.21rem;
+  text-align: justify;
+  overflow: hidden;
+  vertical-align: top;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2 p strong i,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 p strong i {
+  display: inline-block;
+  width: 100%;
+  height: 0;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2 p span,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 p span {
+  font-size: 0.15rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  color: #1e2736;
+  margin-left: 0.3rem;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item2 p .el-tag,
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 p .el-tag {
+  cursor: pointer;
+  color: #fff;
+  font-size: 0.14rem;
+}
+.invoiceList-content .deail-content main .main-box .main-bom .main-bom-item4 {
+  border-right: none;
+}
+.invoiceList-content .deail-content footer {
+  padding-top: 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.invoiceList-content .deail-content footer button {
+  width: 1.12rem;
+  height: 0.46rem;
+  background: #e7e7e7;
+  border: none;
+  opacity: 1;
+  border-radius: 0.03rem;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  color: #1e2736;
+  cursor: pointer;
+}
+.box {
+  height: 2.42rem;
+  box-sizing: border-box;
+  padding: 0.2rem 0;
+}
+.box h2 {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  justify-content: center;
+}
+.box h2 span {
+  align-items: center;
+  font-size: 0.24rem;
+  font-family: PingFang SC;
+  font-weight: bold;
+  line-height: 0.25rem;
+  color: #f0142f;
+}
+.box h2 img {
+  display: block;
+  width: 0.34rem;
+  height: 0.34rem;
+  margin-right: 0.12rem;
+}
+.box p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.3rem 0;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.25rem;
+  color: #1e2736;
+}
+.box .footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.box .footer .el-button {
+  opacity: 1;
+  border-radius: 0.03rem;
+}
+.box .footer .el-button:nth-child(1) {
+  border: none;
+  background: #0058ff;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+.box .footer .el-button:nth-child(2) {
+  margin-left: 0.12rem;
+  background: #e7e7e7;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  color: #1e2736;
+}
+.invoiceSet-content {
+  padding-top: 0.43rem;
+}
+.invoiceSet-content .invoiceSet-top,
+.invoiceSet-content .invoiceSet-bom {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.2rem;
+}
+.invoiceSet-content .invoiceSet-top h2,
+.invoiceSet-content .invoiceSet-bom h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 0.18rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 0.25rem;
+  color: #1e2736;
+}
+.invoiceSet-content .invoiceSet-top .add-button,
+.invoiceSet-content .invoiceSet-bom .add-button {
+  width: 0.54rem;
+  height: 0.32rem;
+  background: #eef4ff;
+  opacity: 1;
+  border-radius: 0.03rem;
+  border: none;
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #0058ff;
+  cursor: pointer;
+}
+.invoiceSet-content .invoiceSet-topTable {
+  border: 0.01rem solid #e6e7eb;
+  opacity: 1;
+  border-radius: 0.03rem;
+  margin-bottom: 0.52rem;
+}
+.invoiceSet-content .el-dialog__body {
+  padding: 0;
+  padding-bottom: 0.2rem;
+}
+.invoiceSet-content .el-dialog__body .el-form--label-top .el-form-item__label {
+  padding: 0;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  height: 0.22rem;
+  color: #1e2736;
+  margin-bottom: 0.1rem;
+}
+.invoiceSet-content .add-Invoice-title,
+.invoiceSet-content .add-Invoice-address {
+  padding: 0 0.8rem;
+}
+.invoiceSet-content .add-Invoice-title h3,
+.invoiceSet-content .add-Invoice-address h3 {
+  font-size: 0.24rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.25rem;
+  color: #171725;
+  margin-bottom: 0.4rem;
+}
+.invoiceSet-content .add-Invoice-title footer,
+.invoiceSet-content .add-Invoice-address footer {
+  height: 0.46rem;
+  margin-bottom: 0.6rem;
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.invoiceSet-content .add-Invoice-title footer .el-button,
+.invoiceSet-content .add-Invoice-address footer .el-button {
+  width: 1.12rem;
+  opacity: 1;
+  border-radius: 0.03rem;
+  font-size: 0.16rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.24rem;
+  border: none;
+}
+.invoiceSet-content .add-Invoice-title footer .el-button:nth-child(1),
+.invoiceSet-content .add-Invoice-address footer .el-button:nth-child(1) {
+  background: #0058ff;
+  color: rgba(255, 255, 255, 0.9);
+}
+.invoiceSet-content .add-Invoice-title footer .el-button:nth-child(2),
+.invoiceSet-content .add-Invoice-address footer .el-button:nth-child(2) {
+  background: #e7e7e7;
+  color: #1e2736;
+  margin-left: 0.12rem;
+}
+.el-table {
+  border: 0.01rem solid #e6e7eb;
+  opacity: 1;
+  border-radius: 0.03rem;
+}
+.el-table .el-table__header-wrapper .cell {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #757575;
+}
+.el-table .el-table__body-wrapper .cell {
+  font-size: 0.14rem;
+  font-family: PingFang SC;
+  font-weight: 400;
+  line-height: 0.22rem;
+  color: #171725;
+}
+.el-popover {
+  min-width: 0.5rem !important;
+}
+.el-popover .operation-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.el-popover .operation-box .operation-item {
+  margin-top: 0.05rem;
+  margin-bottom: 0.05rem;
+}
+.el-popover .operation-box .operation-item:hover {
+  background: #e6f3ff;
+  color: #3699ff;
+}
+.el-form-item {
+  margin-bottom: 0.16rem;
+}
+.el-dialog__body h3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.img-box img {
+  display: block;
+  width: 2.1rem;
+  height: 100%;
+}

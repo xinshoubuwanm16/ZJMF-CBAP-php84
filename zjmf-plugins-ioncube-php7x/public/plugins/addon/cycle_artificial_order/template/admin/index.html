@@ -1,0 +1,127 @@
+<link rel="stylesheet" href="/plugins/addon/cycle_artificial_order/template/admin/css/cycle_order.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template cycle_order" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="box">
+        <div class="common-header">
+          <div class="left">
+            <h3 class="tit">{{lang.cycle_order}}</h3>
+            <p class="tip">{{lang.cycle_tip}}</p>
+          </div>
+          <t-button @click="addOrder" v-permission="'auth_cycle_artificial_order_create_order'">{{lang.order_new}}</t-button>
+        </div>
+        <t-table row-key="id" :data="list" size="medium" :columns="typeColumns" :hover="hover" :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #username="{row}">
+            <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">
+              <template>
+                <span v-if="row.username">{{row.username}}</span>
+                <span v-else-if="row.phone">+{{row.phone_code}}-{{row.phone}}</span>
+                <span v-else="row.email">{{row.email}}</span>
+              </template>
+              <span v-if="row.company">({{row.company}})</span>
+            </a>
+          </template>
+          <template #amount="{row}">
+            {{currency_prefix}}{{row.amount | filterMoney}}
+          </template>
+          <template #renew_amount="{row}">
+            {{currency_prefix}}{{row.renew_amount | filterMoney}}
+          </template>
+          <template #time_range="{row}">
+            {{moment(row.start_time * 1000).format('YYYY/MM/DD')}}&nbsp;-&nbsp;{{row.end_time ?
+            moment(row.end_time *
+            1000).format('YYYY/MM/DD') : '∞'}}
+          </template>
+          <template #num="{row}">
+            {{row.num}}{{calcUnit(row.unit)}}
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+              <t-icon name="edit" size="18px" @click="updateItem(row)" class="common-look" v-permission="'auth_cycle_artificial_order_update_order'"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.detail" :show-arrow="false" theme="light">
+              <t-icon name="view-module" size="18px" @click="toDetails(row)" class="common-look" v-permission="'auth_cycle_artificial_order_detail'"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" size="18px" @click="delteItem(row)" class="common-look" v-permission="'auth_cycle_artificial_order_delete_order'"></t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit" :page-size-options="pageSizeOptions" :on-change="changePage" :current="params.page" />
+      </div>
+    </t-card>
+    <!-- 添加/编辑 -->
+    <t-dialog :visible.sync="visible" :header="addTip" :footer="false" width="550" placement="center" class="packageDialog">
+      <t-form :rules="rules" :data="formData" ref="userDialog" @submit="onSubmit" v-if="visible">
+        <t-form-item :label="lang.user" name="client_id" v-show="optType === 'add'">
+          <com-choose-user :check-id="formData.client_id"
+          @changeuser="changeUser"></com-choose-user>
+        </t-form-item>
+        <t-form-item :label="lang.user" name="client_id" v-show="optType === 'update'">
+          <div class="dis-user">
+            <template>
+              <span v-if="formData.username">{{formData.username}}</span>
+              <span v-else-if="formData.phone">+{{formData.phone_code}}-{{formData.phone}}</span>
+              <span v-else="formData.email">{{formData.email}}</span>
+            </template>
+            <span v-if="formData.company">({{formData.company}})</span>
+          </div>
+        </t-form-item>
+        <t-form-item :label="`${lang.order}${lang.description}`" name="description">
+          <t-textarea :placeholder="`${lang.order}${lang.description}`" v-model="formData.description" />
+        </t-form-item>
+        <t-form-item :label="lang.order_amount" name="amount">
+          <t-input-number v-model="formData.amount" :placeholder="lang.order_amount" :min="0" :max="99999999.00" :decimal-places="2" theme="normal">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item :label="lang.renew_amount" name="renew_amount">
+          <t-input-number v-model="formData.renew_amount" :placeholder="lang.renew_amount" :min="0" :max="99999999.00" :decimal-places="2" theme="normal">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item :label="lang.time_range" name="time_range" class="mul-item required">
+          <t-form-item name="start_time" :required-mark="false">
+            <t-date-picker v-model="formData.start_time" :clearable="optType !== 'update'" :placeholder="lang.start_time" :disabled="optType === 'update'" :disable-date="{before: moment().subtract(1, 'day').format()}" />
+          </t-form-item>
+          <t-form-item>
+            <t-date-picker v-model="formData.end_time" clearable :disable-date="{before: formData.start_time ? moment(formData.start_time).subtract(0, 'day').format() : moment().subtract(1, 'day').format()}" :placeholder="lang.close_time" />
+          </t-form-item>
+        </t-form-item>
+        <t-form-item class="mul-item required" :label="lang.create_period">
+          <t-form-item name="num" :required-mark="false">
+            <t-input v-model="formData.num" :placeholder="lang.create_period" :min="1" :decimal-places="0" theme="normal">
+            </t-input>
+          </t-form-item>
+          <t-form-item>
+            <t-select v-model="formData.unit">
+              <t-option v-for="item in selectArr" :value="item.value" :label="item.label" :key="item.value">
+              </t-option>
+            </t-select>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item class="edit-tip" label=" " v-if="optType === 'update'">
+          <span>*{{lang.cycle_tip1}}</span>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="visible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :close-btn="false" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/cycle_artificial_order/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/cycle_artificial_order/template/admin/api/cycle_order.js"></script>
+<script src="/plugins/addon/cycle_artificial_order/template/admin/js/cycle_order.js"></script>

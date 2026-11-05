@@ -1,0 +1,287 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_sale/template/admin/css/sales_management.css" />
+<div id="content" class="admin template sale_setting" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active">
+          <a href="javascript:;">{{lang.sales_plugin_text2}}</a>
+        </li>
+        <li>
+          <a href="sale_manage.htm">{{lang.sales_plugin_text3}}</a>
+        </li>
+        <li>
+          <a href="bind_user.htm">{{lang.sales_plugin_text72}}</a>
+        </li>
+      </ul>
+      <div class="status-box" v-if="!showALi">
+        <div class="status-title">
+          <span class="title-text">{{lang.sale_text33}}</span>
+          <t-button @click="handelAddSale" class="add">{{lang.sale_text34}}</t-button>
+        </div>
+        <t-table bordered row-key="id" :data="product_commission" :columns="columns">
+          <template #product="{row}">
+            <span>{{row.product_name}}</span>
+          </template>
+          <template #new_value="{row}">
+            <span v-if="row.new_mode === 'fixed'">{{row.new_value}}{{currency_suffix}}</span>
+            <span v-else>{{row.new_value}}%</span>
+          </template>
+          <template #renew_value="{row}">
+            <span v-if="row.renew_mode === 'fixed'">{{row.renew_value}}{{currency_suffix}}</span>
+            <span v-else>{{row.renew_value}}%</span>
+          </template>
+          <template #repurchase_value="{row}">
+            <span v-if="row.repurchase_mode === 'fixed'">{{row.repurchase_value}}{{currency_suffix}}</span>
+            <span v-else>{{row.repurchase_value}}%</span>
+          </template>
+          <template #upgrade_value="{row}">
+            <span v-if="row.repurchase_mode === 'fixed'">{{row.upgrade_value}}{{currency_suffix}}</span>
+            <span v-else>{{row.upgrade_value}}%</span>
+          </template>
+          <template #op="slotProps">
+            <t-tooltip :content="lang.update" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" class="common-look" @click="updateAdmin(slotProps.row)">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" class="common-look" @click="deleteUser(slotProps.row.id,'1')">
+              </t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+      </div>
+      <div class="title-1-text">{{lang.sale_text35}}</div>
+      <div class="status-box" v-if="showALi">
+        <div class="status-title">
+          <span class="title-2-text">{{lang.sale_text36}}</span>
+        </div>
+        <t-table bordered row-key="id" :data="all_commission" :columns="columns2">
+          <template #first_recharge="{row}">
+            <span>{{row.type}}</span>
+          </template>
+          <template #other_recharge="{row}">
+            <span v-if="row.mode === 'fixed'">{{row.value}}{{currency_suffix}}</span>
+            <span v-else-if="row.mode === 'percent'">{{row.value}}%</span>
+            <span v-else>--</span>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.update" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" class="common-look" @click="updateRecharge(row)">
+              </t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+      </div>
+      <div class="status-box">
+        <div class="status-title">
+          <div class="title-text">
+            <span class="title-2-text">{{lang.sale_text37}}</span>
+            <t-tooltip :content="lang.sale_text38" placement="right-top" :overlay-style="{ width: '200px' }" show-arrow>
+              <span>
+                <t-icon name="help-circle" style="font-size:16px" />
+              </span>
+            </t-tooltip>
+          </div>
+          <t-button @click="moneyDialogShow('big_order','add')" class="add">{{lang.sale_text34}}</t-button>
+        </div>
+        <t-table bordered row-key="id" :data="big_order" :columns="columns3">
+          <template #price_range="{row}">
+            <span>{{row.min_price}} - {{row.max_price}}</span>
+          </template>
+          <template #mode_value="{row}">
+            <span v-if="row.mode === 'fixed'">{{row.value}}{{currency_suffix}}</span>
+            <span v-else>{{row.value}}%</span>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.update" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" class="common-look" @click="moneyDialogShow('big_order','edit',row)">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" class="common-look" @click="deleteUser(row.id,'2')">
+              </t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <div v-if="isShowFlag" class="tip-div">{{lang.sale_text39}}</div>
+      </div>
+      <div class="status-box">
+        <div class="status-title">
+          <div class="title-text">
+            <span class="title-2-text">{{lang.sale_text40}}</span>
+            <t-tooltip :content="lang.sale_text38" placement="right-top" :overlay-style="{ width: '200px' }" show-arrow>
+              <span>
+                <t-icon name="help-circle" style="font-size:16px" />
+              </span>
+            </t-tooltip>
+          </div>
+          <t-button @click="moneyDialogShow('month_over','add')" class="add">{{lang.sale_text34}}</t-button>
+        </div>
+        <t-table bordered row-key="id" :data="month_over" :columns="columns3">
+          <template #price_range="{row}">
+            <span>{{row.min_price}} - {{row.max_price}}</span>
+          </template>
+          <template #mode_value="{row}">
+            <span v-if="row.mode === 'fixed'">{{row.value}}{{currency_suffix}}</span>
+            <span v-else>{{row.value}}%</span>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.update" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" class="common-look" @click="moneyDialogShow('month_over','edit',row)"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" class="common-look" @click="deleteUser(row.id,'2')"></t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <div v-if="isShowFlag2" class="tip-div">{{lang.sale_text39}}</div>
+      </div>
+      <div class="status-box">
+        <div class="status-title"><span class="title-text">{{lang.sale_text41}}</span></div>
+        <div>
+          <span class="mar-r-20">{{lang.sale_text42}}</span>
+          <span>{{lang.sale_text43}}</span>
+          <t-input-number v-model="price" theme="normal" :min="0"></t-input-number>
+          <span>{{currency_suffix}}{{lang.sale_text44}}</span>
+        </div>
+        <!-- <div class="box-item">
+              <span class="mar-r-20">Telegram bot Token</span>
+              <t-input placeholder="请输入Telegram bot Token" auto-width style="max-width: 600px"  clearable v-model="telegram_bot_token"/>
+            </div> -->
+      </div>
+      <div class="status-box">
+        <div class="status-title"><span class="title-text">{{lang.sale_text45}}</span></div>
+        <div>
+          <span>{{lang.sale_text46}}:</span>
+          <t-input-number v-model="confirm_wait_day" theme="normal" :min="0"></t-input-number>
+          <span>{{lang.sale_text47}}</span>
+          <t-tooltip :content="lang.sale_text125" placement="right-top" :overlay-style="{ width: '200px' }" show-arrow>
+            <span>
+              <t-icon name="help-circle" style="font-size:16px" />
+            </span>
+          </t-tooltip>
+        </div>
+      </div>
+      <div class="saveBtn">
+        <t-button :loading="saveLoading" @click="editSaleConfig">{{lang.sale_text48}}</t-button>
+      </div>
+    </t-card>
+
+    <!-- 添加商品提成 -->
+    <t-dialog :visible.sync="visible" :header="addTip" :footer="false" :width="formWidth">
+      <t-form :rules="rules" :data="add_product_obj" ref="userDialog" @submit="addProduct" v-if="visible">
+        <t-form-item :label="lang.sale_text49" name="product">
+          <com-tree-select :multiple="true" :value="add_product_obj.product" :pre-placeholder="lang.sale_text50"
+           @choosepro="choosePro" ref="productSelect">
+          </com-tree-select>
+        </t-form-item>
+        <t-form-item :label="lang.sale_text53" name="new_mode">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text52" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="add_product_obj.new_mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="add_product_obj.new_value" theme="normal" :min="0"
+            :auto-width="true"></t-input-number>
+          <span
+            class="mode-type">{{add_product_obj.new_mode ==='fixed' ? currency_suffix : add_product_obj.new_mode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.sale_text54" name="renew_mode">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text57" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="add_product_obj.renew_mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="add_product_obj.renew_value" theme="normal" :min="0"
+            :auto-width="true"></t-input-number>
+          <span
+            class="mode-type">{{add_product_obj.renew_mode ==='fixed' ? currency_suffix : add_product_obj.renew_mode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.sale_text55" name="repurchase_mode">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text58" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="add_product_obj.repurchase_mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="add_product_obj.repurchase_value" theme="normal"
+            :min="0" :auto-width="true"></t-input-number>
+          <span
+            class="mode-type">{{add_product_obj.repurchase_mode ==='fixed' ? currency_suffix : add_product_obj.repurchase_mode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.sale_text127" name="upgrade_value">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text128" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="add_product_obj.upgrade_mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="add_product_obj.upgrade_value" theme="normal" :min="0"
+            :auto-width="true"></t-input-number>
+          <span
+            class="mode-type">{{add_product_obj.upgrade_mode ==='fixed' ? currency_suffix : add_product_obj.upgrade_value === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <div class="f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="close">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 全局提成编辑 -->
+    <t-dialog :visible.sync="visible1" :header="addAllTip" :footer="false" width="600">
+      <t-form>
+        <t-form-item name="new_mode" v-if="addAllTip === lang.sale_text59">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text52" style="width: 200px; display: inline-block; margin-right: 20px"
+            v-model="secObj.first_mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="secObj.first_value" style="min-width: 150px;"
+            theme="normal" :min="0"></t-input-number>
+          <span
+            class="mode-type">{{secObj.first_mode ==='fixed' ? currency_suffix : secObj.first_mode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <t-form-item name="new_mode" v-else>
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text52" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="secObj.other_rmode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="secObj.other_value" theme="normal" :min="0"
+            style="min-width: 150px;"></t-input-number>
+          <span
+            class="mode-type">{{secObj.other_rmode === 'fixed' ? currency_suffix : secObj.other_rmode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <div class="f-btn">
+          <t-button theme="primary" @click="saveModeEdit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="()=>{visible1 = false}">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 奖励编辑添加弹窗 -->
+    <t-dialog :visible.sync="visible2" :header="orderTip" :footer="false" width="600">
+      <t-form :rules="rules" :data="money_data" ref="moneyDialog" @submit="addMoney">
+        <t-form-item name="repurchase_mode">
+          <span class="mode-title">{{lang.sale_text60}}:</span>
+          <t-input-number :placeholder="lang.sale_text61" v-model="money_data.min_price" theme="normal" :min="0">
+          </t-input-number>
+          <span class="num-span"> - </span>
+          <t-input-number :placeholder="lang.sale_text61" v-model="money_data.max_price" theme="normal" :min="0">
+          </t-input-number>
+        </t-form-item>
+        <t-form-item name="repurchase_mode">
+          <span class="mode-title">{{lang.sale_text51}}:</span>
+          <t-select :placeholder="lang.sale_text58" style="width: 120px; display: inline-block; margin-right: 20px"
+            v-model="money_data.mode" :options="modeOption"></t-select>
+          <t-input-number :placeholder="lang.sale_text56" v-model="money_data.value" theme="normal" :min="0">
+          </t-input-number>
+          <span
+            class="mode-type">{{money_data.mode ==='fixed' ? currency_suffix : money_data.mode === 'percent' ? '%' : ''}}</span>
+        </t-form-item>
+        <div class="f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="visible2 = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 删除弹窗 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="delGood" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/api/sales.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/sales_setting.js"></script>

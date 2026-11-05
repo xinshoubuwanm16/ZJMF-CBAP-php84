@@ -1,0 +1,152 @@
+<link rel="stylesheet" href="/plugins/addon/wanyun_resource/template/admin/css/wanyun_resource.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="vlan-manage wanyun-ip" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <div class="flex left">
+          <t-input v-model="params.keywords"
+            :placeholder="`ID、${lang.wy_name}、${lang.wy_type}、${lang.wy_assignor}、${lang.wy_user}、${lang.wy_node}、${lang.wy_notes}`"
+            clearable class="input-search"></t-input>
+          <t-select v-model="params.status" :placeholder="lang.wy_belong_group">
+            <t-option v-for="item in vlanStatus" :value="item.id" :label="item.name" :key="item.id"></t-option>
+          </t-select>
+          <t-button @click="seacrh" class="search">{{lang.wy_search}}</t-button>
+        </div>
+        <div class="flex right">
+          <t-button @click="addVlanType" v-permission="'auth_addon_wanyun_resource_vlan_type'">VLAN
+            {{lang.wy_type}}</t-button>
+          <t-button @click="addVlan" v-permission="'auth_addon_wanyun_resource_vlan_create'">{{lang.wy_add}}
+            VLAN</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+        :hide-sort-tips="true">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #status="{row}">
+          <t-switch size="medium" v-model="row.status" :custom-value="[1,0]"
+            :disabled="!$checkPermission('auth_addon_wanyun_resource_vlan_on_off')"
+            @change="changeVlan($event, row)"></t-switch>
+        </template>
+        <template #path="{row}">
+          <t-popup :content="calcDetail(row.path_node)" placement="top" overlay-class-name="node-pup">
+            <span class="over-hide">{{calcPath(row.path_node)}}</span>
+          </t-popup>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.wy_edit" :show-arrow="false" theme="light">
+            <t-icon name="edit-1" @click="editVlan(row)" class="common-look"
+              v-permission="'auth_addon_wanyun_resource_vlan_update'"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.wy_delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" @click="handlerDel('vlan',row)" class="common-look"
+              v-permission="'auth_addon_wanyun_resource_vlan_delete'"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination :total="total" :page-size="params.limit" :current="params.page" :page-size-options="pageSizeOptions"
+        @change="changePage" v-if="total" />
+    </t-card>
+
+    <!-- VLAN -->
+    <t-dialog :header="optTitle" :visible.sync="vlanVisble" :footer="false" :width="isEn ? 800 : 750" class="vlan-dialog">
+      <t-form :data="formData" :rules="rules" ref="valnDialog" @submit="submitVlan">
+        <div class="item">
+          <t-form-item label="VLAN ID" name="vlanid">
+            <t-input-number :min="1" :max="4094" theme="normal" @blur="changeId" :decimal-places="0"
+              placeholder="VLAN ID" v-model="formData.vlanid"></t-input-number>
+          </t-form-item>
+          <t-form-item :label="`VLAN ${lang.wy_name}`" name="name">
+            <t-input :placeholder="`VLAN ${lang.wy_name}`" v-model="formData.name"></t-input>
+          </t-form-item>
+        </div>
+        <div class="item">
+          <t-form-item :label="lang.wy_type" name="type_id">
+            <t-select v-model="formData.type_id" :placeholder="`VLAN ${lang.wy_type}`">
+              <t-option v-for="item in vlanTypeList" :value="item.id" :label="item.name" :key="item.id"></t-option>
+            </t-select>
+          </t-form-item>
+          <t-form-item :label="lang.wy_assignor" name="assignor">
+            <t-input :placeholder="lang.wy_assignor" v-model="formData.assignor"></t-input>
+          </t-form-item>
+        </div>
+        <div class="item">
+          <t-form-item :label="lang.wy_user" name="user">
+            <t-input :placeholder="lang.wy_user" v-model="formData.user"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.wy_use_unit" name="use_unit">
+            <t-input :placeholder="lang.wy_use_unit" v-model="formData.use_unit"></t-input>
+          </t-form-item>
+        </div>
+        <t-form-item :label="lang.wy_path_node" name="node_id" class="dcim-server">
+          <t-select v-model="formData.node_id" :placeholder="lang.wy_path_node" :keys="{ label: 'text', value: 'id' }"
+            multiple @change="changeNode" :options="nodeList" :min-collapsed-num="1"></t-select>
+          <!-- 已选节点 -->
+          <div class="drag-box" v-if="nodeSelect.length > 0">
+            <t-table row-key="id" :columns="nodeColumns" :data="nodeSelect" :loading="loading" drag-sort="row-handler"
+              @drag-sort="onDragSort">
+              <template #drag="{row}">
+                <t-icon name="move"></t-icon>
+              </template>
+              <template #text="{row}">
+                <div class="node">
+                  <span class="item">{{row.text}}</span>
+                  <t-icon name="minus-circle" class="sub" @click="removeItem(row)"></t-icon>
+                </div>
+              </template>
+            </t-table>
+          </div>
+        </t-form-item>
+        <t-form-item :label="lang.wy_notes">
+          <t-textarea :placeholder="lang.wy_notes" v-model="formData.notes" maxlength="200"></t-textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.wy_hold}}</t-button>
+          <t-button theme="default" @click="vlanVisble = false">{{lang.wy_cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+
+    <!-- VLAN Type-->
+    <t-dialog :header="`VLAN ${lang.wy_type}`" :visible.sync="vlanTypeVisble" :footer="false" width="574">
+      <t-form :data="typeFormData" ref="vlanType" @submit="submitType" :label-width="60" label-align="left">
+        <t-form-item :label="lang.wy_type" name="name"
+          :rules="[{ required: true, message: `${lang.wy_input}${lang.wy_type}`, type: 'error' }]">
+          <t-input :placeholder="lang.wy_type" maxlength="10" v-model="typeFormData.name"></t-input>
+          <t-button theme="primary" type="submit" :loading="submitLoading" class="type-btn">
+            {{optType === 'add' ? lang.wy_add : lang.wy_hold}}
+          </t-button>
+        </t-form-item>
+      </t-form>
+      <!-- type table -->
+      <t-table row-key="id" :data="vlanTypeList" size="medium" :columns="typeColumns" :hover="hover"
+        :loading="typeLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange"
+        display-type="fixed-width" :max-height="400" :hide-sort-tips="true" class="type-table">
+        <template #op="{row}">
+          <t-tooltip :content="lang.wy_edit" :show-arrow="false" theme="light">
+            <t-icon name="edit-1" @click="editVlanType(row)" class="common-look"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.wy_delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" @click="handlerDel('vlanType',row)" class="common-look"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+    </t-dialog>
+    <!-- 删除 -->
+    <t-dialog theme="warning" :header="lang.wy_tip3" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/wanyun_resource/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/api/wanyun_resource.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/js/vlan_manage.js"></script>

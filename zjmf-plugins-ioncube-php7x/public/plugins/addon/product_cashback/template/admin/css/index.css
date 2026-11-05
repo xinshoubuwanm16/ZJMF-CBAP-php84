@@ -1,0 +1,38 @@
+.material-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 30px;
+}
+.cashback .t-input-number {
+  width: 100%;
+}
+.cashback .t-pagination .t-input-number {
+  width: 48px;
+}
+.cashback .input-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.cashback .prev {
+  white-space: nowrap;
+  margin-right: 5px;
+}
+.cashback .next {
+  white-space: nowrap;
+  margin-left: 5px;
+}
+.cashback .price .tip {
+  margin-top: 8px;
+}
+.cashback .price .star {
+  color: #e34d59;
+}
+.cashback .price .t-form__controls-content {
+  flex-wrap: wrap;
+}
+.isEn .cashback .t-form .t-form__label {
+  width: 150px !important;
+}

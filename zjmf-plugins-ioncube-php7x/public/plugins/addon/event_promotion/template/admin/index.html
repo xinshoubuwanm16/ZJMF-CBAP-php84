@@ -1,0 +1,121 @@
+<link rel="stylesheet" href="/plugins/addon/event_promotion/template/admin/css/voucher.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="voucher" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <h2>{{lang.event_promotion_text1}}</h2>
+      <div class="common-header">
+        <div class="client-search">
+          <t-input class="search-input" v-model="params.keywords" @keypress.enter.native="seacrh"
+            :placeholder="lang.event_promotion_text2" :on-clear="clearKey" clearable>
+          </t-input>
+          <t-date-picker v-model="params.time" enable-time-picker allow-input clearable></t-date-picker>
+          <t-button @click="seacrh">{{lang.event_promotion_text44}}</t-button>
+        </div>
+        <div>
+          <t-button @click="sortEvent" class="add" v-permission="'auth_event_promotion_order_event_promotion'">
+            {{lang.event_promotion_text67}}
+          </t-button>
+          <t-button @click="addPromo" class="add" v-permission="'auth_event_promotion_create_event_promotion'">
+            {{lang.event_promotion_text3}}
+          </t-button>
+        </div>
+
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" @row-click="goDetail">
+        <template #id="{row}">
+          {{row.id}}
+        </template>
+        <template #active_name="{row}">
+          {{row.name}}
+        </template>
+        <template #type="{row}">
+          {{lang[row.type]}}
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+        <template #client_type="{row}">
+          {{client_type[row.client_type]}}
+        </template>
+        <template #active_time="{row}">
+          {{row.start_time ? moment(row.start_time * 1000).format('YYYY/MM/DD HH:mm') : '--'}} - {{row.end_time ?
+          moment(row.end_time * 1000).format('YYYY/MM/DD HH:mm') : '--'}}
+        </template>
+        <template #status="{row}">
+          <t-tag :theme="calcStatus(row).theme" class="com-status" variant="light">
+            {{calcStatus(row).label}}
+          </t-tag>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.event_promotion_text48" :show-arrow="false" theme="light"
+            v-if="row.status === 'Suspended' && $checkPermission('auth_event_promotion_deactivate_enable_event_promotion')">
+            <t-icon name="play-circle-stroke" class="common-look stop" @click="changeStatus(row)">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.event_promotion_text49" :show-arrow="false" theme="light"
+            v-if="row.status === 'Active' && $checkPermission('auth_event_promotion_deactivate_enable_event_promotion')">
+            <t-icon name="stop-circle" class="common-look stop" @click="changeStatus(row)" style="color: #FF0000">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.event_promotion_text50" :show-arrow="false" theme="light">
+            <t-icon name="edit" class="common-look" @click="jump(row)"
+              v-permission="'auth_event_promotion_update_event_promotion'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.event_promotion_text51" :show-arrow="false" theme="light">
+            <t-icon name="delete" class="common-look" @click="deletes(row.id)"
+              v-permission="'auth_event_promotion_delete_event_promotion'"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" v-if="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" @change="changePage" />
+    </t-card>
+
+    <!-- 活动排序 -->
+    <t-dialog :header="lang.event_promotion_text67" :close-btn="false" :visible.sync="sortVisible" width="550px">
+      <t-radio-group v-model="addon_event_promotion_does_not_participate">
+        <span>{{lang.event_promotion_text70}}</span>
+        <t-radio value="top">{{lang.event_promotion_text71}}</t-radio>
+        <t-radio value="bottom">{{lang.event_promotion_text72}}</t-radio>
+      </t-radio-group>
+      <t-table style="margin-top: 10px;" hover row-key="id" :loading="tableLoading" :data="active_list"
+        :columns="active_columns" drag-sort="row-handler" @drag-sort="onDragSort">
+        <template #drag="{row}">
+          <t-icon name="move" style="cursor: move;"></t-icon>
+        </template>
+        <template #notes="{row}">
+          <div>{{row.notes || '--'}}</div>
+        </template>
+      </t-table>
+      <template slot="footer">
+        <t-button theme="primary" @click="sureSort" :loading="submitLoading">{{lang.event_promotion_text45}}</t-button>
+        <t-button theme="default" @click="sortVisible=false">{{lang.event_promotion_text46}}</t-button>
+      </template>
+    </t-dialog>
+
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.event_promotion_text53" :close-btn="false" :visible.sync="delVisible"
+      class="delDialog">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelUser"
+          :loading="submitLoading">{{lang.event_promotion_text45}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.event_promotion_text46}}</t-button>
+      </template>
+    </t-dialog>
+    <!-- 启用/停用 -->
+    <t-dialog theme="warning" :header="statusTip" :visible.sync="statusVisble">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureChange"
+          :loading="submitLoading">{{lang.event_promotion_text45}}</t-button>
+        <t-button theme="default" @click="statusVisble = false">{{lang.event_promotion_text46}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/event_promotion/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/event_promotion/template/admin/api/index.js"></script>
+<script src="/plugins/addon/event_promotion/template/admin/js/index.js"></script>

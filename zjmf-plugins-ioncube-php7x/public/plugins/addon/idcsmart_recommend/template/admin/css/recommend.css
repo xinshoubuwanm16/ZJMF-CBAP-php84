@@ -1,0 +1,133 @@
+/* recommend */
+.recommend .client-search {
+  display: flex;
+}
+.recommend .client-search .t-input,
+.recommend .client-search .t-select {
+  width: 240px;
+  max-width: 100%;
+}
+.recommend .client-search > span {
+  margin-right: 10px;
+}
+.recommend .client-search .t-select__wrap {
+  width: auto;
+}
+.recommend .jump {
+  color: var(--td-brand-color-active);
+  cursor: pointer;
+}
+.recommend .choose-user .type {
+  width: auto;
+  margin-right: 0;
+}
+.recommend .common-header .t-select-input {
+  width: auto;
+  margin-right: 10px;
+}
+.replay-dialog td,
+.replay-dialog th {
+  padding: 12px 24px;
+}
+.replay-form {
+  margin-top: 10px;
+}
+.replay-form .t-form__label {
+  width: 0 !important;
+}
+.replay-form .t-form__controls {
+  margin-left: 0 !important;
+}
+.replay-form textarea {
+  height: 200px;
+}
+/* recommend-config */
+.recommend-config .t-card__body {
+  height: 100%;
+}
+.recommend-config .box {
+  width: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+.recommend-config .t-form {
+  max-width: 1230px;
+}
+.recommend-config .item {
+  display: flex;
+  flex-wrap: wrap;
+}
+.recommend-config .item .t-input {
+  width: 240px;
+  margin-right: 40px;
+}
+.recommend-config .item .t-icon {
+  font-size: 16px;
+}
+.recommend-config .item .t-input-number {
+  width: 240px;
+  margin-right: 10px;
+}
+.recommend-config .t-input__wrap {
+  width: auto;
+}
+.recommend-config .fee {
+  margin-bottom: 30px !important;
+}
+.recommend-config .s-tit {
+  margin: 0 0 10px 0;
+  line-height: 1;
+}
+.recommend-config .t-popup {
+  width: 100%;
+}
+.recommend-config .add-more {
+  line-height: 42px;
+  text-align: center;
+  color: var(--td-brand-color-active);
+  border: 1px solid var(--td-component-border);
+  margin-top: -1px;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.recommend-config .f-btn {
+  width: 100%;
+  max-width: 1230px;
+  text-align: right;
+  margin-top: 30px;
+}
+.recommend-config .f-btn .t-button {
+  margin-left: 20px;
+}
+.recommend-config textarea {
+  height: 300px;
+}
+.edit-pop .t-popup__content {
+  width: 350px !important;
+}
+.t-popup__content {
+  max-height: 300px;
+  overflow-y: auto;
+}
+@media screen and (max-width: 1400px) {
+  .recommend .client-search .t-input,
+  .recommend .client-search .t-select {
+    width: 200px;
+  }
+  .recommend-config .box {
+    padding-right: 20px !important;
+    box-sizing: border-box;
+  }
+}
+@media screen and (max-width: 1200px) {
+  .recommend .client-search .t-input,
+  .recommend .client-search .t-select {
+    width: 150px;
+  }
+}
+.isEn .recommend .t-form .t-form__label {
+  width: 220px !important;
+}

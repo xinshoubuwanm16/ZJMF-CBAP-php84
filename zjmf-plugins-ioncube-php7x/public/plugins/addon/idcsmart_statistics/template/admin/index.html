@@ -1,0 +1,73 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_statistics/template/admin/css/statistics.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="statistics" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active" v-permission="'auth_idcsmart_statistics_year'">
+          <a href="javascript:;">{{lang.year_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_expect'">
+          <a href="expect_income.htm">{{lang.expect_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_product'">
+          <a href="product_income.htm">{{lang.product_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_month'">
+          <a href="month_income.htm">{{lang.month_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_year_order'">
+          <a href="other_info.htm">{{lang.month_order_income}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <!-- <p class="t-tit">{{lang.income_tip}}</p> -->
+        <p class="tit">{{time}}{{lang.year}}{{lang.income_tip}}</p>
+        <p class="des">{{lang.income_tip1}}</p>
+        <t-loading :loading="loading" show-overlay size="small">
+          <div class="charts">
+            <div id="monitorContainer" ref="monitorContainer"></div>
+          </div>
+        </t-loading>
+        <t-table row-key="1" :data="curData.list" size="medium" :columns="columns" :hover="hover" :loading="loading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true"
+          @row-click="handelRowClick" row-class-name="hover-row">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #amount_in="{row}">
+            {{currency_prefix}}{{formatMoney(row.amount_in)}}&nbsp;{{currency_suffix}}
+          </template>
+          <template #amount_out="{row}">
+            {{currency_prefix}}{{formatMoney(row.amount_out)}}&nbsp;{{currency_suffix}}
+          </template>
+          <template #cost="{row}">
+            {{currency_prefix}}{{formatMoney(row.cost)}}&nbsp;{{currency_suffix}}
+          </template>
+          <template #balance="{row}">
+            {{currency_prefix}}{{formatMoney(row.balance)}}&nbsp;{{currency_suffix}}
+          </template>
+        </t-table>
+        <p class="change-year">
+          <span class="item" @click="changeNum('sub')">
+            <t-icon name="chevron-left-double"></t-icon>{{time -
+            1}}
+          </span>
+          <span class="item" v-if="time < curYear" @click="changeNum('add')">
+            {{time + 1}}
+            <t-icon name="chevron-right-double"></t-icon>
+          </span>
+        </p>
+        <p class="balance">{{lang.balance}}：{{currency_prefix}}{{formatMoney(curData.balance)}}&nbsp;{{currency_suffix}}
+        </p>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/echarts.min.js"></script>
+<script src="/plugins/addon/idcsmart_statistics/template/admin/api/statistics.js"></script>
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/year_income.js"></script>

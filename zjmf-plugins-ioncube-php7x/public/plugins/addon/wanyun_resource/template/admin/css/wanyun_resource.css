@@ -1,0 +1,208 @@
+/* wanyun-ip */
+.flex {
+  display: flex;
+  align-items: center;
+}
+.wanyun-ip .common-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.wanyun-ip .left .t-input {
+  width: 200px;
+}
+.wanyun-ip .left .t-select__wrap {
+  margin: 0 10px;
+}
+.wanyun-ip .right .t-button {
+  margin-left: 20px;
+}
+.wanyun-ip .t-table__row-full-element {
+  padding: 0;
+}
+.wanyun-ip .t-table__row-full-element table {
+  border: 1px solid var(--td-brand-color-active);
+}
+.wanyun-ip .t-table__expanded-row > td {
+  padding: 0;
+}
+.wanyun-ip .dcim-server .t-form__controls-content {
+  display: flex;
+  flex-wrap: wrap;
+}
+.wanyun-ip .dcim-server .t-form__controls-content .s-tip {
+  color: #999;
+  margin-top: 5px;
+  display: block;
+}
+.wanyun-ip .ip-details .com-f-btn {
+  text-align: center;
+  margin-top: 24px;
+}
+.wanyun-ip .ip-details .t-table__content {
+  overflow-x: hidden;
+}
+/* vlan-manage */
+.vlan-manage .input-search {
+  width: 350px;
+}
+.vlan-manage .input-search .t-input {
+  width: 100%;
+}
+.vlan-manage .left .t-select__wrap {
+  width: auto;
+}
+.vlan-manage .type-btn {
+  margin-left: 20px;
+}
+.type-table {
+  margin-top: 30px;
+}
+.type-table thead tr {
+  background: #f3f3f3;
+}
+.node-pup {
+  white-space: pre-line !important;
+  min-width: 100px;
+}
+.over-hide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+/* vlan-dialog */
+.vlan-dialog .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.vlan-dialog .item .t-form__item {
+  margin-bottom: 24px !important;
+}
+.vlan-dialog .item .t-form__item .t-input__wrap {
+  width: 230px;
+}
+.vlan-dialog .t-dialog__body {
+  overflow: visible;
+}
+.drag-box {
+  width: 100%;
+}
+.drag-box .node {
+  position: relative;
+}
+.drag-box .item {
+  line-height: 30px;
+  border: 1px solid var(--td-border-level-2-color);
+  box-sizing: border-box;
+  border-radius: 3px;
+  padding: 0 8px;
+  width: calc(100% - 30px);
+}
+.drag-box .t-table td,
+.drag-box .t-table th {
+  border: none;
+  padding: 5px 0;
+}
+.drag-box .sub {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.4);
+}
+.drag-box .t-table {
+  position: relative;
+  margin: 0 -30px;
+  width: calc(100% + 60px);
+}
+/* fiber-manage */
+.fiber-manage .left .t-select__wrap {
+  width: auto;
+}
+.fiber-manage .input-search {
+  width: 450px;
+}
+.fiber-manage .input-search .t-input {
+  width: 100%;
+}
+.fiber-manage .left .t-select__wrap {
+  margin: 0;
+}
+.fiber-manage .left .owner {
+  margin: 0 10px;
+}
+.fiber-manage .left .t-button {
+  margin-left: 10px;
+}
+.fiber-manage .t-input-number {
+  width: 100%;
+}
+.fiber-manage .type-table {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+.fiber-manage .opt-btn {
+  text-align: center;
+}
+.fiber-manage .opt-btn .t-button {
+  margin: 0 10px;
+}
+/* node-manage */
+.node-manage .top-info {
+  font-size: 20px;
+}
+.node-manage .top-info .tit {
+  font-weight: bold;
+  margin-right: 10px;
+}
+.node-manage .top-info .back {
+  color: var(--td-brand-color-active);
+  cursor: pointer;
+}
+.node-manage .filed-table .t-table__th-cell-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  width: 100%;
+  text-wrap: nowrap;
+  overflow: hidden;
+}
+.node-manage .filed-table .custom-box {
+  display: flex;
+}
+.node-manage .filed-table .custom-tit,
+.node-manage .filed-table .custom-body {
+  flex: 1;
+  min-width: 40px;
+  word-break: break-all;
+  position: relative;
+}
+.node-manage .type-btn {
+  margin-left: 10px;
+}
+.node-manage .required {
+  color: red;
+  margin-right: 5px;
+}
+.node-manage .mul-item .field_name {
+  margin-right: 10px;
+}
+.node-manage .mul-item .required-item .t-form__label {
+  padding-right: 0;
+}
+.node-manage .filed-form .t-select__wrap {
+  width: auto;
+}
+.node-manage .filed-form .t-input__wrap {
+  width: 300px;
+}
+.t-popup {
+  max-width: 600px;
+  white-space: normal;
+}
+.en-dialog .t-form .t-form__label {
+  width: 180px !important;
+}

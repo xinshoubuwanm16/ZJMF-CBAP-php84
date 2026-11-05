@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="/plugins/addon/credit_limit/template/admin/css/credit_limit.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="credit_limit_setting" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_credit_limit_record_view'">
+          <a href="index.htm">{{lang.credit_records}}</a>
+        </li>
+        <li class="active" v-permission="'auth_credit_limit_configuration_view'">
+          <a href="javascript:;">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <t-form :data="formData" :label-width="150" ref="formValidatorStatus" label-align="left" @submit="onSubmit"
+        label-width="200" :rules="rules">
+        <t-form-item :label="lang.credit_tip" name="addon_credit_limit_repayment_notice">
+          <span>{{lang.credit_tip1}}</span>
+          <t-input v-model="formData.addon_credit_limit_repayment_notice" theme="normal"></t-input>
+          <span>{{lang.credit_tip2}}</span>
+        </t-form-item>
+        <p class="s-tip">{{lang.credit_tip3}}</p>
+        <t-form-item :label="lang.credit_tip4" name="addon_credit_limit_overdue_notice">
+          <span>{{lang.credit_tip5}}</span>
+          <t-input v-model="formData.addon_credit_limit_overdue_notice" theme="normal"></t-input>
+          <span>{{lang.credit_tip6}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.credit_tip7" name="addon_credit_limit_overdue_suspend_host">
+          <span>{{lang.credit_overdue}}</span>
+          <t-input-number v-model="formData.addon_credit_limit_overdue_suspend_host" theme="normal"
+            :min="0"></t-input-number>
+          <span>{{lang.credit_tip8}}</span>
+        </t-form-item>
+        <t-form-item class="f-btn">
+          <t-button theme="primary" type="submit" :loading="loading" v-permission="'auth_credit_limit_configuration_save_configuration'">{{lang.hold}}</t-button>
+        </t-form-item>
+      </t-form>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/credit_limit/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/credit_limit/template/admin/api/credit_limit.js"></script>
+<script src="/plugins/addon/credit_limit/template/admin/js/credit_limit_setting.js"></script>

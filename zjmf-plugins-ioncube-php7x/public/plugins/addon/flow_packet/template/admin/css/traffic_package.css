@@ -1,0 +1,62 @@
+.traffic_package_order {
+  display: none;
+}
+.traffic_package_order .common-header {
+  margin-top: 0;
+}
+.traffic_package_order .client-search {
+  display: flex;
+}
+.traffic_package_order .client-search .t-input__wrap {
+  margin-left: 10px;
+}
+.traffic_package_order .client-search .t-button {
+  margin-left: 20px;
+}
+.traffic_package_order .client-search .t-input__wrap,
+.traffic_package_order .client-search .t-select__wrap {
+  width: auto;
+}
+.traffic_package_order .client-search .t-input__wrap .t-input,
+.traffic_package_order .client-search .t-select__wrap .t-input {
+  width: 250px;
+}
+.traffic_package_order .client-search .t-select__wrap .t-input {
+  width: 200px;
+}
+.traffic_package_order .flow {
+  position: relative;
+}
+.traffic_package_order .flow .tag {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 2;
+}
+.traffic_package_order .t-input-number {
+  width: 100%;
+}
+.traffic_package_order .t-input-number .t-input__inner {
+  padding-right: 10px;
+}
+.traffic_package_order .t-pagination .t-input-number {
+  width: 48px;
+}
+.traffic_package_order .t-switch {
+  margin-left: 10px;
+}
+.traffic_package_order .packageDialog .t-select__wrap .t-input {
+  display: flex;
+}
+.traffic_package_order .order-unpaid {
+  background: #2F4484 !important;
+}
+.traffic_package_order .order-refunded {
+  background: #B52619 !important;
+}
+.traffic_package_order .order-paid {
+  background: #067945 !important;
+}
+.isEn .t-form .t-form__label {
+  width: 170px !important;
+}

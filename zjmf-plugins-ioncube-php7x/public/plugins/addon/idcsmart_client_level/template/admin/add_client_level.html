@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_client_level/template/admin/css/client_level.css" />
+<div id="content" class="add-client-level" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="box">
+        <p class="com-tit"><span>{{ lang.basic_info }}</span></p>
+        <t-form :data="formData" :rules="rules" ref="userInfo" @submit="onSubmit" label-align="top">
+          <div class="item">
+            <t-form-item :label="lang.clinet_level" name="name">
+              <t-input v-model="formData.name" :placeholder="lang.clinet_level"></t-input>
+            </t-form-item>
+            <t-form-item :label="lang.representative_color" name="background_color">
+              <t-color-picker :value="formData.background_color" :recent-colors="null" placeholder=" " class="colorPic"
+                :swatch-colors="swatchColors" format="CSS" :color-modes="['monochrome']" @change="changeColor" />
+            </t-form-item>
+          </div>
+          <div class="item" style="width: 680px;margin-bottom: 24px;">
+            <t-form-item :label="lang.notes" name="notes" style="width: 100%;">
+              <t-textarea v-model="formData.notes" :placeholder="lang.notes"></t-textarea>
+            </t-form-item>
+          </div>
+          <t-form-item :label="lang.product_preference" name="discount_status" label-align="left">
+            <t-switch size="medium" :custom-value="[1,0]" v-model="formData.discount_status">
+            </t-switch>
+          </t-form-item>
+          <template v-if="formData.discount_status">
+            <!-- 优惠表格 -->
+            <t-table row-key="id" :data="formData.product" size="medium" :columns="replayColumns" :hover="hover"
+              :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+              :hide-sort-tips="true" bordered class="replay-dialog">
+              <template #title-slot-name>
+                {{lang.discount_ratio}}
+                <t-tooltip :content="lang.levevl_tip" :show-arrow="false" theme="light" placement="top-left">
+                  <t-icon name="help-circle"></t-icon>
+                </t-tooltip>
+              </template>
+              <template #tailorism="{row,rowIndex}">
+                <!-- :attach="`#myPopup${rowIndex}`"  -->
+                <!-- 编辑单选 -->
+                <t-popup placement="bottom-left" :destroy-on-close="true" overlay-class-name="edit-pop"
+                  :visible="visibleTreeObj[rowIndex]?.visibleTree" v-show="row.isEdit && optType === 'update'">
+                  <div :id="`myPopup${rowIndex}`" class="productPop">
+                    <t-input v-model="row.new_name" :placeholder='lang.tailorism'
+                      @click.native="focusHandler(rowIndex)">
+                      <template slot="suffix">
+                        <t-icon name="chevron-down" size="18px"
+                          :class="{active:visibleTreeObj[rowIndex]?.visibleTree}"></t-icon>
+                      </template>
+                    </t-input>
+                  </div>
+                  <template slot="content" class="test">
+                    <t-tree :data="productList" :activable="true" :expand-on-click-node="true" ref="tree"
+                      @click="onClick" hover :label="getLabel" :expand-mutex="true" id="product-tree">
+                    </t-tree>
+                  </template>
+                </t-popup>
+                <!-- 新增多选 -->
+                <t-tree-select v-model="curProArr" :data="productList" multiple clearable
+                  :tree-props="{ keys:{ label: 'name', value: 'key'}}" v-show="row.isEdit && optType === 'add'"
+                  :min-collapsed-num="1">
+                </t-tree-select>
+                <!-- 未编辑状态 -->
+                <span v-show="!row.isEdit">{{row.name}}</span>
+              </template>
+              <template #ratio="{row,rowIndex}">
+                <span v-show="!row.isEdit">{{(row.discount_percent * 1).toFixed(2)}}%</span>
+                <t-input-number v-show="row.isEdit" :min="0" :max="100" :decimal-places="2"
+                  v-model="row.new_discount_percent" theme="normal" v-show="row.isEdit"></t-input-number>
+                </t-input-number>
+              </template>
+              <template #op="{row,rowIndex}">
+                <template v-if="!row.isEdit">
+                  <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                    <t-icon name="edit" class="common-look" @click="eidtItem(row, rowIndex)">
+                    </t-icon>
+                  </t-tooltip>
+                </template>
+                <template v-else>
+                  <t-tooltip :content="lang.hold" :show-arrow="false" theme="light">
+                    <t-icon name="save" class="common-look" @click="saveItem(row)">
+                    </t-icon>
+                  </t-tooltip>
+                  <t-tooltip :content="lang.cancel" :show-arrow="false" theme="light">
+                    <t-icon name="close-circle" class="common-look" @click="closeItem(row, rowIndex)">
+                    </t-icon>
+                  </t-tooltip>
+                </template>
+                <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                  <t-icon name="delete" class="common-look" @click="delItem(row,rowIndex)">
+                  </t-icon>
+                </t-tooltip>
+              </template>
+            </t-table>
+            <div class="add-more" @click="addMore" v-show="!editStatus">{{lang.order_new}}&nbsp;+</div>
+          </template>
+          <div class="f-btn">
+            <t-button theme="primary" type="submit" :loading="loading">{{lang.hold}}</t-button>
+            <t-button theme="default" variant="base" @click="close">{{lang.cancel}}</t-button>
+          </div>
+        </t-form>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/idcsmart_client_level/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_client_level/template/admin/api/client_level.js"></script>
+<script src="/plugins/addon/idcsmart_client_level/template/admin/js/add_client_level.js"></script>

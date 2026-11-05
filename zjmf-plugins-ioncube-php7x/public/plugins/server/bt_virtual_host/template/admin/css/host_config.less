@@ -1,0 +1,64 @@
+.common_config {
+  margin: 24px 0;
+
+  .item {
+    .t-form__item {
+      width: 100%;
+    }
+  }
+  .s-tip{
+    color: #999;
+    margin-top: -20px;
+    margin-bottom: 25px;
+  }
+  .com-f-btn {
+    text-align: left;
+
+    .t-button {
+      margin-left: 0;
+    }
+  }
+  .unit-box{
+    position: relative;
+    .t-form__controls-content{
+      display: flex;
+    }
+    .number{
+      margin-right: 0 !important;
+      flex: 1;
+    }
+    .unit{
+      width: 40px;
+      flex: 0;
+      position: absolute;
+      top: 0;
+      right: 12px;
+      z-index: 10;
+      .t-input{
+        padding: 0;
+      }
+      .t-input__suffix{
+        padding-left: 0;
+      }
+      .t-select-input--borderless .t-input--focused,
+      .t-select-input--borderless .t-input:hover{
+        background: transparent;
+      }
+      .t-select{
+        background: transparent;
+      }
+    }
+    .t-form__controls{
+      .t-form__label{
+        display: none;
+      }
+    }
+  }
+  .t-input-number{
+    width: 100%;
+  }
+}
+
+.unit-pup{
+  width: 60px !important;
+}

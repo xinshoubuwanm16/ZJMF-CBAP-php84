@@ -1,0 +1,61 @@
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/addon/client_care/template/clientarea/css/msgDetail.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <el-main>
+          <!-- 自己的东西 -->
+          <div class="msgdetail-box">
+            <div class="page-title">
+              <div class="back-btn" @click="goBack">
+                <img src="/plugins/addon/client_care/template/clientarea/img/back_icon.png" alt="">
+              </div>
+              <div class="title">{{lang.client_care_text2}}</div>
+            </div>
+            <div class="msg-content">
+              <div class="msg-title">{{msgDetail.title}}</div>
+              <div class="msg-time">
+                <span>{{lang.client_care_text1}}：{{msgDetail.create_time | formateTime}}</span>
+                <span style="margin-left: 0.4rem;">{{lang.client_care_text3}}：{{msgType[msgDetail.type]}}</span>
+              </div>
+              <div class="msg-text" v-html="msgDetail.content"></div>
+            </div>
+            <div class="msg-page">
+              <div class="page-left">
+                <template v-if="msgDetail.prev?.id">
+                  <span class="page-icon" @click="goOtherPage(msgDetail.prev.id)"><i
+                      class="el-icon-arrow-left page-icon"
+                      style="margin-right: 0.08rem;"></i>{{lang.client_care_text4}}: </span>
+                  <span class="page-next" @click="goOtherPage(msgDetail.prev.id)">{{msgDetail.prev.title}}</span>
+                </template>
+              </div>
+              <div class="page-right">
+                <template v-if="msgDetail.next?.id">
+                  <span class="page-icon" @click="goOtherPage(msgDetail.next.id)">{{lang.client_care_text5}}: </span>
+                  <span class="page-next" @click="goOtherPage(msgDetail.next.id)">{{msgDetail.next.title}}<i
+                      class="el-icon-arrow-right page-icon" style="margin-left: 0.08rem;"></i></span>
+                </template>
+              </div>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/client_care/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/client_care/template/clientarea/js/msgDetail.js"></script>
+  <script src="/plugins/addon/client_care/template/clientarea/api/msgDetail.js"></script>

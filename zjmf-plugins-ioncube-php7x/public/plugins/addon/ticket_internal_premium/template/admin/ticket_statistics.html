@@ -1,0 +1,145 @@
+<link rel="stylesheet" href="/plugins/addon/ticket_internal_premium/template/admin/css/ticket_statistics.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="template" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_addon_ticket_internal_premium_ticket_list'">
+          <a href="index.htm">{{lang.inside_work_order}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_config'">
+          <a href="ticket_setting.htm">{{lang.order__configuration}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_cron'">
+          <a href="ticket_time.htm">{{lang.order_text142}}</a>
+        </li>
+        <li class="active">
+          <a>{{lang.order_text88}}</a>
+        </li>
+      </ul>
+      <div class="top-search">
+        <div class="left-department">{{nowDepartment}}</div>
+        <div class="right-search">
+          <t-date-range-picker v-model="range" value-type='time-stamp' :presets="presets" enable-time-picker clearable>
+          </t-date-range-picker>
+          <t-select v-model="params.score_role" style="width: 240px;" clearable :placeholder="lang.order_text162">
+            <t-option :label="lang.order_text160" :value="0"></t-option>
+            <t-option :label="lang.order_text161" :value="1"></t-option>
+          </t-select>
+          <t-tree-select style="width: 240px;" v-model="params.id" :data="departmentList"
+            :placeholder="lang.order_text89" clearable :keys="{ label: 'name', value: 'id',children:'admin' }">
+          </t-tree-select>
+          <t-button class="search-btn" @click="getTicketStatistics">{{lang.order_text94}}</t-button>
+        </div>
+      </div>
+      <div class="mid-start">
+        <div class="left-total">
+          <div class="total-num">
+            <span>{{ticketDetail.avgrage_score}}</span>
+            <t-rate v-model="ticketDetail.show_avgrage_score" allow-half color="#FFC329" size="24px" disabled></t-rate>
+          </div>
+          <div class="total-score">
+            <t-space break-line>
+              <span>{{lang.order_text100}}：{{ticketDetail.satisfaction}}</span>
+              <t-divider layout="vertical"></t-divider>
+              <span>{{lang.order_text101}}：{{ticketDetail.attitude}}</span>
+              <t-divider layout="vertical"></t-divider>
+              <span>{{lang.order_text102}}：{{ticketDetail.processing_time}}</span>
+            </t-space>
+          </div>
+        </div>
+        <div class="order-num">
+          <t-space break-line>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text103}}</span>
+              <span class="order-score">{{ticketDetail.total}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text104}}</span>
+              <span class="order-score">{{ticketDetail.pending_total}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text105}}</span>
+              <span class="order-score">{{ticketDetail.processed_total}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text106}}<span
+                  class="order-time">({{lang.order_text107}})</span></span>
+              <span class="order-score">{{ticketDetail.average_processing_time | formatSeconds}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text108}}</span>
+              <span class="order-score">{{ticketDetail.score_total}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text109}}</span>
+              <span class="order-score">{{ticketDetail.not_score_total}}</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text110}}</span>
+              <span class="order-score">{{(ticketDetail.score_rate * 100).toFixed(0)}}%</span>
+            </div>
+            <t-divider layout="vertical"></t-divider>
+            <div class="order-item">
+              <span class="order-type">{{lang.order_text111}}</span>
+              <span class="order-score">{{(ticketDetail.overtime_ratio * 100).toFixed(0)}}%</span>
+            </div>
+          </t-space>
+        </div>
+      </div>
+    </t-card>
+    <div class="bottom-table">
+      <div class="table-star">
+        <div class="table-title" v-if="params.type === 'admin'">{{nowTableName}}{{lang.order_text112}}</div>
+        <div class="table-title" v-else-if="params.type === 'department'">{{nowTableName}}{{lang.order_text112}}</div>
+        <div class="table-title" v-else>{{lang.order_text113}}</div>
+        <div class=" table-content">
+          <div class="table-item" v-for="(item,index) in scoreRank" :key="index">
+            <div class="table-left">
+              <span class="table-type">{{item.name}}</span>
+              <span class="star-box">
+                <t-rate v-model="item.show_score" allow-half color="#FFC329" size="24px" disabled></t-rate>
+              </span>
+              <span class="table-num">{{item.score}}</span>
+            </div>
+            <div class="table-score">
+              <t-space break-line>
+                <span>{{lang.order_text100}}：{{item.satisfaction}}</span>
+                <t-divider layout="vertical"></t-divider>
+                <span>{{lang.order_text101}}：{{item.attitude}}</span>
+                <t-divider layout="vertical"></t-divider>
+                <span>{{lang.order_text102}}：{{item.processing_time}}</span>
+              </t-space>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-time">
+        <div class="table-title" v-if="params.type === 'admin'">{{nowTableName}}{{lang.order_text114}}</div>
+        <div class="table-title" v-else-if="params.type === 'department'">{{nowTableName}}{{lang.order_text114}}</div>
+        <div class="table-title" v-else>{{lang.order_text115}}</div>
+        <div class="table-content">
+          <div class="table-item" v-for="(item,index) in timeRank" :key="index">
+            <div class="table-left">
+              <span class="table-type">{{item.name}}</span>
+            </div>
+            <div class="table-min">
+              <div class="table-long" :style="getMaxTime(item.score)"></div>
+              <span class="time-text">{{item.score | formatSecondsToMin}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </com-config>
+</div>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/api/order.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/ticket_statistics.js"></script>

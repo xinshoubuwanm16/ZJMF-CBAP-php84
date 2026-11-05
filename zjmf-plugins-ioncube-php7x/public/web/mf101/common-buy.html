@@ -1,0 +1,262 @@
+{include file="header"}
+
+<link rel="stylesheet" href="/web/mf101/css/element.css">
+<link rel="stylesheet" href="/web/mf101/css/common_config.css">
+</head>
+
+<body style="background-color: rgb(240, 245, 251);">
+    <header>{include file="conf/header"}</header>
+    <section id="buy" class="section buy-section" v-cloak>
+        <div class="template common-config">
+            <div class="select-box">
+                <el-popover placement="bottom-start" trigger="click" v-model="visible">
+                    <span slot="reference" class="select-text">{{ selectName }}
+                        <i class="el-icon-arrow-down"></i>
+                    </span>
+                    <div class="product-list">
+                        <div class=" product-item" v-for="item in allProList" @click="handelClick(item)">{{item.name}}
+                        </div>
+                    </div>
+                </el-popover>
+            </div>
+            <div class="goods-page">
+                <!-- 自己的东西 -->
+                <div class="main-card">
+                    <div class="common-box">
+                        <div class="l-config">
+                            <div class="description card-item" v-html="calStr" v-if="calStr"></div>
+                            <!-- 自定义配置项 -->
+                            <div class="config-item card-item" v-for="item in configoptions" :key="item.id">
+                                <p class="config-tit">{{item.option_name}}</p>
+                                <template v-if="item.option_type === 'os'">
+                                    <!-- 镜像组选择框 -->
+                                    <el-select class="os-select os-group-select" v-model="osGroupId"
+                                        @change="(e)=>osSelectGroupChange(e,item)">
+                                        <img class="os-group-img" :src="osIcon" slot="prefix" alt="">
+                                        <el-option v-for="items in item.subs" :key='items.os' :value="items.os"
+                                            :label="items.os">
+                                            <div class="option-label">
+                                                <img class="option-img"
+                                                    :src="'/web/mf101/assets/img/idcsmart_common/' + items.os + '.svg'"
+                                                    alt="">
+                                                <span class="option-text">{{items.os}}</span>
+                                            </div>
+                                        </el-option>
+                                    </el-select>
+                                    <!-- 镜像实际选择框 -->
+                                    <el-select class="os-select" v-model="configForm[item.id]" @change="osSelectChange">
+                                        <el-option v-for="os in osSelectData" :key="os.id" :value="os.id"
+                                            :label="os.option_name"></el-option>
+                                    </el-select>
+                                </template>
+                                <!-- 配置项 -->
+                                <div class="config-way">
+                                    <!-- 下拉单选/多选 -->
+                                    <el-select v-model="configForm[item.id]" :placeholder="lang.please_select"
+                                        v-if="item.option_type === 'select' || item.option_type ==='multi_select'"
+                                        :multiple="item.option_type ==='multi_select'" collapse-tags
+                                        @change="changeItem(item)">
+                                        <el-option v-for="item in item.subs" :key="item.id" :label="item.option_name"
+                                            :value="item.id">
+                                        </el-option>
+                                    </el-select>
+                                    <!-- 是否 -->
+                                    <el-switch v-model="configForm[item.id]" v-if="item.option_type ==='yes_no'"
+                                        active-color="#0052D9" :active-value="calcSwitch(item,true)"
+                                        :inactive-value="calcSwitch(item,false)" @change="changeConfig(false)">
+                                    </el-switch>
+                                    <!-- 数据输入 -->
+                                    <el-input-number v-model="configForm[item.id]" :min="item.qty_min"
+                                        :max="item.qty_max" v-if="item.option_type ==='quantity'"
+                                        @change="changeConfig(false)">
+                                    </el-input-number>
+                                    <!-- 数量拖动 -->
+                                    <div class="slider" v-if="item.option_type ==='quantity_range'">
+                                        <span class="min">{{item.qty_min}}</span>
+                                        <el-slider v-model="configForm[item.id][0]" @change="changeConfig(false)"
+                                            :min="item.qty_min" :max="item.qty_max" show-input>
+                                        </el-slider>
+                                        <span class="max">{{item.qty_max}}</span>
+                                    </div>
+                                    <!-- 点击单选 -->
+                                    <el-radio-group @input="changeClick" v-model="configForm[item.id]"
+                                        v-if="item.option_type ==='radio'">
+                                        <el-radio-button :label="el.id" v-for="el in item.subs" :key="el.id">
+                                            {{el.option_name}}
+                                        </el-radio-button>
+                                    </el-radio-group>
+
+                                    <!-- 区域选择 -->
+                                    <template v-if="item.option_type ==='area'">
+                                        <div class="area-box">
+                                            <div class="country">
+                                                <span class="tit">{{lang.account_label4}}</span>
+                                                <el-radio-group v-model="curCountry[item.id]"
+                                                    @input="(index)=>changeCountry(item.id,index)">
+                                                    <el-radio-button :label="index"
+                                                        v-for="(el,index) in filterCountry[item.id]" :key="index">
+                                                        <img :src="`/upload/common/country/${el[0].country}.png`"
+                                                            class="city-img" alt="">
+                                                        <span>{{calcCountry(el[0].country)}}</span>
+                                                    </el-radio-button>
+                                                </el-radio-group>
+                                            </div>
+                                            <div class="city">
+                                                <span class="tit">{{lang.city}}</span>
+                                                <el-radio-group @input="changeCity" v-model="configForm[item.id]">
+                                                    <el-radio-button :label="el.id"
+                                                        v-for="(el,index) in filterCountry[item.id][curCountry[item.id]]"
+                                                        :key="index">
+                                                        <img class="city-img"
+                                                            :src="`/upload/common/country/${el.country}.png`" alt="">
+                                                        <span>{{el.option_name}}</span>
+                                                    </el-radio-button>
+                                                </el-radio-group>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <!-- 后缀单位 -->
+                                    <span class="unit">{{item.unit}}</span>
+                                </div>
+                                <!-- 描述 -->
+                                <p class="des" v-if="item.option_type !== 'area' && item.description"
+                                    v-html="calcDes(item.description)">
+                                </p>
+                            </div>
+                            <div class="config-item card-item" v-show="is_show_custom">
+                                <p class="config-tit">{{lang.other_config}}</p>
+                                <custom-goods :id="id" :self_defined_field.sync="self_defined_field"
+                                    :is_show_custom.sync="is_show_custom" class="custom-config" ref="customGoodRef">
+                                </custom-goods>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 底部 -->
+                <div class="f-order">
+                    <section class="section">
+                        <div class="left">
+                            <div class="num">
+                                <span class="l-txt">{{lang.shoppingCar_goodsNums}}</span>
+                                <el-input-number :disabled="basicInfo.allow_qty === 0" v-model="orderData.qty"
+                                    :max="999" @change="changeConfig">
+                                </el-input-number>
+                            </div>
+                            <div class="time">
+                                <span class="l-txt">{{lang.cycle}}</span>
+                                <el-select v-model="cycle" class="duration-select" popper-class="duration-pup"
+                                    :visible-arrow="false" @change="changeCycle">
+                                    <el-option v-for="item in cycleList" :key="item.id" :label="calcPrice(item)"
+                                        :value="item.id">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span class="txt">{{item.name}}</span>
+                                            <span
+                                                class="tip">{{commonData.currency_prefix}}{{((item.cycle_amount !== '' ? item.cycle_amount :item.amount) * 1).toFixed(2) | filterMoney}}</span>
+                                        </div>
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <div class="mid">
+                                <el-popover placement="top" trigger="hover" popper-class="free-content">
+                                    <div class="content">
+                                        <div class="tit">{{lang.product_preview}}</div>
+                                        <div class="con">
+                                            <p class="c-item" v-for="(item,index) in showInfo" :key="index">
+                                                <span class="l-txt">{{item.name}}：{{item.value}}</span>
+                                                <span
+                                                    class="price">{{commonData.currency_prefix}}{{item.price | filterMoney}}</span>
+                                            </p>
+                                        </div>
+                                        <div class="bot">
+                                            <p class="c-item">
+                                                <span class="l-txt">{{lang.shoppingCar_tip_text3}}：</span>
+                                                <span class="price">
+                                                    {{commonData.currency_prefix}}{{totalPrice | filterMoney}}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <a class="link" slot="reference">{{lang.product_preview}}</a>
+                                </el-popover>
+                                <div class="bot-price" v-loading="dataLoading">
+                                    <div class="new">
+                                        {{commonData.currency_prefix}}<span>{{totalPrice | filterMoney}}</span>
+                                        <el-popover placement="top" min-width="200" trigger="hover"
+                                            v-if="original_price !=totalPrice" popper-class="level-pup">
+                                            <div class="show-config-list">
+                                                <p v-if="clDiscount * 1 !== 0">
+                                                    {{lang.shoppingCar_tip_text2}}：{{commonData.currency_prefix}}
+                                                    {{ clDiscount | filterMoney }}
+                                                </p>
+                                                <p v-if="isShowPromo && isUseDiscountCode">
+                                                    {{lang.shoppingCar_tip_text4}}：{{commonData.currency_prefix}}
+                                                    {{ code_discount | filterMoney }}
+                                                </p>
+                                                <p v-if="customfield.event_promotion">
+                                                    {{lang.goods_text4}}：{{commonData.currency_prefix}}
+                                                    {{ eventData.discount | filterMoney }}
+                                                </p>
+                                            </div>
+                                            <img class="total-icon" src="/web/mf101/assets/img/help-circle.svg" alt=""
+                                                slot="reference">
+                                        </el-popover>
+                                    </div>
+                                    <div class="old">
+                                        <div class="show" v-if="original_price !=totalPrice">
+                                            {{commonData.currency_prefix}}{{original_price | filterMoney }}
+                                        </div>
+                                        <template v-if="isShowPromo">
+                                            <!-- 优惠码 -->
+                                            <!-- 未使用 -->
+                                            <el-popover placement="top" trigger="click" popper-class="discount-pup"
+                                                v-model="dis_visible" v-if=" !code_discount">
+                                                <div class="discount">
+                                                    <img src="/web/mf101/assets/img/close_icon.png" alt="" class="close"
+                                                        @click="dis_visible = !dis_visible">
+                                                    <div class="code">
+                                                        <el-input v-model="customfield.promo_code"
+                                                            :placeholder="`${lang.placeholder_pre1}${lang.cloud_code}`"></el-input>
+                                                        <button class="sure"
+                                                            @click="useDiscount">{{lang.referral_btn6}}</button>
+                                                    </div>
+                                                    <span class="error-tip" v-show="showErr">{{lang.mf_tip8}}</span>
+                                                </div>
+                                                <p class="use" slot="reference">{{lang.use_discount}}
+                                                </p>
+                                            </el-popover>
+                                            <!-- 已使用 -->
+                                            <div class="used" v-else>
+                                                <span>{{customfield.promo_code}}</span>
+                                                <i class="el-icon-circle-close" @click="canclePromo"></i>
+                                            </div>
+                                        </template>
+                                        <!-- 活动插件 -->
+                                        <event-code v-if="isShowFull" :product_id='id' :qty="orderData.qty"
+                                            :amount="onePrice" :billing_cycle_time="orderData.duration"
+                                            @change="eventChange">
+                                        </event-code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right ">
+                            <el-button class="buy" @click="buyNow"
+                                :loading="submitLoading">{{lang.product_buy_now}}</el-button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="/web/mf101/js/util.js"></script>
+    <script src="/web/mf101/js/common_api.js"></script>
+    <script src="/web/mf101/js/styme_lang.js"></script>
+    <script src="/web/mf101/js/common_lang.js"></script>
+    <script src="/web/mf101/js/customGoods.js"></script>
+    <script src="/web/mf101/js/eventCode.js"></script>
+    <script src="/web/mf101/js/common_buy.js"></script>
+    <script src="/web/mf101/assets/lib/vue.js"></script>
+    <script src="/web/mf101/assets/lib/element.js"></script>
+    <script src="/web/mf101/assets/lib/axios.min.js"></script>
+    <script src="/web/mf101/js/request.js"></script>
+    {include file="footer"}

@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/admin/css/e_contract.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template contract-details" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="con">
+        <p class="top-info">{{lang.fingerprint}}：{{info.fingerprint}}</p>
+        <!-- 拒绝/作废原因 -->
+        <p class="reason" v-if="info.status === 'reject' || info.status === 'cancel'">
+          {{info.status === 'reject' ? lang.dismiss_the_reason : lang.nullify_reason
+          }}：{{info.reason}}
+        </p>
+        <div class="detail" v-html="info.detail"></div>
+        <div class="opt">
+          <!-- 待审核 -->
+          <template v-if="info.status === 'review'">
+            <t-button class="pass" @click="optHandler('complete')" v-permission="'auth_e_contract_list_approve_contract'">{{lang.pass}}</t-button>
+            <t-button theme="danger" class="reject" @click="optHandler('reject')" v-permission="'auth_e_contract_list_reject_contract'">{{lang.reject}}</t-button>
+          </template>
+          <!-- 已签订 -->
+          <template v-if="info.status === 'complete'">
+            <t-button class="pass" :loading="loading" @click="downPdf" v-permission="'auth_e_contract_list_download_contract'">{{lang.download_contract}}
+            </t-button>
+            <!-- <t-button theme="danger" class="reject" @click="optHandler('cancel')">{{lang.invoice_status6}}</t-button> -->
+          </template>
+          <t-button theme="default" @click="back">{{lang.back}}</t-button>
+        </div>
+      </div>
+    </t-card>
+    <!-- 二次确认弹窗 -->
+    <t-dialog :theme="optType === 'complete' ? 'warning' : ''" :header="calcHeader" :visible.sync="delVisible"
+      :footer="optType === 'complete'">
+      <t-form :data="formData" :rules="rules" :label-width="80" label-align="top" ref="formValidatorStatus"
+        v-if="optType !== 'complete'" @submit="onSubmit">
+        <t-form-item name="reason" label=" " v-if="optType === 'reject'">
+          <t-textarea v-model="formData.reason" :placeholder="`${lang.reject_reason}`">
+          </t-textarea>
+        </t-form-item>
+        <t-form-item name="cancel_reason" label=" " v-if="optType === 'cancel'">
+          <t-textarea v-model="formData.cancel_reason" :placeholder="`${lang.nullify_reason}`">
+          </t-textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="loading">{{lang.sure}}</t-button>
+          <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+      <template slot="footer" v-if="optType === 'complete'">
+        <t-button theme="primary" @click="sureHandler" :loading="loading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/e_contract/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/api/e_contract.js"></script>
+<script src="/plugins/addon/e_contract/template/admin/js/contract_details.js"></script>

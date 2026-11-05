@@ -1,0 +1,11 @@
+# 本机验证环境与工具链、原版参考树：不入库
+_tools/
+_work/
+zjmf-src/
+
+# 根目录的交付压缩包（由目录现场重建；source.zip 111MB 超过 GitHub 单文件 100MB 限制）
+# 只忽略根目录这一层：插件自带的 data/abc.zip 等源文件仍照常入库
+/*.zip
+
+# 站点安装后生成的配置（public/upgrade/upgrade.log 是上游自带文件，不在忽略范围）
+/zjmf-10.4.6-php84/public/config.php

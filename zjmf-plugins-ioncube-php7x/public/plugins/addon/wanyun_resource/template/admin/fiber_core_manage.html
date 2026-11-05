@@ -1,0 +1,168 @@
+<link rel="stylesheet" href="/plugins/addon/wanyun_resource/template/admin/css/wanyun_resource.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="wanyun-ip node-manage fiber-core-manage" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <div class="flex top-info">
+          <span class="tit">「{{fiber_num}}」- {{lang.wy_core_manage}}</span><span class="back" @click="back">
+            <<{{lang.wy_back}} </span>
+        </div>
+        <div class="flex right">
+          <t-button @click="addCustomFiled"
+            v-permission="'auth_addon_wanyun_resource_fiber_core_manage_self_defined_field'">{{lang.wy_custom_fields}}</t-button>
+        </div>
+      </div>
+      <div class="filed-table">
+        <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" display-type="fixed-width"
+          :hide-sort-tips="true">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <!-- 循环自定义字段 -->
+          <template #title-slot-custom>
+            <span v-for="item in self_defined_field" class="custom-tit" :key="item.id">
+              {{item.field_name}}
+            </span>
+          </template>
+          <template #custom="{row}">
+            <div class="custom-box">
+              <span v-for="(item,index) in self_defined_field" :key="item.id" class="custom-body">
+                {{calcFiledName(row.self_defined_field, item)}}
+              </span>
+            </div>
+          </template>
+          <template #path="{row}">
+            <t-popup :content="calcDetail(row.path_node)" placement="top" overlay-class-name="node-pup"
+              v-if="row.path_node.length > 0">
+              <span class="over-hide">{{calcPath(row.path_node)}}</span>
+            </t-popup>
+            <span v-else>--</span>
+          </template>
+          <template #notes="{row}">
+            {{row.notes || '--'}}
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.wy_edit" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" @click="editCore(row)" class="common-look"
+                v-permission="'auth_addon_wanyun_resource_fiber_core_update'"></t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+      </div>
+      <t-pagination :total="total" :page-size="params.limit" :current="params.page" :page-size-options="pageSizeOptions"
+        @change="changePage" v-if="total" />
+    </t-card>
+
+    <!-- core -->
+    <t-dialog :header="optTitle" :visible.sync="coreVisble" :footer="false" width="540" class="vlan-dialog">
+      <t-form :data="formData" :rules="rules" ref="coreDialog" @submit="submitNode" v-if="coreVisble">
+        <t-form-item :label="lang.wy_path_node" name="node_id">
+          <t-select v-model="formData.node_id" :placeholder="lang.wy_path_node" :keys="{ label: 'text', value: 'id' }"
+            multiple :options="nodeList" :min-collapsed-num="1">
+          </t-select>
+        </t-form-item>
+        <!-- 循环自定义字段 -->
+        <t-form-item :label="item.field_name"
+          :rules="item.is_required ?
+      [{required: true, message: (item.field_type ==='text' ? lang.wy_input : lang.wy_select) + item.field_name}] : [{required: false}]"
+          :name="'self_defined_field.' + item.id" v-for="item in customFiled" :key="item.id">
+          <t-input v-model="formData.self_defined_field[item.id]" v-if="item.field_type === 'text'"
+            :placeholder="item.field_name">
+          </t-input>
+          <t-select v-model="formData.self_defined_field[item.id]" :placeholder="item.field_name"
+            v-if="item.field_type === 'dropdown'" clearable>
+            <t-option :value="el" :key="index" :label="el" v-for="(el, index) in calcOptions(item.field_option)"
+              :key="index">
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="lang.wy_notes" name="notes">
+          <t-textarea :placeholder="lang.wy_notes" v-model="formData.notes" :maxlength="200">
+          </t-textarea>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.wy_hold}}</t-button>
+          <t-button theme="default" @click="coreVisble = false">{{lang.wy_cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 自定义字段 -->
+    <t-dialog :header="lang.wy_custom_fields" :visible.sync="filedVisble" :footer="false" width="700">
+      <t-form :data="filedFormData" ref="filedDialog" @submit="submitFiled" :label-width="100" label-align="left"
+        :rules="rules" v-if="filedVisble" class="filed-form">
+        <t-form-item class="mul-item">
+          <t-form-item :label="lang.wy_field_name" name="field_name" class="field_name">
+            <t-input :placeholder="lang.wy_field_name" maxlength="10" show-limit-number
+              v-model="filedFormData.field_name">
+            </t-input>
+          </t-form-item>
+          <t-form-item label=" " name="is_required" class="required-item" :label-width="0">
+            <t-checkbox v-model="filedFormData.is_required">{{lang.wy_tip5}}</t-checkbox>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="lang.wy_field_type" name="field_type">
+          <t-select v-model="filedFormData.field_type" :placeholder="lang.wy_field_type">
+            <t-option value="text" key="text" :label="lang.wy_textarea"></t-option>
+            <t-option value="dropdown" key="dropdown" :label="lang.wy_dropdown"></t-option>
+          </t-select>
+          <t-button theme="primary" type="submit" :loading="submitLoading" class="type-btn"
+            v-show="filedFormData.field_type !== 'dropdown'">
+            {{optType === 'add' ? lang.wy_add : lang.wy_hold}}
+          </t-button>
+        </t-form-item>
+        <t-form-item :label="lang.wy_dropdown_value" name="field_option" v-if="filedFormData.field_type === 'dropdown'">
+          <t-input :placeholder="lang.wy_tip6" v-model="filedFormData.field_option">
+          </t-input>
+          <t-button theme="primary" type="submit" :loading="submitLoading" class="type-btn">
+            {{optType === 'add' ? lang.wy_add : lang.wy_hold}}
+          </t-button>
+        </t-form-item>
+      </t-form>
+      <t-table row-key="id" :data="customFiled" size="medium" :columns="filedColumns" :hover="hover"
+        :loading="filedLoading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+        :max-height="400" :hide-sort-tips="true" class="type-table" drag-sort="row-handler" @drag-sort="onDragSort">
+        <template #drag="{row}">
+          <t-icon name="move"></t-icon>
+        </template>
+        <template #field_name="{row}">
+          <span class="required" v-if="row.is_required">*</span>{{row.field_name}}
+        </template>
+        <template #show_list="{row}">
+          <t-switch size="medium" :custom-value="[1,0]" v-model="row.show_list" @change="changeShowFiled($event, row)">
+          </t-switch>
+        </template>
+        <template #field_type="{row}">
+          <t-popup :content="calcFiledOptions(row.field_option)" placement="top-left" overlay-class-name="node-pup"
+            v-if="row.field_type === 'dropdown'">
+            <span class="over-hide">{{lang.wy_dropdown}}</span>
+          </t-popup>
+          <span v-else>{{lang.wy_textarea}}</span>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.wy_edit" :show-arrow="false" theme="light">
+            <t-icon name="edit-1" @click="editCustomFiled(row)" class="common-look"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.wy_delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" @click="handlerDel('filed',row)" class="common-look"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+    </t-dialog>
+
+    <!-- 删除 -->
+    <t-dialog theme="warning" :header="lang.wy_tip3" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelete" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/wanyun_resource/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/api/wanyun_resource.js"></script>
+<script src="/plugins/addon/wanyun_resource/template/admin/js/fiber_core_manage.js"></script>

@@ -1,0 +1,98 @@
+.statistics {
+  .hover-row {
+    cursor: pointer;
+  }
+
+  .change-year {
+    display: flex;
+    justify-content: space-between;
+
+    .item {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        color: var(--td-brand-color-8);
+      }
+    }
+  }
+
+  .t-tit {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    line-height: 1;
+    font-size: 20px;
+  }
+
+  .balance {
+    text-align: center;
+  }
+
+  .tit {
+    font-size: 18px;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .des {
+    font-size: 12px;
+    color: #999;
+  }
+
+  .type {
+    margin: 0;
+    margin-bottom: -30px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  #monitorContainer {
+    width: 100%;
+    height: 500px;
+  }
+
+  .choose {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    .item {
+      display: inline-block;
+      margin: 0 5px;
+      line-height: 32px;
+      border-radius: 3px;
+      text-align: center;
+      background: var(--td-bg-color-component);
+      color: var(--td-text-color-primary);
+      padding: 0 10px;
+      cursor: pointer;
+
+      &.active {
+        background: var(--td-brand-color-8);
+        color: #fff;
+      }
+    }
+  }
+
+  .sub-total {
+    display: flex;
+    border-bottom: 1px solid var(--td-component-border);
+    line-height: 49px;
+    margin: 0;
+
+    .item {
+      flex: 1;
+      text-align: center;
+    }
+  }
+
+  .table-item {
+    table {
+      thead tr {
+        background: #E7E7E7;
+      }
+    }
+  }
+}

@@ -1,0 +1,338 @@
+<link rel="stylesheet" href="/plugins/addon/credit_limit/template/admin/css/credit_limit.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="credit_limit" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active" v-permission="'auth_credit_limit_record_view'">
+          <a href="javascript:;">{{lang.credit_records}}</a>
+        </li>
+        <li v-permission="'auth_credit_limit_configuration_view'">
+          <a href="credit_limit_setting.htm">{{lang.basic_setting}}</a>
+        </li>
+      </ul>
+      <div class="common-header">
+        <div>
+          <t-button @click="addUser" class="add" v-permission="'auth_credit_limit_record_create_credit_limit'">{{lang.add_credit}}</t-button>
+        </div>
+        <div class="right-search">
+          <div class="com-search">
+            <t-input v-model="params.keywords" class="search-input"
+              :placeholder="`${lang.username}、${lang.email}、${lang.phone}、${lang.notes}`" @keypress.enter.native="seacrh"
+              :on-clear="clearKey" clearable>
+            </t-input>
+          </div>
+          <t-select v-model="params.status" :placeholder="lang.credit_status" clearable>
+            <t-option v-for="item in creditStatus" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+          <t-date-range-picker allow-input clearable v-model="range"
+            :placeholder="`${lang.select}${lang.client_care_label44}`"></t-date-range-picker>
+          <t-button @click="seacrh">{{lang.query}}</t-button>
+        </div>
+      </div>
+      <t-table row-key="id" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" :hide-sort-tips="hideSortTips"
+        :max-height="maxHeight">
+        <template slot="sortIcon">
+          <t-icon name="caret-down-small"></t-icon>
+        </template>
+        <template #username="{row}">
+          <a :href="`${baseUrl}client_detail.htm?id=${row.client_id}`" class="aHover">{{row.username}}</a>
+        </template>
+        <template #credit_limit="{row}">
+          {{currency_prefix}}{{row.credit_limit | filterMoney}}
+        </template>
+        <template #remaining_amount="{row}">
+          {{currency_prefix}}{{row.remaining_amount | filterMoney}}
+        </template>
+        <template #credit_term="{row}">
+          {{moment(row.start_time * 1000).format('YYYY-MM-DD')}}&nbsp;~&nbsp;{{moment(row.end_time *
+          1000).format('YYYY-MM-DD')}}
+        </template>
+        <template #day="{row}">
+          {{row.statement_date}}/{{row.repayment_date}}
+        </template>
+        <template #status="{row}">
+          <t-tag theme="success" class="status" v-if="row.status === 'Active'"
+            variant="light">{{lang.credit_active}}</t-tag>
+          <t-tag theme="default" class="status" v-if="row.status === 'Expired'"
+            variant="light">{{lang.promo_expiration}}</t-tag>
+          <t-tag theme="warning" class="status" v-if="row.status === 'Suspended'"
+            variant="light">{{lang.Suspended}}</t-tag>
+          <t-tag theme="danger" class="status" v-if="row.status === 'Overdue'"
+            variant="light">{{lang.credit_overdue}}</t-tag>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.purchase_history" :show-arrow="false" theme="light">
+            <t-icon name="creditcard" class="common-look" @click="lookRecord(row)" v-permission="'auth_credit_limit_record_expenses_record'">
+            </t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.credit_details" :show-arrow="false" theme="light">
+            <t-icon name="view-module" class="common-look" @click="updateAdmin(row)" v-permission="'auth_credit_limit_record_credit_limit_record'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" :page-size="params.limit" :page-size-options="pageSizeOptions"
+        :on-change="changePage" :current="params.page" />
+    </t-card>
+
+    <!-- 添加/编辑授信 -->
+    <t-dialog :visible.sync="visible" :header="addTip" :footer="false" width="700" placement="center">
+      <t-form :rules="rules" :data="formData" ref="userDialog" @submit="onSubmit" v-if="visible">
+        <t-form-item :label="lang.credit_user" name="client_id" v-show="optType === 'add'">
+          <com-choose-user @changeuser="changeUser"></com-choose-user>
+        </t-form-item>
+        <t-form-item :label="lang.credit_user" v-show="optType === 'update'">
+          <t-input v-model="formData.username" disabled></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.credit_status" name="discount_status" v-if="optType === 'update'">
+          <t-switch size="medium" :custom-value="['Active','Suspended']" v-model="formData.status"
+            :disabled="temp_status === 'Overdue'">
+          </t-switch>
+        </t-form-item>
+        <t-form-item :label="lang.credit_term" class="date-range">
+          <t-form-item name="start_time">
+            <t-date-picker v-model="formData.start_time" :placeholder="lang.credit_start_time"
+              :disable-date="{ after: moment().subtract(0, 'day').format() }"></t-date-picker>
+          </t-form-item>
+          <t-form-item name="end_time">
+            <t-date-picker v-model="formData.end_time" :placeholder="lang.credit_end_time"
+              :disable-date="{ before: formData.start_time }"></t-date-picker>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="lang.credit_line" name="credit_limit">
+          <t-input-number :placeholder="lang.credit_line" v-model="formData.credit_limit" :min="0" :decimal-places="2"
+            theme="normal"></t-input-number>
+          <span class="residue" v-if="optType === 'update'">{{lang.used}}&nbsp;{{((formData.credit_limit -
+            formData.remaining_amount).toFixed(2)) | filterMoney}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.billing_date" name="statement_date">
+          <t-input-number :placeholder="lang.credit_tip9" v-model="formData.statement_date" @blur="changeState"
+            :max="28" theme="normal" />
+        </t-form-item>
+        <t-form-item :label="lang.repayment_date" name="repayment_date">
+          <t-input-number :placeholder="lang.credit_tip9" v-model="formData.repayment_date" @blur="changeRepayment"
+            :max="28" theme="normal" />
+        </t-form-item>
+        <t-form-item :label="lang.notes" name="notes">
+          <t-textarea :placeholder="lang.notes" v-model="formData.notes" />
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading" :disabled="hideEdit">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="visible = false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+      <!-- 操作记录 -->
+      <div class="opt-records" v-if="optType === 'update'">
+        <div class="top">
+          <span class="tit">{{lang.credit_opt_record}}</span>
+          <div class="opt">
+            <t-select v-model="optParams.type" :placeholder="lang.opt_type" :popup-props="popupProps" clearable
+              @change="getCreditLogs">
+              <t-option v-for="item in optSelect" :value="item.value" :label="item.label" :key="item.value"></t-option>
+            </t-select>
+            <t-select v-model="optParams.admin_id" :placeholder="lang.operator" @change="getCreditLogs"
+              :popup-props="popupProps" clearable>
+              <t-option v-for="item in adminList" :value="item.id" :label="item.name" :key="item.id"></t-option>
+            </t-select>
+          </div>
+        </div>
+        <t-table row-key="id" :data="optList" size="medium" :columns="optColumns" :hover="hover" :loading="optLoading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" @sort-change="sortChange" :hide-sort-tips="hideSortTips"
+          :max-height="300">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #type="{row}">
+            {{calcType(row.type)}}
+          </template>
+          <template #credit_limit="{row}">
+            {{currency_prefix}}{{row.credit_limit | filterMoney}}
+          </template>
+          <template #remaining_amount="{row}">
+            {{currency_prefix}}{{row.remaining_amount | filterMoney}}
+          </template>
+          <template #create_time="{row}">
+            {{moment(row.create_time * 1000).format('YYYY-MM-DD HH:mm:ss')}}
+          </template>
+          <template #day="{row}">
+            {{row.statement_date}}/{{row.repayment_date}}
+          </template>
+          <template #status="{row}">
+            <t-tag theme="success" class="status" v-if="row.status === 'Active'"
+              variant="light">{{lang.credit_active}}</t-tag>
+            <t-tag theme="default" class="status" v-if="row.status === 'Expired'"
+              variant="light">{{lang.promo_expiration}}</t-tag>
+            <t-tag theme="warning" class="status" v-if="row.status === 'Suspended'"
+              variant="light">{{lang.Suspended}}</t-tag>
+            <t-tag theme="danger" class="status" v-if="row.status === 'Overdue'"
+              variant="light">{{lang.credit_overdue}}</t-tag>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.purchase_history" :show-arrow="false" theme="light">
+              <t-icon name="creditcard" class="common-look" @click="lookRecord(row)">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.credit_details" :show-arrow="false" theme="light">
+              <t-icon name="view-module" class="common-look" @click="updateAdmin(row)">
+              </t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <t-pagination show-jumper v-if="optTotal" :total="optTotal" :page-size="optParams.limit"
+          :page-size-options="pageSizeOptions" :on-change="changePageOpt" :current="optParams.page" />
+      </div>
+    </t-dialog>
+
+    <!-- 消费记录 -->
+    <t-dialog :header="lang.purchase_history" :visible.sync="recordVisble" width="1000" :footer="false">
+      <t-enhanced-table ref="table" row-key="id" drag-sort="row-handler" :data="recordList" :columns="recordColumns"
+        :tree="{ childrenKey: 'list', treeNodeColumnIndex: 0 }" :loading="recordLoading" class="user-order"
+        :hide-sort-tips="true" :key="new Date().getTime()">
+        <template #id="{row}">
+          <a :href="`order_details.htm?id=${row.id}`" v-if="row.type" class="aHover">
+            <!-- <t-icon :name="row.isExpand ? 'caret-up-small' : 'caret-down-small'" v-if="row.order_item_count > 1">
+            </t-icon> -->
+            {{row.id}}
+          </a>
+          <span v-else class="child">-</span>
+        </template>
+        <template #client_name="{row}">
+          <a :href="`${baseUrl}client_detail.htm?client_id=${row.client_id}`" class="aHover">
+            <template>
+              <span v-if="row.client_name">{{row.client_name}}</span>
+              <span v-else-if="row.phone">+{{row.phone_code}}-{{row.phone}}</span>
+              <span v-else="row.email">{{row.email}}</span>
+            </template>
+            <span v-if="row.company">({{row.company}})</span>
+          </a>
+        </template>
+        <template #type="{row}">
+          {{lang[row.type]}}
+        </template>
+        <template #pay_time="{row}">
+          {{row.type ? moment(row.pay_time * 1000).format('YYYY/MM/DD HH:mm') : ''}}
+        </template>
+        <template #icon="{row}">
+          <t-tooltip :content="lang[row.type]" theme="light" :show-arrow="false" placement="top-right">
+            <img :src="`/plugins/addon/credit_limit/template/admin/img/${row.type}.png`" alt=""
+              style="position: relative; top: 3px; left: -10px;">
+          </t-tooltip>
+        </template>
+        <template #product_names={row}>
+          <template v-if="row.product_names">
+            <div v-if="row.description">
+              <t-tooltip theme="light" :show-arrow="false" placement="top-right">
+                <div slot="content" class="tool-content">{{row.description}}</div>
+                <!--  <span @click="itemClick(row)" class="hover">{{row.product_names[0]}}</span> -->
+                <a class="aHover" :href="`${baseUrl}order_details.htm?id=${row.id}`">{{row.product_names[0]}}</a>
+                <span v-if="row.product_names.length>1"
+                  class="hover">{{lang.wait}}{{row.product_names.length}}{{lang.products}}</span>
+              </t-tooltip>
+            </div>
+            <div v-else>
+              <a class="aHover" :href="`${baseUrl}order_details.htm?id=${row.id}`">{{row.product_names[0]}}</a>
+              <span v-if="row.product_names.length>1"
+                class="hover">{{lang.wait}}{{row.product_names.length}}{{lang.products}}</span>
+            </div>
+          </template>
+          <span v-else class="child-name">
+            <t-tooltip theme="light" :show-arrow="false" placement="top-right">
+              <div slot="content" class="tool-content">{{row.description}}</div>
+              <!-- <a :href="row.host_id ? `host_detail.htm?client_id=${father_client_id}&id=${row.host_id}` : 'javascript:;'" class="aHover">{{row.product_name ? row.product_name : row.description}}
+                <span class="host-name" v-if="row.host_name">({{row.host_name}})</span>
+              </a> -->
+              <a :href="`${baseUrl}order_details.htm?id=${father_order_id}`" class="aHover">{{row.product_name ?
+                row.product_name : row.description}}
+                <span class="host-name" v-if="row.host_name">({{row.host_name}})</span>
+              </a>
+            </t-tooltip>
+          </span>
+        </template>
+        <template #amount="{row}">
+          {{currency_prefix}}&nbsp;{{row.amount}}
+          <!-- 升降机为退款时不显示周期 -->
+          <span v-if="row.billing_cycle && Number(row.amount) >= 0">/{{row.billing_cycle}}</span>
+        </template>
+        <template #status="{row}">
+          <t-tag theme="default" variant="light" v-if="(row.status || row.host_status)==='Cancelled'"
+            class="canceled order-canceled">{{lang.canceled}}
+          </t-tag>
+          <t-tag theme="default" variant="light" v-if="(row.status || row.host_status)==='Refunded'"
+            class="canceled order-refunded">{{lang.refunded}}
+          </t-tag>
+          <t-tag theme="warning" variant="light" v-if="(row.status || row.host_status)==='Unpaid'"
+            class="order-unpaid">{{lang.Unpaid}}
+          </t-tag>
+          <t-tag theme="primary" variant="light" v-if="row.status==='Paid'" class="order-paid">{{lang.Paid}}
+          </t-tag>
+          <t-tag theme="primary" variant="light" v-if="row.host_status === 'Pending'">
+            {{lang.Pending}}
+          </t-tag>
+          <t-tag theme="success" variant="light" v-if="(row.status || row.host_status)==='Active'">{{lang.Active}}
+          </t-tag>
+          <t-tag theme="danger" variant="light" v-if="(row.status || row.host_status)==='Failed'">{{lang.Failed}}
+          </t-tag>
+          <t-tag theme="default" variant="light" v-if="(row.status || row.host_status)==='Suspended'">
+            {{lang.Suspended}}
+          </t-tag>
+          <t-tag theme="default" variant="light" v-if="(row.status || row.host_status)==='Deleted'"
+            class="delted">{{lang.Deleted}}
+          </t-tag>
+        </template>
+        <template #gateway="{row}">
+          <!-- 其他支付方式 -->
+          <template v-if="row.credit == 0">
+            {{row.gateway}}
+          </template>
+          <!-- 混合支付 -->
+          <template v-if="row.credit * 1 >0 && row.credit * 1 < row.amount * 1">
+            <t-tooltip :content="currency_prefix+row.credit" theme="light" placement="bottom-right">
+              <span class="theme-color">{{lang.credit}}</span>
+            </t-tooltip>
+            <span>{{row.gateway ? '+ ' + row.gateway: '' }}</span>
+          </template>
+          <template v-if="row.amount*1 != 0 && row.credit==row.amount">
+            <!-- <t-tooltip :content="currency_prefix+row.credit" theme="light" placement="bottom-right">
+                <span>{{lang.credit}}</span>
+              </t-tooltip> -->
+            <span>{{lang.credit}}</span>
+          </template>
+        </template>
+        <template #op="{row}">
+
+          <template v-if="row.type">
+            <t-tooltip :content="`${lang.look}${lang.detail}`" :show-arrow="false" theme="light">
+              <t-icon name="view-module" class="common-look" @click="lookDetail(row)"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.update_price" :show-arrow="false" theme="light">
+              <t-icon name="money-circle" @click="updatePrice(row, 'order')" class="common-look"
+                v-if="row.status!=='Paid' && row.status!=='Cancelled' && row.status!=='Refunded'"></t-icon>
+            </t-tooltip>
+            <!-- <t-tooltip :content="lang.sign_pay" :show-arrow="false" theme="light">
+              <t-icon name="discount" @click="signPay(row)" class="common-look" v-if="row.status!=='Paid' && row.status!=='Cancelled' && row.status!=='Refunded'" :class="{disable:row.status==='Paid'}"></t-icon>
+            </t-tooltip> -->
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" @click="delteOrder(row)" class="common-look"></t-icon>
+            </t-tooltip>
+          </template>
+          <template v-else>
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light" v-if="row.edit">
+              <t-icon name="edit" size="18px" @click="updatePrice(row, 'sub')" class="common-look"></t-icon>
+            </t-tooltip>
+          </template>
+        </template>
+      </t-enhanced-table>
+      <t-pagination show-jumper v-if="recordTotal" :total="recordTotal" :page-size="orderParams.limit"
+        :current="orderParams.page" :page-size-options="pageSizeOptions" :on-change="changePageRecord" />
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/credit_limit/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/credit_limit/template/admin/api/credit_limit.js"></script>
+<script src="/plugins/addon/credit_limit/template/admin/js/credit_limit.js"></script>

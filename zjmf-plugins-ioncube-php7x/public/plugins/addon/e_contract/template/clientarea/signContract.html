@@ -1,0 +1,88 @@
+<link rel="stylesheet" href="/plugins/addon/e_contract/template/clientarea/css/index.css">
+</head>
+
+<body>
+  <!-- mounted之前显示 -->
+  <div id="mainLoading">
+    <div class="ddr ddr1"></div>
+    <div class="ddr ddr2"></div>
+    <div class="ddr ddr3"></div>
+    <div class="ddr ddr4"></div>
+    <div class="ddr ddr5"></div>
+  </div>
+  <div class="template">
+    <el-container>
+      <aside-menu></aside-menu>
+      <el-container>
+        <top-menu></top-menu>
+        <el-main>
+          <div class="apply-contract">
+            <div class="apply-title">
+              <div class="back-btn" @click="goBack">
+                <img src="/plugins/addon/e_contract/template/clientarea/img/back_icon.png" alt="">
+              </div>
+              <div class="title-text">{{lang.contract_text11}}</div>
+            </div>
+            <div class="sign-info">
+              <div class="sign-title">{{lang.contract_text12}}</div>
+              <el-row style="margin-bottom: 0.2rem;">
+                <el-col :span="10">
+                  <span class="info-label">{{lang.contract_text13}}：</span>
+                  <span class="info-value">{{infoData.name}}</span>
+                </el-col>
+                <el-col :span="14">
+                  <span class="info-label">{{lang.contract_text14}}：</span>
+                  <span class="info-value">{{infoData.contact_phone}}</span>
+                </el-col>
+              </el-row>
+              <el-row style="margin-bottom: 0.2rem;">
+                <el-col :span="10">
+                  <span class="info-label">{{lang.contract_text15}}：</span>
+                  <span class="info-value">{{infoData.id_number}}</span>
+                </el-col>
+                <el-col :span="14">
+                  <span class="info-label">{{lang.contract_text16}}：</span>
+                  <span class="info-value">{{infoData.contact_email}}</span>
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">
+                  <span class="info-label">{{lang.contract_text17}}：</span>
+                  <span class="info-value">{{infoData.contact_address}}</span>
+                </el-col>
+              </el-row>
+            </div>
+            <div class="fingerprint-info">{{lang.contract_text18}}：{{infoData.fingerprint}}</div>
+            <div class="signtem-box">
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <template v-for="item in infoData.template">
+                  <el-tab-pane :label="item.name" :name="item.id.toString()">
+                    <div class="contract-info" v-html="item.detail"></div>
+                  </el-tab-pane>
+                </template>
+              </el-tabs>
+            </div>
+            <div class="sign-btn">
+              <el-checkbox v-model="checked">{{lang.contract_text19}}</el-checkbox>
+              <el-button @click="handelSign">{{lang.contract_text20}}</el-button>
+            </div>
+          </div>
+        </el-main>
+        <el-dialog width="7rem" :visible.sync="isShowSignDia" @open="diaOpen" :show-close="false" @close="signClose"
+          class="sign-dialog">
+          <div class="dialog-title">{{lang.contract_text21}}</div>
+          <div class="dialog-dec">{{lang.contract_text22}}</div>
+          <canvas id="signature-canvas" width="550" height="250"></canvas>
+          <div class="dialog-fotter">
+            <el-button class="save-btn" :loading="loading" @click="saveImage">{{lang.contract_text23}}</el-button>
+            <el-button class="cancel-btn" @click="signClose">{{lang.contract_text24}}</el-button>
+          </div>
+        </el-dialog>
+      </el-container>
+    </el-container>
+  </div>
+  <!-- =======页面独有======= -->
+  <script src="/plugins/addon/e_contract/template/clientarea/lang/index.js"></script>
+  <script src="/plugins/addon/e_contract/template/clientarea/js/html2canvas.min.js"></script>
+  <script src="/plugins/addon/e_contract/template/clientarea/api/index.js"></script>
+  <script src="/plugins/addon/e_contract/template/clientarea/js/signContract.js"></script>

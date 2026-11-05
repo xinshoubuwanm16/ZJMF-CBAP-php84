@@ -1,0 +1,47 @@
+const plugin_lang = {
+  client_custom_label1: "User details custom field",
+  client_custom_label2:
+    "Please customize the information that can be entered in the user details here",
+  client_custom_label3: "New field",
+  client_custom_label4: "Drop-down",
+  client_custom_label5: "Input",
+  client_custom_label6:
+    "There may be data in the current field, do you confirm the deletion?",
+  client_custom_label7: "Edit Field",
+  client_custom_label8: "New field",
+  client_custom_label9: "Field name",
+  client_custom_label10: "Field type",
+  client_custom_label11:
+    "Drop-down value, use English half-width ','space between values",
+  client_custom_label12: "Drop-down value",
+  client_custom_label13: "Save",
+  client_custom_label14: "Cancel",
+  client_custom_label15: "value",
+  client_custom_label16: "Display status",
+  client_custom_label17: "OK",
+  client_custom_label18: "Cancel",
+  client_custom_label19: "Field required",
+  client_custom_label20: "Operation",
+  client_custom_label21: "Visible to administrators",
+  client_custom_label22: "Displayed during registration",
+  client_custom_label23: "Link",
+  client_custom_label24: "Password",
+  client_custom_label25: "Check box",
+  client_custom_label26: "Text area",
+  client_custom_label27: "Text box",
+  client_custom_label28: "Validation Rules",
+  client_custom_label29:
+    "If the expression is wrong, the front desk may not be able to input it",
+  client_custom_label30: "Field description",
+  client_custom_label31: "Regular expression",
+  client_custom_label32: "Display settings",
+  client_custom_label33: "Field description",
+  client_custom_label34: "Visible location",
+  client_custom_label35: "Dropdown Text Box",
+  client_custom_label36: "Sort",
+  client_custom_label37: "Required before ordering",
+  client_custom_label38: "yes",
+  client_custom_label39: "no",
+};
+
+window.plugin_lang = plugin_lang;

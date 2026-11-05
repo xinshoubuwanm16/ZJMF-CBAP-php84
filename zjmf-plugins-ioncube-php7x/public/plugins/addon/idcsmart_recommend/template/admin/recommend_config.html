@@ -1,0 +1,226 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_recommend/template/admin/css/recommend.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="recommend-config table" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_recommend_award_record'">
+          <a :href="`index.htm`">{{lang.reward_record}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_recommend_configuration'">
+          <a href="javascript:;">{{lang.recommend_config}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <t-form :data="formData" :rules="rules" ref="userInfo" @submit="onSubmit" label-align="top">
+          <div class="item">
+            <t-form-item name="awards">
+              <template slot="label">
+                {{lang.recommend_awards}}
+                <t-tooltip :content="lang.recommend_tip" :show-arrow="false" theme="light" placement="top-left">
+                  <t-icon name="help-circle"></t-icon>
+                </t-tooltip>
+              </template>
+              <t-input v-model="formData.awards" :placeholder="lang.recommend_awards"></t-input>
+            </t-form-item>
+            <t-form-item name="day">
+              <template slot="label">
+                {{lang.recommend_days}}
+                <t-tooltip :content="lang.recommend_tip1" :show-arrow="false" theme="light" placement="top-left">
+                  <t-icon name="help-circle"></t-icon>
+                </t-tooltip>
+              </template>
+              <t-input v-model="formData.day" :placeholder="lang.recommend_tip4"></t-input>
+            </t-form-item>
+            <t-form-item name="withdraw_min">
+              <template slot="label">
+                {{lang.withdraw_min}}
+                <t-tooltip :content="lang.recommend_tip2" :show-arrow="false" theme="light" placement="top-left">
+                  <t-icon name="help-circle"></t-icon>
+                </t-tooltip>
+              </template>
+              <t-input v-model="formData.withdraw_min" :placeholder="lang.withdraw_min"></t-input>
+            </t-form-item>
+            <t-form-item name="withdraw_handling_fee" class="fee">
+              <template slot="label">
+                {{lang.withdraw_handling_fee}}
+              </template>
+              <t-input-number :min="0" :max="100" :decimal-places="0" v-model="formData.withdraw_handling_fee"
+                :placeholder="lang.recommend_tip7" theme="normal">
+              </t-input-number>
+              %
+            </t-form-item>
+          </div>
+          <t-form-item name="default_url">
+            <template slot="label">
+              {{lang.default_recommend}}
+              <t-tooltip :content="lang.recommend_tip9" :show-arrow="false" theme="light" placement="top-left">
+                <t-icon name="help-circle"></t-icon>
+              </t-tooltip>
+            </template>
+            <t-input v-model="formData.default_url" :placeholder="lang.recommend_tip8" style="width: 520px;"></t-input>
+          </t-form-item>
+          <p class="s-tit">{{lang.recommend_ratio}}</p>
+          <t-table row-key="id" :data="formData.ratios" size="medium" :columns="replayColumns" :hover="hover"
+            :loading="loading" :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width"
+            :hide-sort-tips="true" bordered class="replay-dialog">
+            <template #title-slot-name>
+              {{lang.min_pay_money}}
+              <t-tooltip :content="lang.recommend_tip3" :show-arrow="false" theme="light" placement="top-left">
+                <t-icon name="help-circle"></t-icon>
+              </t-tooltip>
+            </template>
+
+            <template #tailorism="{row,rowIndex}">
+              <!-- :attach="`#myPopup${rowIndex}`"  -->
+              <!-- 编辑单选 -->
+              <t-popup placement="bottom-left" :destroy-on-close="true" overlay-class-name="edit-pop"
+                :visible="visibleTreeObj[rowIndex]?.visibleTree" v-show="row.isEdit && optType === 'update'">
+                <div :id="`myPopup${rowIndex}`" class="productPop">
+                  <t-input v-model="row.new_name" :placeholder='lang.tailorism' @click.native="focusHandler(rowIndex)">
+                    <template slot="suffix">
+                      <t-icon name="chevron-down" size="18px" :class="{active:visibleTreeObj[rowIndex]?.visibleTree}">
+                      </t-icon>
+                    </template>
+                  </t-input>
+                </div>
+                <template slot="content" class="test">
+                  <t-tree :data="productList" :auto-Width="true" :activable="true" :expand-on-click-node="true"
+                    ref="tree" @click="onClick" hover :label="getLabel" :expand-mutex="true" id="product-tree">
+                  </t-tree>
+                </template>
+              </t-popup>
+              <!-- 新增多选 -->
+              <t-tree-select v-model="curProArr" :auto-Width="true" :data="productList" multiple clearable :tree-props="{
+                keys:{ label: 'name', value: 'key'}
+              }" v-show="row.isEdit && optType === 'add'" :min-collapsed-num="1">
+              </t-tree-select>
+              <!-- 未编辑状态 -->
+              <span v-show="!row.isEdit">{{row.name}}</span>
+            </template>
+            <template #ratio="{row,rowIndex}">
+              <span v-show="!row.isEdit">{{row.ratio}}%</span>
+              <t-input-number v-show="row.isEdit" :min="1" :max="100" :decimal-places="0" v-model="row.new_ratio"
+                theme="normal" v-show="row.isEdit"></t-input-number>
+              </t-input-number>
+            </template>
+
+            <template #renew_ratio="{row,rowIndex}">
+              <span v-show="!row.isEdit">{{row.renew_ratio}}%</span>
+              <t-input-number v-show="row.isEdit" :min="0" :max="100" :decimal-places="0" v-model="row.new_renew_ratio"
+                theme="normal" v-show="row.isEdit"></t-input-number>
+              </t-input-number>
+            </template>
+
+
+            <template #amount="{row,rowIndex}">
+              <span v-show="!row.isEdit">{{currency_prefix}}{{row.amount}}</span>
+              <t-input-number :min="0" v-model="row.new_amount" theme="normal" :decimal-places="2" v-show="row.isEdit"
+                :label="currency_prefix"></t-input-number>
+            </template>
+
+            <template #renew_amount="{row,rowIndex}">
+              <span v-show="!row.isEdit">{{currency_prefix}}{{row.renew_amount}}</span>
+              <t-input-number :min="0" v-model="row.new_renew_amount" theme="normal" :decimal-places="2"
+                v-show="row.isEdit" :label="currency_prefix"></t-input-number>
+            </template>
+            <template #op="{row,rowIndex}">
+              <template v-if="!row.isEdit">
+                <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+                  <t-icon name="edit" class="common-look" @click="eidtItem(row, rowIndex)">
+                  </t-icon>
+                </t-tooltip>
+              </template>
+              <template v-else>
+                <t-tooltip :content="lang.hold" :show-arrow="false" theme="light">
+                  <t-icon name="save" class="common-look" @click="saveItem(row)">
+                  </t-icon>
+                </t-tooltip>
+                <t-tooltip :content="lang.cancel" :show-arrow="false" theme="light">
+                  <t-icon name="close-circle" class="common-look" @click="closeItem(row, rowIndex)">
+                  </t-icon>
+                </t-tooltip>
+              </template>
+              <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                <t-icon name="delete" class="common-look" @click="delItem(row,rowIndex)">
+                </t-icon>
+              </t-tooltip>
+            </template>
+          </t-table>
+          <div class="add-more" @click="addMore" v-show="!editStatus">{{lang.order_new}}&nbsp;+</div>
+
+          <t-form-item style="margin-top: 40px;">
+            <template slot="label">
+              {{lang.recommend_text1}}
+              <t-tooltip :content="lang.recommend_tip10" :show-arrow="false" theme="light" placement="top-left">
+                <t-icon name="help-circle"></t-icon>
+              </t-tooltip>
+            </template>
+
+            <div>
+              <t-table row-key="id" drag-sort="row-handler" @drag-sort="onDragSort" :data="formData.products"
+                size="medium" :columns="recProColums" :hover="hover" :loading="loading"
+                :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true"
+                bordered class="replay-dialog">
+                <!-- 自定义表头，title值为插槽名称  -->
+                <template #title-slot-name>
+                  <span>{{lang.feed_link}}
+                    <t-tooltip :content="lang.recommend_text4" :show-arrow="false" theme="light">
+                      <t-icon name="help-circle-filled" class="common-look">
+                      </t-icon>
+                    </t-tooltip>
+                  </span>
+                </template>
+                <template #drag="{row}">
+                  <t-icon name="move" style="cursor: move;"></t-icon>
+                </template>
+
+                <template #url="{row}">
+                  <span v-if="row.url" style="white-space: initial;">
+                    {{row.url}}
+                    <a style="margin-left: 5px;" class="common-look" @click="copyUrl(row.url)">
+                      <svg class="common-look stop">
+                        <use xlink:href="/plugins/addon/idcsmart_recommend/template/admin/img/icons.svg#cus-copy">
+                        </use>
+                      </svg>
+                    </a>
+                  </span>
+                  <span v-else>--</span>
+                </template>
+                <template #tailorism="{row,rowIndex}">
+                  <t-select v-model="row.product_id" :placeholder="lang.recommend_text3" v-show="row.isAdd">
+                    <t-option v-for="item in addProList" :value="item.product_id" :label="item.name"
+                      :key="item.product_id" :disabled="item.disabled">
+                    </t-option>
+                  </t-select>
+                  <!-- 未编辑状态 -->
+                  <span v-show="!row.isAdd">
+                    {{row.name}}
+                  </span>
+                </template>
+                <template #op="{row,rowIndex}">
+                  <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+                    <t-icon name="delete" class="common-look" @click="deletePro(rowIndex)">
+                    </t-icon>
+                  </t-tooltip>
+                </template>
+              </t-table>
+              <div class="add-more" @click="addPro">{{lang.order_new}}&nbsp;+</div>
+            </div>
+          </t-form-item>
+          <div class="f-btn">
+            <t-button theme="primary" type="submit" :loading="submitLoading"
+              v-permission="'auth_idcsmart_recommend_configuration_save_configuration'">{{lang.sure}}</t-button>
+            <t-button theme="default" variant="base" @click="close">{{lang.cancel}}</t-button>
+          </div>
+        </t-form>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+
+
+<script src="/plugins/addon/idcsmart_recommend/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/idcsmart_recommend/template/admin/api/recommend.js"></script>
+<script src="/plugins/addon/idcsmart_recommend/template/admin/js/recommend_config.js"></script>

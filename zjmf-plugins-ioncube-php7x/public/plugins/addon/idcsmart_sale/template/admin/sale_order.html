@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_sale/template/admin/css/sales_management.css" />
+<div id="content" class="admin" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <div>
+          <t-select v-if="isSaleFlag" :placeholder="lang.sale_text9" filterable :scroll="{ type: 'virtual' }"
+            @change="seacrh" multiple clearable v-model="params.sale_id" :min-collapsed-num="3" :options="sale_list"
+            :keys="{ label: 'name', value: 'id'}"></t-select>
+        </div>
+        <div class="com-search">
+          <t-input v-model="params.keywords" class="search-input" :placeholder="lang.sale_text18"
+            @keyup.enter.native="seacrh" :on-clear="clearKey" clearable>
+          </t-input>
+          <t-icon size="20px" name="search" @click="seacrh" class="com-search-btn" />
+        </div>
+      </div>
+      <t-table row-key="1" :data="data" size="medium" :columns="columns" :hover="hover" :loading="loading"
+        :table-layout="tableLayout ? 'auto' : 'fixed'">
+        <template #username="{row}">
+          <span class="act-text" @click="jumpHandle(row)">{{row.username}}{{row.company ? '(' + row.company + ')' :
+            ''}}</span>
+        </template>
+        <template #create_time="{row}">
+          <span>{{formatDate(row.create_time)}}</span>
+        </template>
+        <template #amount="{row}">
+          <span>{{currency_prefix}}{{row.amount}}</span>
+        </template>
+        <template #commission_price="{row}">
+          <span>{{currency_prefix}}{{row.commission_price}}</span>
+        </template>
+        <template #statustext="{row}">
+          <div class="text-box" :class="row.stattusClass">{{row.statusText}}</div>
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.sale_text20" :show-arrow="false" theme="light">
+            <t-icon name="file-excel" class="common-look" @click="toVoid(row)" v-if="row.status==='wait'">
+            </t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper :total="total" :page-size="params.limit" :page-size-options="pageSizeOptions"
+        :on-change="changePage" :current="params.page" />
+    </t-card>
+    <!-- 作废弹窗 -->
+    <t-dialog theme="warning" :header="lang.sale_text19" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_sale/template/admin/api/sales.js"></script>
+<script src="/plugins/addon/idcsmart_sale/template/admin/js/sale_order.js"></script>

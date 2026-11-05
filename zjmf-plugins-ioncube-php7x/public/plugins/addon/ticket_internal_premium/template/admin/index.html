@@ -1,0 +1,203 @@
+<link rel="stylesheet" href="/plugins/addon/ticket_internal_premium/template/admin/css/order.css" />
+<!-- =======内容区域======= -->
+<div id="content" class="template" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li class="active">
+          <a>{{lang.inside_work_order}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_config'">
+          <a href="ticket_setting.htm">{{lang.order__configuration}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_cron'">
+          <a href="ticket_time.htm">{{lang.order_text142}}</a>
+        </li>
+        <li v-permission="'auth_addon_ticket_internal_premium_statistics'">
+          <a href="ticket_statistics.htm">{{lang.order_text88}}</a>
+        </li>
+      </ul>
+      <div class="order-search-wrapper internal">
+        <div class="search-box-left">
+          <div class="search-left-top">
+            <t-input v-model="params.keywords" :placeholder="lang.order_text2" clearable></t-input>
+            <t-tree-select :min-collapsed-num="1" style="width: 240px;" v-model="params.type_id" :data="departmentList"
+              multiple :placeholder="lang.please_search_order_type" clearable
+              :keys="{ label: 'name', value: 'id',children:'type' }">
+            </t-tree-select>
+
+            <t-select :placeholder="lang.please_search_order_status" :min-collapsed-num="1" multiple clearable
+              v-model="params.status" :keys="{ label: 'name', value: 'id'}" :options="statusList">
+            </t-select>
+          </div>
+          <div class="search-left-bottom">
+            <t-select :placeholder="lang.order_text3" filterable clearable v-model="params.post_admin_id"
+              :options="adminList" :keys="{ label: 'name', value: 'id'}">
+            </t-select>
+            <t-select :placeholder="lang.order_text9" filterable clearable v-model="params.last_reply_admin_id"
+              :options="adminList" :keys="{ label: 'name', value: 'id'}">
+            </t-select>
+            <t-select :placeholder="lang.order_text86" filterable clearable v-model="params.order_admin_id"
+              :options="adminList" :keys="{ label: 'name', value: 'id'}">
+            </t-select>
+            <t-button @click="doInternalOrderSearch">{{lang.order_text1}}</t-button>
+            <t-button @click="doInternalOrderSearch('all')" style="margin-left: 10px;">{{lang.order_text77}}</t-button>
+          </div>
+        </div>
+        <div class="search-box-right">
+          <t-select :placeholder="lang.please_search_order_time" v-model="order_time" :options="timeList"
+            @change="selectTimeChange">
+            <div slot="panelTopContent" style="padding: 6px 6px 0 6px">
+              <span>{{lang.please_search_order_time}}</span>
+            </div>
+          </t-select>
+          <div>
+            <t-button @click="goAddorder()"
+              v-permission="'auth_addon_ticket_internal_premium_ticket_create'">{{lang.add_ordertip}}</t-button>
+          </div>
+        </div>
+      </div>
+
+      <t-table class="list-table" :data="internalOrderData" :columns="internalOrderColumns" @row-click="rowClick" hover
+        :loading="internalOrderTableloading" row-key="id" size="small">
+        <template #id="slotProps">
+          <span>#{{slotProps.row.ticket_num}}</span>
+        </template>
+        <template #title="slotProps">
+          <div style="display: flex;align-items: center; column-gap: 5px;" class="order-name"
+            @click="internalOrderReply(slotProps.row)">
+            <template v-if="slotProps.row.finished === 0">
+              <t-tooltip :content="lang.order_text96" theme="light" v-if="slotProps.row.timeout === 1">
+                <span class="expire-text">{{lang.order_text97}}</span>
+              </t-tooltip>
+              <t-tooltip :content="lang.order_text98" theme="light" v-if="slotProps.row.timeout === 2">
+                <img src="/plugins/addon/ticket_internal_premium/template/admin/img/warning_icon.svg" alt="">
+              </t-tooltip>
+            </template>
+            <t-tooltip :content="lang.order_text99" theme="light"
+              v-if="slotProps.row.finished === 1 &&slotProps.row.timeout === 0">
+              <img src="/plugins/addon/ticket_internal_premium/template/admin/img/success_icon.svg" alt="">
+            </t-tooltip>
+            {{slotProps.row.title}}
+          </div>
+        </template>
+        <template #name="{row}">
+          <span>{{row.department_name || '--'}} - {{row.type_name || '--'}}</span>
+        </template>
+        <template #admin_name="slotProps">
+          <span>{{slotProps.row.order_admin_name || "--" }}</span>
+        </template>
+        <template #user="{row}">
+          <span class="user-name">{{row.post_admin_name || '--'}}({{row.admin_name || "--"}})</span>
+        </template>
+        <template #last_reply_time="slotProps">
+          {{ slotProps.row.last_reply_time == 0 ? '--' : formatDate(slotProps.row.last_reply_time) }}
+        </template>
+        <template #admin_id="{row}">
+          <t-button @click="userOrderReceive(row)" :loading="row.receiveLoading" theme="primary" shape="round"
+            variant="base"
+            v-if="configObj.order_button == '1' && row.finished === 0 && !row.order_admin_name">{{lang.order_text78}}</t-button>
+        </template>
+        <template #status="slotProps">
+          <t-tag :style="{background:slotProps.row.color}" variant="light">{{slotProps.row.status}}</t-tag>
+        </template>
+        <template #operation="slotProps">
+          <t-button :title="lang.turn_order" shape="circle" variant="text"
+            @click.stop="internalOrderForward(slotProps.row)"
+            v-permission="'auth_addon_ticket_internal_premium_ticket_forward'">
+            <t-icon name="enter" size="small" style="color:var(--td-brand-color)" />
+          </t-button>
+          <t-button :title="lang.order_new_close" shape="circle" variant="text" @click.stop="isClose(slotProps.row)"
+            v-if="slotProps.row.status !='已关闭'" v-permission="'auth_addon_ticket_internal_premium_ticket_close'">
+            <t-icon name="close-circle" size="small" style="color:var(--td-brand-color)" />
+          </t-button>
+          <t-button :title="lang.order_text137" shape="circle" variant="text" @click.stop="handelStar(slotProps.row)"
+            v-if="slotProps.row.show_score == 1">
+            <t-icon name="star" size="small" style="color:var(--td-brand-color)" />
+          </t-button>
+        </template>
+      </t-table>
+      <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" @change="changePage" />
+    </t-card>
+
+    <!-- 评分弹窗 -->
+    <t-dialog width="450px" :header="lang.order_text135" :footer="false" :visible.sync="starVisible" destroy-on-close
+      class="star-dialog">
+      <div class="star-dialog-top">
+        <div class="star-text">{{lang.order_title}}：{{starObj.title}}</div>
+        <div class="star-text">{{lang.order_text136}}：{{starObj.department}}</div>
+      </div>
+      <div class="star-dialog-main">
+        <div class="star-item">
+          <div class="star-title">{{lang.order_text100}}</div>
+          <t-rate v-model="starObj.satisfaction" allow-half color="#FFC329" size="24px"></t-rate>
+        </div>
+        <div class="star-item">
+          <div class="star-title">{{lang.order_text101}}</div>
+          <t-rate v-model="starObj.attitude" allow-half color="#FFC329" size="24px"></t-rate>
+        </div>
+        <div class="star-item">
+          <div class="star-title">{{lang.order_text102}}</div>
+          <t-rate v-model="starObj.processing_time" allow-half color="#FFC329" size="24px"></t-rate>
+        </div>
+      </div>
+      <div class="star-dialog-footer">
+        <t-button theme="primary" :loading="starLoading" @click="starSubmit">{{lang.order_text138}}</t-button>
+        <t-button theme="default" @click="starVisible = false">{{lang.cancel}}</t-button>
+      </div>
+    </t-dialog>
+
+
+    <!-- 转发弹窗 -->
+    <t-dialog :header="lang.order_forward" :footer="false" :visible.sync="forwardDialogVisible" destroy-on-close>
+      <t-form :data="forwardFormData" :rules="forwardFormRules" ref="forwardForm" label-align="left" :label-width="80"
+        @submit="forwardFormSubmit" class="forwardForm">
+        <!-- 工单部门 -->
+        <t-form-item :label="lang.order_designated_department" name="department_id">
+          <t-select clearable @change="departmentChange" v-model="forwardFormData.department_id"
+            :keys="{ label: 'name', value: 'id' }" :options="departmentList" :placeholder="lang.select"></t-select>
+        </t-form-item>
+        <!-- 工单类型 -->
+        <t-form-item :label="lang.order_designated_type" name="type_id">
+          <t-select clearable v-model="forwardFormData.type_id" :keys="{ label: 'name', value: 'id' }"
+            :options="orderTypeOptions" :placeholder="lang.select"></t-select>
+        </t-form-item>
+        <!-- 管理员 -->
+        <t-form-item :label="lang.order_designated_person" name="admin_id">
+          <t-select v-model="forwardFormData.admin_id" clearable filterable style="width:100%"
+            :placeholder="lang.select">
+            <t-option v-for="(item, index) in adminsOptions" :value="item.id" :label="item.name" :key="index">
+              {{ item.name }}
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <!-- 备注 -->
+        <t-form-item :label="lang.order_designated_reson" name="notes">
+          <t-textarea v-model="forwardFormData.notes"></t-textarea>
+        </t-form-item>
+
+        <t-form-item class="turn-inside-dialog-footer">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" type="reset" @click="forwardDialogClose">{{lang.cancel}}</t-button>
+        </t-form-item>
+      </t-form>
+    </t-dialog>
+
+    <!-- 关闭工单确认弹窗 -->
+    <t-dialog theme="danger" :header="lang.sure_close_job" :visible.sync="closeOrderVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="internalOrderResolved(closeRow)"
+          :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="closeDia">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+    <audio id="audio_tip" muted src="/plugins/addon/ticket_internal_premium/template/admin/media/tip.wav"></audio>
+  </com-config>
+</div>
+
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/api/common.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/api/order.js"></script>
+<script src="/plugins/addon/ticket_internal_premium/template/admin/js/index.js"></script>

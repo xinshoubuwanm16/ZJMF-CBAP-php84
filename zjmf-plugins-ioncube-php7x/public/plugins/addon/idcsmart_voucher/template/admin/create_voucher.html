@@ -1,0 +1,136 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_voucher/template/admin/css/voucher.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="voucher-detail" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <p class="com-h-tit">{{optTit}}</p>
+      <div class="box">
+        <t-form :data="formData" :rules="rules" :label-width="80" label-align="top" ref="formValidatorStatus"
+          @submit="onSubmit">
+          <t-form-item class="type-box">
+            <t-form-item name="code" :label="lang.voucher_code" style="margin-right: 40px;">
+              <t-input v-model="formData.code" :disabled="optType ==='update'" :placeholder="lang.voucher_tip"
+                @blur="checkRepeat">
+              </t-input>
+              <span class="random" @click="randomCode" v-if="optType ==='add'">{{lang.order_random}}</span>
+            </t-form-item>
+            <div class="t-box">
+              <t-form-item class="type" name="type">
+                <template slot="label">
+                  {{lang.voucher_type}}
+                  <t-tooltip :content="lang.voucher_tip1 + '\n' + lang.voucher_tip2" :show-arrow="false" theme="light"
+                    placement="top-left" class="pack-tip">
+                    <t-icon name="help-circle" class="pack-tip"></t-icon>
+                  </t-tooltip>
+                </template>
+                <t-radio-group v-model="formData.type" :options="typeOptions" :disabled="optType ==='update'"
+                  @change="changeType">
+                </t-radio-group>
+              </t-form-item>
+              <!-- 数值 -->
+              <t-form-item name="num" :label="lang.voucher_num" class="type-lable" label-align="left"
+                v-if="formData.type === 'public'">
+                <t-input-number :min="0" :decimal-places="0" v-model="formData.num" :placeholder="lang.max_times_tip"
+                  theme="normal" class="num"></t-input-number>
+                </t-input-number>
+              </t-form-item>
+            </div>
+          </t-form-item>
+          <t-form-item name="price" :label="lang.voucher_cost">
+            <t-input v-model="formData.price" :disabled="optType ==='update'" :placeholder="lang.voucher_cost">
+            </t-input>
+            <span style="margin-left: 10px;">{{currency_suffix}}</span>
+          </t-form-item>
+          <!-- 时间选择 -->
+          <div class="time-item">
+            <div class="s-item">
+              <t-form-item name="start_time" :label="lang.assert_time" :rules="[{ validator: checkTime}]">
+                <t-date-picker enable-time-picker allow-input :value="formData.start_time"
+                  :disable-date="{ before: moment().subtract(1, 'day').format() }" @change="changeStart"
+                  :placeholder="`${lang.select}${lang.client_care_label44}`" />
+              </t-form-item>
+              <t-form-item label=" " style="margin-bottom: 24px;">
+                <t-select v-model="curTime" label=" " :placeholder="lang.quick_select" @change="fastClick" clearable>
+                  <t-option v-for="item in timeOpt" :value="item.value" :label="item.label" :key="item.value">
+                  </t-option>
+                </t-select>
+              </t-form-item>
+            </div>
+            <div class="s-item">
+              <t-form-item name="end_time" :label="lang.deadline" :rules="[{ validator: checkTime1}]" style="margin-bottom: 24px;">
+                <t-date-picker enable-time-picker allow-input clearable :value="formData.end_time" @focus="chooseEnd"
+                  @change="changeEnd" :disable-date="{ before: moment().subtract(1, 'day').format() }"
+                  :placeholder="`${lang.select}${lang.client_care_label44}`" />
+              </t-form-item>
+              <span v-if="formData.end_time && time_diff" class="time-diff">{{lang.all_time}}：{{time_diff}}</span>
+            </div>
+          </div>
+          <!-- 产品选择 -->
+          <t-form-item name="product" :label="lang.order_for_goods">
+            <com-tree-select :multiple="true" :value="formData.product" @choosepro="choosePro"
+              :pre-placeholder="lang.select">
+            </com-tree-select>
+            <span class="p-tip"><span class="tip">*</span>{{lang.voucher_tip6}}</span>
+          </t-form-item>
+          <t-form-item name="product_need" :label="lang.need_products">
+            <com-tree-select :multiple="true" :value="formData.product_need" @choosepro="chooseNeedPro" :pre-placeholder="lang.select"></com-tree-select>
+            <span class="p-tip"><span class="tip">*</span>{{lang.voucher_tip7}}</span>
+          </t-form-item>
+          <!-- 最低金额 -->
+          <t-form-item name="min_price" :label="lang.min_use_amount">
+            <t-input v-model="formData.min_price" :placeholder="lang.verify19"></t-input>
+          </t-form-item>
+          <t-form-item name="user_type" :label="lang.user_type_limit">
+            <t-radio-group v-model="formData.user_type" :options="useType"></t-radio-group>
+          </t-form-item>
+          <!-- 功能开关 -->
+          <div class="switch">
+            <t-form-item name="single_user_once" :label="lang.single_user_once" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.onetime">
+              </t-switch>
+              <t-tooltip :content="lang.voucher_tip3" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+            <t-form-item name="upgrade" :label="lang.upgrade_use" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.upgrade_use">
+              </t-switch>
+              <t-tooltip :content="lang.voucher_tip4" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+            <t-form-item name="host_upgrade" :label="lang.renew_use" label-align="left">
+              <t-switch size="medium" :custom-value="[1,0]" v-model="formData.renew_use">
+              </t-switch>
+              <t-tooltip :content="lang.voucher_tip5" :show-arrow="false" theme="light" placement="top-left"
+                class="data-tip">
+                <t-icon name="help-circle" class="pack-tip"></t-icon>
+              </t-tooltip>
+            </t-form-item>
+          </div>
+          <t-form-item name="cycle" label-align="left" style="margin-top: 24px;" v-if="formData.cycle_limit"
+            :rules=" formData.cycle_limit ? rules.cycle : [{required: false}]">
+            <t-checkbox-group v-model="formData.cycle" :options="cycleOpt" @change="chooseCycle">
+            </t-checkbox-group>
+          </t-form-item>
+          <t-form-item name="notes" :label="lang.notes" style="margin-top: 24px;">
+            <t-textarea :placeholder="lang.notes" v-model="formData.notes" />
+          </t-form-item>
+          <div class="f-btn">
+            <t-button theme="primary" type="submit" :loading="loading" style="margin-right: 15px;">{{lang.hold}}
+            </t-button>
+            <t-button theme="default" variant="base" @click="back">{{lang.close}}</t-button>
+          </div>
+        </t-form>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/api/voucher.js"></script>
+<script src="/plugins/addon/idcsmart_voucher/template/admin/js/create_voucher.js"></script>

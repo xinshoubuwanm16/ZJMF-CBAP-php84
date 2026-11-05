@@ -1,0 +1,57 @@
+.client-care tbody tr {
+  cursor: pointer;
+}
+.client-care .top-right {
+  display: flex;
+}
+.client-care .top-right .t-select__wrap {
+  margin-right: 10px;
+}
+.client-care .list-card-container .top-search {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+.client-care .list-card-container .top-search .add-btn {
+  display: inline;
+  padding: 6px 16px;
+  background: var(--td-brand-color);
+  border-radius: 3px;
+  font-size: 14px;
+  color: #FFFFFF;
+  cursor: pointer;
+}
+.client-care .list-card-container .top-search .search-input {
+  width: 320px;
+}
+.client-care .list-card-container .status {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.client-care .list-card-container .active {
+  background: rgba(3, 177, 147, 0.2);
+  color: #03B193;
+}
+.client-care .list-card-container .unactive {
+  background: rgba(153, 153, 153, 0.2);
+  color: #666666;
+}
+.client-care .list-card-container .icon {
+  font-size: 16px;
+  margin-right: 20px;
+  cursor: pointer;
+}
+.client-care .list-card-container .icon:last-child {
+  margin-right: 0;
+}
+.client-care .list-card-container .open-icon {
+  color: var(--td-brand-color);
+}
+.client-care .list-card-container .stop-icon {
+  color: #FF0000;
+}
+.client-care .list-card-container .del-icon {
+  color: var(--td-brand-color);
+}

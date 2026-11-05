@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="/plugins/addon/idcsmart_statistics/template/admin/css/statistics.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="statistics" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <ul class="common-tab">
+        <li v-permission="'auth_idcsmart_statistics_year'">
+          <a href="index.htm">{{lang.year_income}}</a>
+        </li>
+        <li class="active" v-permission="'auth_idcsmart_statistics_expect'">
+          <a href="javascript:;">{{lang.expect_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_product'">
+          <a href="product_income.htm">{{lang.product_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_month'">
+          <a href="month_income.htm">{{lang.month_income}}</a>
+        </li>
+        <li v-permission="'auth_idcsmart_statistics_year_order'">
+          <a href="other_info.htm">{{lang.month_order_income}}</a>
+        </li>
+      </ul>
+      <div class="box">
+        <!-- <p class="t-tit">{{lang.expect_income}}</p> -->
+        <p class="des">{{lang.income_tip7}}</p>
+        <div class="charts">
+          <div id="monitorContainer" ref="monitorContainer" style="width: 100%; height: 500px;"></div>
+        </div>
+        <t-table row-key="1" :data="curData" size="medium" :columns="columns" :hover="hover" :loading="loading"
+          :table-layout="tableLayout ? 'auto' : 'fixed'" display-type="fixed-width" :hide-sort-tips="true">
+          <template slot="sortIcon">
+            <t-icon name="caret-down-small"></t-icon>
+          </template>
+          <template #total="{row}">
+            {{currency_prefix}}{{formatMoney(row.total)}}&nbsp;{{currency_suffix}}
+          </template>
+        </t-table>
+        <p class="balance">
+          {{lang.expect_total_income}}：{{currency_prefix}}{{formatMoney(total)}}&nbsp;{{currency_suffix}}</p>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/echarts.min.js"></script>
+<script src="/plugins/addon/idcsmart_statistics/template/admin/api/statistics.js"></script>
+<script src="/plugins/addon/idcsmart_statistics/template/admin/js/expect_income.js"></script>

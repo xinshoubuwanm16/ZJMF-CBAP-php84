@@ -1,0 +1,242 @@
+<link rel="stylesheet" href="/plugins/addon/abnormal_inspection_records/template/admin/css/index.css" />
+<div id="content" class="admin" v-cloak>
+  <com-config>
+    <div class="main-box">
+      <t-card class="list-card-container">
+        <div class="page-box">
+          <div class="page-title">
+            <h3>{{lang.abnormal_text1}}</h3>
+            <div>{{lang.abnormal_text2}}</div>
+          </div>
+          <div class="abnormal-top">
+            <div class="left-search">
+              <div class="searchbar com-search">
+                <t-input v-model="params.keywords" class="search-input" :placeholder="lang.abnormal_text3"
+                  clearable></t-input>
+                <t-icon size="20px" name="search" @click="seacrh" class="com-search-btn" />
+              </div>
+              <div class="select-time">
+                <t-date-range-picker allow-input clearable @change="onChange" v-model="dataTime"
+                  :placeholder="[`${lang.select}${lang.abnormal_text21}`,`${lang.select}${lang.abnormal_text21}`]"></t-date-range-picker>
+              </div>
+              <t-button @click="seacrh">{{lang.abnormal_text23}}</t-button>
+              <t-button @click="dowloadFile" :loading="downLoading"
+                v-permission="'auth_abnormal_inspection_records_export_record'">{{lang.abnormal_text22}}</t-button>
+            </div>
+            <div class="right-btn" v-permission="'auth_abnormal_inspection_records_create_record'">
+              <t-button @click="handAdd">{{lang.abnormal_text24}}</t-button>
+            </div>
+          </div>
+          <t-table hover row-key="index" :loading="loading" :data="tableList" :columns="columns" class="table-box">
+            <template #user_name="{row}">
+              <div class="user-name" @click="goclient_detail(row)">
+                <span>{{row.username}}</span>
+                <span v-if="row.company">({{row.company}})</span>
+              </div>
+            </template>
+            <template #order_id="{row}">
+              <span class="user-name" @click="goOrder(row.order_id)">{{row.order_id}}</span>
+            </template>
+            <template #phone="{row}">
+              <div class="phone-email">
+                <div v-if="row.phone" class="tel">+{{row.phone_code}}-{{row.phone}}</div>
+                <div v-if="row.email" class="tel">{{row.email}}</div>
+              </div>
+            </template>
+            <template #pay_time="{row}">
+              <span> {{row.pay_time ? moment(row.pay_time * 1000).format('YYYY-MM-DD HH:mm') : '--'}}</span>
+            </template>
+            <template #process_time="{row}">
+              <span> {{row.process_time ? moment(row.process_time * 1000).format('YYYY-MM-DD HH:mm') : '--'}}</span>
+            </template>
+            <template #admin_name="{row}">
+              <span>{{row.admin_name}}</span>
+            </template>
+            <template #op="{row}">
+              <t-tooltip :content="lang.abnormal_text25" :show-arrow="false" theme="light">
+                <t-icon name="view-module" class="common-look" @click="handDetail(row)"
+                  v-permission="'auth_abnormal_inspection_records_check_record'"></t-icon>
+              </t-tooltip>
+              <t-tooltip :content="lang.abnormal_text26" :show-arrow="false" theme="light">
+                <t-icon name="edit-1" class="common-look" @click="handEdit(row)"
+                  v-permission="'auth_abnormal_inspection_records_update_record'"></t-icon>
+              </t-tooltip>
+              <t-tooltip :content="lang.abnormal_text27" :show-arrow="false" theme="light">
+                <t-icon name="delete" class="common-look" @click="deletes(row.id)"
+                  v-permission="'auth_abnormal_inspection_records_delete_record'"></t-icon>
+              </t-tooltip>
+            </template>
+          </t-table>
+          <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+            :page-size-options="pageSizeOptions" @change="changePage" />
+        </div>
+      </t-card>
+      <!-- 新增异常记录弹窗 -->
+      <t-dialog :header="editId ? lang.abnormal_text14 : lang.abnormal_text13" placement="center" class="check-dialog"
+        :visible.sync="addVisible" width="600" :footer="false" @closed="addDiaClose">
+        <t-form :rules="addRules" ref="addForm" :data="formData" @submit="addSubmit" reset-type="initial">
+          <template v-if="editId !== null">
+            <t-form-item :label="lang.abnormal_text28" name="client_id">
+              <div class="dis-user">
+                <template>
+                  <span v-if="formData.username">{{formData.username}}</span>
+                  <span v-else-if="formData.phone">+{{formData.phone_code}}-{{formData.phone}}</span>
+                  <span v-else="formData.email">{{formData.email}}</span>
+                </template>
+                <span v-if="formData.company">({{formData.company}})</span>
+              </div>
+            </t-form-item>
+            <t-form-item :label="lang.abnormal_text16" name="host_id">
+              <div class="dis-user">
+                <span>{{formData.product_name || '--'}}</span>
+                <span>({{formData.host_name || '--'}})</span>
+              </div>
+            </t-form-item>
+          </template>
+          <template v-else>
+            <t-form-item :label="lang.abnormal_text15" name="client_id">
+              <com-choose-user :check-id="formData.client_id" @changeuser="changeUser"
+                :disabled="editId !== null"></com-choose-user>
+            </t-form-item>
+            <t-form-item :label="lang.abnormal_text16" name="host_id">
+              <t-select :scroll="{ type: 'virtual',threshold:20 }" :popup-props="popupProps"
+                :placeholder="lang.abnormal_text29" clearable v-model="formData.host_id" :options="hostOptions"
+                :keys="{ label: 'showName', value: 'id'}"></t-select>
+            </t-form-item>
+          </template>
+          <t-form-item :label="lang.abnormal_text8" name="ip">
+            <t-input v-model="formData.ip" :placeholder="lang.abnormal_text8" clearable></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.abnormal_text10" name="measure">
+            <t-input v-model="formData.measure" :placeholder="lang.abnormal_text10" clearable></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.abnormal_text11" name="process_time">
+            <t-date-picker style="width: 100%;" @change="onTimeChange" v-model="process_time"
+              :placeholder="lang.abnormal_text11" enable-time-picker allow-input clearable></t-date-picker>
+          </t-form-item>
+          <t-form-item :label="lang.abnormal_text9" name="matter">
+            <t-textarea v-model="formData.matter" :placeholder="lang.abnormal_text9" clearable></t-textarea>
+          </t-form-item>
+          <t-form-item :label="lang.abnormal_text17" name="img">
+            <t-upload v-model="loop_img" :action="uploadUrl" :headers="uploadHeaders" :placeholder="lang.upload_tip"
+              theme="image" accept="image/*" :format-response="formatResponse" :auto-upload="true" multiple
+              @success="changeLoopFile" @remove="removeLoopFile" :image-viewer-props="{ imageScale: {'max': 3} }">
+            </t-upload>
+          </t-form-item>
+          <div class="com-f-btn">
+            <t-button theme="primary" type="submit" :loading="subLoading">{{lang.abnormal_text30}}</t-button>
+            <t-button theme="default" variant="base" @click="addVisible=false">{{lang.abnormal_text31}}</t-button>
+          </div>
+        </t-form>
+      </t-dialog>
+      <!-- 删除提示框 -->
+      <t-dialog theme="warning" :header="lang.sureDelete" :close-btn="false" :visible.sync="delVisible">
+        <template slot="footer">
+          <t-button theme="primary" @click="sureDelUser">{{lang.abnormal_text32}}</t-button>
+          <t-button theme="default" @click="delVisible=false">{{lang.abnormal_text31}}</t-button>
+        </template>
+
+      </t-dialog>
+      <!-- 详情弹窗 -->
+      <t-dialog :header="lang.abnormal_text18" placement="center" :visible.sync="detailVisible" width="900"
+        :footer="false" @closed="detailDiaClose">
+        <div class="detail-box">
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text15}}：</div>
+            <div class="detail-value">
+              {{detailInfo.username}}
+              <template v-if="detailInfo.company">
+                ({{detailInfo.company}})
+              </template>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text5}}：</div>
+            <div class="detail-value">
+              <span v-if="detailInfo.phone" class="tel">+{{detailInfo.phone_code}}-{{detailInfo.phone}}</span>
+              <span v-if="detailInfo.email" class="tel">({{detailInfo.email}})</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text16}}：</div>
+            <div class="detail-value">
+              <span>{{detailInfo.product_name || '--'}}</span>
+              <span v-if="detailInfo.host_name">({{detailInfo.host_name || '--'}})</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text6}}：</div>
+            <div class="detail-value">
+              <span>{{detailInfo.order_id }}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text7}}：</div>
+            <div class="detail-value">
+              <span> {{detailInfo.pay_time ? moment(detailInfo.pay_time * 1000).format('YYYY-MM-DD HH:mm') :
+                '--'}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text11}}：</div>
+            <div class="detail-value">
+              <span> {{detailInfo.process_time ? moment(detailInfo.process_time * 1000).format('YYYY-MM-DD HH:mm') :
+                '--'}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text8}}：</div>
+            <div class="detail-value">
+              <span> {{ detailInfo.ip}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text10}}：</div>
+            <div class="detail-value">
+              <span> {{ detailInfo.measure}}</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">{{lang.abnormal_text12}}：</div>
+            <div class="detail-value">
+              <span> {{ detailInfo.admin_name}}</span>
+            </div>
+          </div>
+          <div class="detail-item all-item">
+            <div class="detail-label">{{lang.abnormal_text9}}：</div>
+            <div class="detail-value">
+              <span> {{ detailInfo.matter}}</span>
+            </div>
+          </div>
+          <div class="detail-item all-item">
+            <div class="detail-label">{{lang.abnormal_text17}}：</div>
+            <div class="detail-value">
+              <template v-if="detailInfo.img && detailInfo.img.length !==0">
+                <t-image-viewer class="img-box" v-for="(img, index) in detailInfo.img" :key="index"
+                  :default-index="index" :images="detailInfo.img" :image-scale="{max: 3}">
+                  <template #trigger="{ open }">
+                    <div class="tdesign-demo-image-viewer__ui-image tdesign-demo-image-viewer__base">
+                      <img alt="test" :src="img.url" class="tdesign-demo-image-viewer__ui-image--img" @click="open" />
+                    </div>
+                  </template>
+                </t-image-viewer>
+              </template>
+              <template v-else>
+                <span>{{lang.abnormal_text19}}</span>
+              </template>
+            </div>
+          </div>
+        </div>
+        <template slot="footer">
+          <t-button theme="default" @click="detailVisible=false">{{lang.abnormal_text33}}</t-button>
+        </template>
+      </t-dialog>
+    </div>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+
+<script src="/plugins/addon/abnormal_inspection_records/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comChooseUser/comChooseUser.js"></script>
+<script src="/plugins/addon/abnormal_inspection_records/template/admin/api/index.js"></script>
+<script src="/plugins/addon/abnormal_inspection_records/template/admin/js/index.js"></script>

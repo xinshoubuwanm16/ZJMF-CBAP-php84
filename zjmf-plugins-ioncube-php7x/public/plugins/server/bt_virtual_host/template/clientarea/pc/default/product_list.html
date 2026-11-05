@@ -1,0 +1,118 @@
+<!-- 页面独有样式 -->
+<link rel="stylesheet" href="/plugins/server/bt_virtual_host/template/clientarea/pc/default/css/cloudList.css">
+<div id="cloudList">
+  <!-- 自己的东西 -->
+  <div class="main-card">
+    <div class="main-card-title">
+      <span class="title-text">{{lang.cloud_title}}</span>
+    </div>
+
+    <!-- 表格 -->
+    <div class="main-card-table">
+      <product-filter :tab.sync="params.tab" @change="inputChange" :count="expiring_count"></product-filter>
+      <!-- 筛选 -->
+      <div class="main-card-search">
+        <batch-renewpage :tab="params.tab" :ids="multipleSelection" module-type="bt_virtual_host" @success="inputChange"
+          ref="batchRenewRef">
+        </batch-renewpage>
+        <div class="right-search">
+          <!-- 数据中心 -->
+          <el-select v-model="curIndex" style="width:3.2rem;" :filterable="true" :clearable="true"
+            :placeholder="`${lang.placeholder_pre2}${lang.cloud_table_head_1}`">
+            <el-option v-for="(item, index) in center" :key="index" :value="index" :label="item.label">
+              <div class="center-option-label">
+                <img :src="'/upload/common/country/' + item.iso + '.png'" class="area-img">
+                <span class="option-text">{{item.label}}</span>
+              </div>
+            </el-option>
+          </el-select>
+          <!-- 产品状态 -->
+          <el-select v-model="params.status" @change="statusSelectChange" :placeholder="lang.select_pro_status"
+            style="width:3.2rem;" clearable>
+            <el-option v-for="item in statusSelect" :key="item.id" :value="item.status" :label="item.label"></el-option>
+          </el-select>
+          <el-input v-model="params.keywords" style="width: 3.2rem;"
+            :placeholder="`ID、${lang.product_name}、${lang.da_package}、IP`" clearable @clear="getCloudList">
+          </el-input>
+          <div class="search-btn" @Click="inputChange">{{lang.baidu_plugin_text7}}</div>
+        </div>
+      </div>
+      <div class="table">
+        <el-table v-loading="loading" :data="cloudData" style="width: 100%;margin-bottom: .2rem;"
+          @selection-change="handleSelectionChange" @row-click="($event,event)=>toDetail($event,event)">
+          <el-table-column type="selection" width="60" :show-overflow-tooltip="true">
+          </el-table-column>
+          <el-table-column label="ID" prop="id" width="100" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column :label="lang.cloud_table_head_1" width="180" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <div class="area" v-if="scope.row.country">
+                <img :src="'/upload/common/country/' + scope.row.iso + '.png'" class="area-img">
+                <span class="area-country">{{scope.row.country}}</span>
+                <span>-{{scope.row.area}}-{{scope.row.region}}</span>
+              </div>
+              <div v-else>--</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="product_name" :label="lang.appstore_text221" min-width="180"
+            :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <div class="cloud-name" @click="toDetail(scope.row)">
+                <span class="packge-name">{{ scope.row.product_name }}</span>
+                <span class="name">{{ scope.row.name }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column :label="lang.da_package" prop="package_name" width="150"
+            :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column prop="second_domain" :label="lang.domain" width="250" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <span v-if="scope.row.domain">{{scope.row.domain}}</span>
+              <span v-else>--</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="id" :label="lang.finance_label4" width="120" align="left">
+            <template slot-scope="scope">
+              <div class="status"
+                :style="'color:'+status[scope.row.status].color + ';background:' + status[scope.row.status].bgColor">
+                {{status[scope.row.status].text }}
+              </div>
+            </template>
+          </el-table-column>
+          <!--
+          <el-table-column prop="due_time" :label="lang.cloud_table_head_4" width="200">
+            <template slot-scope="scope">
+              {{scope.row.due_time | formateTime}}
+            </template>
+          </el-table-column> -->
+          <el-table-column prop="client_notes" :label="lang.invoice_text139" min-width="100"
+            :show-overflow-tooltip="true">
+            <template slot-scope="{row}">
+              {{row.client_notes || '--'}}
+            </template>
+          </el-table-column>
+
+          <!-- <el-table-column prop="op" :label="lang.finance_label6" width="150">
+            <template slot-scope="{row}">
+              <span v-show="row.loading">
+                <i class="el-icon-loading"></i>
+              </span>
+              <span v-show="!row.loading">
+                <span class="idle" @click="handlerJump(row)" v-if="row.ip">{{lang.login}}DA</span>
+                <span v-else>--</span>
+              </span>
+            </template>
+          </el-table-column> -->
+
+        </el-table>
+      </div>
+      <div class="page">
+        <pagination :page-data="params" v-if="params.total" @sizechange="sizeChange" @currentchange="currentChange" />
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- =======页面独有======= -->
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/lang/index.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/api/cloud.js"></script>
+<script src="/plugins/server/bt_virtual_host/template/clientarea/pc/default/js/cloudList.js"></script>

@@ -1,0 +1,70 @@
+<div class="footer-box">
+    <div class="section">
+        <div class="left-logo">
+            <div class="footet-logo">
+                <img src="{$data.config['official_website_logo'] ?? ''}" alt="" />
+            </div>
+            <div class="left-logo-copyright">
+                <p>Copyright © 1999-2024
+                    <br>
+                    {$data.config.enterprise_name ?? '重庆顺戴网络科技有限公司'}
+                </p>
+            </div>
+        </div>
+        <div class="mid-menu">
+            {if ( isset($data.footer_nav) ) }
+                {foreach $data.footer_nav as $key=>$value}
+                <ul class="mid-menu-list">
+                    <li class="mid-menu-type">{$value.name}</li>
+                    {foreach $value.children as $k=>$v}
+                    <li class="mid-menu-item"><a href="{$v.url}">{$v.name}</a></li>
+                    {/foreach}
+                </ul>
+                {/foreach}
+            {else /}
+            <ul class="mid-menu-list">
+                <li class="mid-menu-type">热门产品</li>
+                <li class="mid-menu-item"><a href="/cloud.html">云服务器</a></li>
+                <li class="mid-menu-item"><a href="/dcim.html">物理裸机</a></li>
+                <li class="mid-menu-item"><a href="javascript:;">域名注册</a></li>
+            </ul>
+            <ul class="mid-menu-list">
+                <li class="mid-menu-type">客户支持</li>
+                <li class="mid-menu-item"><a href="javascript:;">文档中心</a></li>
+                <li class="mid-menu-item"><a href="javascript:;">技术工单</a></li>
+                <li class="mid-menu-item"><a href="javascript:;">在线客服</a></li>
+            </ul>
+            <ul class="mid-menu-list">
+                <li class="mid-menu-type">账户管理</li>
+                <li class="mid-menu-item"><a href="/home.htm" target="_blank">控制台</a></li>
+                <li class="mid-menu-item"><a href="javascript:;">域名管理</a></li>
+                <li class="mid-menu-item"><a href="javascript:;">备案管理</a></li>
+            </ul>
+            <ul class="mid-menu-list">
+                <li class="mid-menu-type">其他</li>
+                <li class="mid-menu-item"><a href="javascript:;" target="_blank">用户协议</a></li>
+                <li class="mid-menu-item"><a href="javascript:;" target="_blank">隐私政策</a></li>
+                <li class="mid-menu-item"><a href="javascript:;" target="_blank">Cookies政策</a></li>
+            </ul>
+            {/if}
+        </div>
+        <div class="right-link">
+            <div class="connect-us">
+                <div class="connect-us-title">联系我们</div>
+                <div class="connect-us-text">关注{$data.config.enterprise_name ?? '魔方云'}公众号，了解相关讯息</div>
+            </div>
+            <div class="qr-box">
+                <div class="qr-item">
+                    <img src="{$data.config.enterprise_qrcode ?? '/web/mf101/assets/img/qr-code1.png'}" alt="" />
+                </div>
+                <!-- <div class="qr-item">
+                    <img src="/web/mf101/assets/img/qr-code2.png" alt="" />
+                </div> -->
+            </div>
+            <div class="tle-box">
+                咨询热线：<span class="tle-num">{$data.config.enterprise_telephone ?? '400-845-8882'}</span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>

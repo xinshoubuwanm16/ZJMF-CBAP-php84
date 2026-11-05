@@ -1,0 +1,31 @@
+const plugin_lang = {
+  /* 用户等级 */
+  new_create: "新建",
+  update: "修改",
+  delete: "删除",
+  sure: "确定",
+  cancel: "取消",
+  sureDelete: "确认删除？",
+  clinet_level: "用户等级",
+  basic_info: "基础资料",
+  representative_color: "代表色",
+  customer: "客户",
+  notes: "备注",
+  edit: "编辑",
+  hold: "保存",
+  order_new: "新增",
+  product_preference: "产品优惠",
+  discount_ratio: "折扣比例",
+  levevl_tip: "优惠5%时，用户购买时显示9.5折",
+  baidu_price_num: "百度价格系数",
+  baidu_total: "总折扣",
+  order_index: "序号",
+  operation: "操作",
+  input: "请输入",
+  select: "请选择",
+  tailorism: "产品",
+  verify2: "之间的数,最多两位小数",
+  level_text1: "会员中心显示用户所属用户等级",
+};
+
+window.plugin_lang = plugin_lang;

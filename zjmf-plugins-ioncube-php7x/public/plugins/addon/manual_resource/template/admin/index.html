@@ -1,0 +1,339 @@
+<link rel="stylesheet" href="/plugins/addon/manual_resource/template/admin/css/index.css">
+<!-- =======内容区域======= -->
+<div id="content" class="order" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="common-header">
+        <!-- 右侧搜索 -->
+        <div class="left-search">
+          <t-input v-model="params.keywords" class="search-input" :placeholder="lang.manual_text1"
+            @keypress.enter.native="seacrh" :on-clear="clearKey" clearable></t-input>
+          <t-select v-model="params.addon_manual_resource_supplier_id" :placeholder="lang.manual_text2" clearable>
+            <t-option v-for="item in supplierList" :value="item.id" :label="item.name" :key="item.id">
+            </t-option>
+          </t-select>
+          <t-button @click="seacrh" class="seacrh">{{lang.query}}</t-button>
+        </div>
+        <div class="right-btn">
+          <t-button class="add" @click="supplierShow = true" v-permission="'auth_manual_resource_supplier'">{{lang.manual_text3}}</t-button>
+          <t-button @click="handelAddMantal" v-permission="'auth_manual_resource_create_resource'">{{lang.manual_text4}}</t-button>
+        </div>
+      </div>
+      <t-table ref="table" row-key="id" :data="data" :columns="columns" :loading="loading" :hover="hover">
+        <template #power_status="{row}">
+          {{statusObj[row.power_status] || '--'}}
+        </template>
+        <template #config="{row}">
+          <t-tooltip class="placement top center" placement="top" theme="light" show-arrow>
+            <div style="white-space: pre-wrap;">{{row.configuration || '--'}}</div>
+            <template slot="content">
+              <div style="white-space: pre-wrap;">{{row.configuration || '--'}}</div>
+            </template>
+          </t-tooltip>
+        </template>
+        <template #machine_op="{row}">
+          <div class="machine-op-box">
+            <template v-if="row.power_status === 'error' || row.control_mode ==='not_support'">
+              <span> --</span>
+            </template>
+            <template v-else>
+              <span class="op-text" @click="handelOpen(row,'on')"
+                v-if="row.power_status === 'off'">{{lang.manual_text52}}</span>
+              <span class="op-text" @click="handelOpen(row,'off')"
+                v-if="row.power_status === 'on'">{{lang.manual_text46}}</span>
+              <span class="op-text" @click="handelOpen(row,'re')"
+                v-if="row.control_mode !=='not_support'">{{lang.manual_text47}}</span>
+              <span class="op-text" @click="optSystem(row,'reinstall')"
+                v-if="row.control_mode === 'dcim_client'">{{lang.manual_text48}}</span>
+              <span class="op-text" @click="optSystem(row,'reset')"
+                v-if="row.control_mode === 'dcim_client'">{{lang.manual_text49}}</span>
+              <span class="op-text" @click="optSystem(row,'rescue')"
+                v-if="row.control_mode === 'dcim_client'">{{lang.manual_text50}}</span>
+              <span class="op-text" @click="handelVnc(row)">{{lang.manual_text51}}</span>
+            </template>
+
+          </div>
+        </template>
+        <template #notes="{row}">
+          {{row.notes || '--'}}
+        </template>
+        <template #cost="{row}">
+          <div>{{row.supplier}}</div>
+          <div>{{ currency_prefix + row.cost + currency_suffix}}</div>
+        </template>
+        <template #username="{row}">
+          <div>{{row.username || '--'}}</div>
+          <div>{{row.password || '--'}}</div>
+        </template>
+        <template #client_name="{row}">
+          <div class="a-text" @click="goClient(row)">{{row.client_name || '--'}}</div>
+          <div class="a-text" @click="goProduct(row)" v-if="row.host_name">{{row.host_name || '--'}}</div>
+        </template>
+        <template #due_time="{row}">
+          {{ moment(row.due_time * 1000).format('YYYY-MM-DD HH:mm') || '--'}}
+        </template>
+        <template #op="{row}">
+          <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+            <t-icon name="edit" size="18px" @click="editManual(row.id)" class="common-look" v-permission="'auth_manual_resource_update_resource'"></t-icon>
+          </t-tooltip>
+          <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+            <t-icon name="delete" size="18px" @click="delManual(row.id)" class="common-look" v-permission="'auth_manual_resource_delete_resource'"></t-icon>
+          </t-tooltip>
+        </template>
+      </t-table>
+      <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+        :page-size-options="pageSizeOptions" :on-change="changePage" />
+    </t-card>
+    <!-- 添加/编辑 资源-->
+    <t-dialog @close="closeProduct" :footer="false" :header="editId ? lang.manual_text17 : lang.manual_text4"
+      :visible.sync="addManualShow" width="1250" class="manual-add">
+      <t-form ref="productForm" @submit="submitProduct" :data="manualForm" :rules="productRules" reset-type="initial"
+        label-width="80px">
+        <div class="form-box">
+          <div class="form-left">
+            <div class="form-ip">
+              <div class="ip-l">
+                <t-form-item :label="lang.manual_text18" name="dedicated_ip">
+                  <t-input v-model="manualForm.dedicated_ip"></t-input>
+                </t-form-item>
+                <t-form-item :label="lang.manual_text44" name="port">
+                  <t-input v-model="manualForm.port"></t-input>
+                </t-form-item>
+              </div>
+              <div class="ip-r">
+                <t-form-item :label="lang.manual_text19" name="assigned_ips">
+                  <t-textarea v-model="manualForm.assigned_ips" :placeholder="lang.manual_text45"
+                    :autosize="{minRows: 4, maxRows: 4}"></t-textarea>
+                </t-form-item>
+              </div>
+            </div>
+            <t-form-item :label="lang.manual_text21" name="configuration">
+              <t-textarea v-model="manualForm.configuration" :placeholder="lang.manual_text45"
+                :autosize="{minRows: 4, maxRows: 4}"></t-textarea>
+            </t-form-item>
+            <div class=" row-form">
+              <t-form-item :label="lang.manual_text24" name="username" style="width: 40%; flex-shrink:0;">
+                <t-input v-model="manualForm.username"></t-input>
+              </t-form-item>
+              <t-form-item :label="lang.manual_text25" name="password">
+                <t-input v-model="manualForm.password"></t-input>
+              </t-form-item>
+            </div>
+            <div class="row-form">
+              <t-form-item :label="lang.manual_text10" name="addon_manual_resource_supplier_id" style="width: 40%; flex-shrink:0;">
+                <t-select v-model="manualForm.addon_manual_resource_supplier_id" :placeholder="lang.manual_text10"
+                  clearable>
+                  <t-option v-for="item in supplierList" :value="item.id" :label="item.name" :key="item.id">
+                  </t-option>
+                </t-select>
+              </t-form-item>
+              <t-form-item :label="lang.manual_text23" name="cost">
+                <t-input v-model="manualForm.cost"></t-input>
+              </t-form-item>
+            </div>
+            <t-form-item :label="lang.manual_text27" name="due_time">
+              <t-date-picker style="width: 100%;" v-model="manualForm.due_time" enable-time-picker allow-input clearable
+                :placeholder="lang.manual_text27"></t-date-picker>
+            </t-form-item>
+            <t-form-item :label="lang.manual_text20" name="notes">
+              <t-input v-model="manualForm.notes"></t-input>
+            </t-form-item>
+          </div>
+          <div class="form-right">
+            <t-form-item :label="lang.manual_text26" name="control_mode" label-width="130px">
+              <t-select v-model="manualForm.control_mode" :placeholder="lang.manual_text26" clearable
+                @change="controlChange">
+                <t-option value="not_support" :label="lang.manual_text28"></t-option>
+                <t-option value="ipmi" :label="lang.manual_text29"></t-option>
+                <t-option value="dcim_client" :label="lang.manual_text30"></t-option>
+              </t-select>
+            </t-form-item>
+            <template v-if="manualForm.control_mode && manualForm.control_mode === 'ipmi'">
+              <t-form-item :label="lang.manual_text33" name="ipmi_ip" label-width="130px">
+                <t-input v-model="manualForm.ipmi_ip"></t-input>
+              </t-form-item>
+              <t-form-item :label="lang.manual_text34" name="ipmi_version" label-width="130px">
+                <t-select v-model="manualForm.ipmi_version" :placeholder="lang.manual_text34" clearable>
+                  <t-option value="1.5" label="1.5"></t-option>
+                  <t-option value="2.0" label="2.0"></t-option>
+                </t-select>
+              </t-form-item>
+            </template>
+            <template v-if="manualForm.control_mode && manualForm.control_mode === 'dcim_client'">
+              <t-form-item :label="lang.manual_text35" name="dcim_client_url" label-width="130px">
+                <t-input v-model="manualForm.dcim_client_url"></t-input>
+              </t-form-item>
+              <t-form-item :label="lang.manual_text36" name="dcim_client_id" label-width="130px">
+                <t-input v-model="manualForm.dcim_client_id"></t-input>
+              </t-form-item>
+            </template>
+            <template v-if="manualForm.control_mode && manualForm.control_mode !== 'not_support'">
+              <t-form-item :label="lang.manual_text31" name="control_username" label-width="130px">
+                <t-input v-model="manualForm.control_username"></t-input>
+              </t-form-item>
+              <t-form-item :label="lang.manual_text32" name="control_password" label-width="130px">
+                <t-input v-model="manualForm.control_password"></t-input>
+              </t-form-item>
+            </template>
+          </div>
+        </div>
+        <div class="com-f-btn" style="margin-top: 30px; padding-right: 50px;">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.sure}}</t-button>
+          <t-button theme="default" variant="base" @click="closeProduct">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+    <!-- 删除弹窗 -->
+    <t-dialog theme="warning" :header="lang.manual_text37" :visible.sync="delVisible">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDel" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+    <!-- 管理供应商 -->
+    <t-dialog @close="closeSupplier" :footer="false" :header="lang.manual_text3" :visible.sync="supplierShow"
+      width="700" class="manual-add">
+      <t-form ref="supplierForm" :data="supplierlForm" @submit="addSuplier" :rules="supplierRules" reset-type="initial">
+        <div class="row-div">
+          <t-form-item :label="lang.manual_text38" name="name">
+            <t-input v-model="supplierlForm.name"></t-input>
+          </t-form-item>
+          <t-form-item :label="lang.manual_text39" name="contact">
+            <t-input v-model="supplierlForm.contact"></t-input>
+          </t-form-item>
+        </div>
+        <div class="row-div">
+          <t-form-item :label="lang.manual_text40" name="notes">
+            <t-input v-model="supplierlForm.notes"></t-input>
+          </t-form-item>
+          <t-button class="add-btn" type="submit" :loading="submitLoading">{{lang.order_text53}}</t-button>
+        </div>
+      </t-form>
+      <t-table row-key="id" :data="supplierList" :columns="supplierColumns" :pagination="pagination"
+        @page-change="onPageChange">
+        <template #name="{row}">
+          <span v-if="!row.isEdit">{{row.name || '--'}}</span>
+          <t-input v-model="supplierEditData.name" v-else></t-input>
+        </template>
+        <template #contact="{row}">
+          <span v-if="!row.isEdit">{{row.contact || '--'}}</span>
+          <t-input v-model="supplierEditData.contact" v-else></t-input>
+        </template>
+        <template #notes="{row}">
+          <span v-if="!row.isEdit">{{row.notes || '--'}}</span>
+          <t-input v-model="supplierEditData.notes" v-else></t-input>
+        </template>
+        <template #op="{row}">
+          <template v-if="!row.isEdit">
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+              <t-icon name="edit" size="18px" @click="editSupplier(row)" class="common-look"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-popconfirm theme="default" :content="lang.manual_text41" @confirm="(e)=>delSupplier(e,row)">
+                <t-icon name="delete" size="18px" class="common-look"></t-icon>
+              </t-popconfirm>
+            </t-tooltip>
+          </template>
+          <template v-else>
+            <t-tooltip :content="lang.hold" :show-arrow="false" theme="light">
+              <t-icon name="save" class="common-look" @click="saveSupplier(row)"></t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.cancel" :show-arrow="false" theme="light">
+              <t-icon name="close-rectangle" class="common-look" @click="cancelEdit(row)"></t-icon>
+            </t-tooltip>
+          </template>
+        </template>
+      </t-table>
+    </t-dialog>
+    <!-- 系统操作 -->
+    <t-dialog :header="systemTit" :visible.sync="reinstallDialog" width="550" class="opt-system-dialog" :footer="false">
+      <p class="s-tip" v-if="optType !== 'reinstall'">{{calcPasTip}}</p>
+      <t-form :rules="systemRules" :data="reinstallData" ref="reinstallForm" @submit="onSubmit" label-align="top"
+        v-if="reinstallDialog">
+        <t-form-item :label="lang.opt_system" v-if="optType === 'reinstall'" name="os" class="opt-sys">
+          <t-form-item>
+            <t-select v-model="curVersion" @change="changeVersion">
+              <img :src="`/plugins/addon/manual_resource/template/admin/img/${calcImg}.svg`" alt="" class="os-img"
+                slot="prefixIcon">
+              <t-option :value="item.id" :label="item.name" :key="item.id" v-for="item in systemArr">
+                <div class="os-item">
+                  <img :src="`/plugins/addon/manual_resource/template/admin/img/${item.name}.svg`" alt=""
+                    class="os-img">
+                  {{item.name}}
+                </div>
+              </t-option>
+            </t-select>
+          </t-form-item>
+          <t-form-item>
+            <t-select v-model="reinstallData.os">
+              <t-option :value="item.id" :label="item.name" :key="item.id" v-for="item in calcSystem"></t-option>
+            </t-select>
+          </t-form-item>
+        </t-form-item>
+        <t-form-item :label="`${lang.rescue}${lang.type}`" v-if="optType === 'rescue'">
+          <t-select v-model="reinstallData.system">
+            <img
+              :src="`/plugins/addon/manual_resource/template/admin/img/${reinstallData.system === 1 ? 'CentOS' : 'Windows'}.svg`"
+              alt="" class="os-img" slot="prefixIcon">
+            <t-option :value="1" label="Linux" :key="1">
+              <div class="os-item">
+                <img src="/plugins/addon/manual_resource/template/admin/img/CentOS.svg" alt="" class="os-img">
+                Linux
+              </div>
+            </t-option>
+            <t-option :value="2" label="Windows" :key="2">
+              <div class="os-item">
+                <img src="/plugins/addon/manual_resource/template/admin/img/Windows.svg" alt="" class="os-img">
+                Windows
+              </div>
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="calcPasTit" class="randomPassword" name="password">
+          <t-input v-model="reinstallData.password" :placeholder="`${lang.input}${lang.password}`"></t-input>
+          <span class="random" @click="autoPass">{{lang.order_random}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.auth_port" class="randomPassword" name="port" v-if="optType === 'reinstall'">
+          <t-input v-model="reinstallData.port" :placeholder="`${lang.input}${lang.auth_port}`"></t-input>
+          <span class="random" @click="autoPort">{{lang.order_random}}</span>
+        </t-form-item>
+        <t-form-item :label="lang.zone_type" v-if="optType === 'reinstall'">
+          <t-select v-model="reinstallData.part_type">
+            <t-option :value="0" :label="lang.zone_type1" :key="0"></t-option>
+            <t-option :value="1" :label="lang.zone_type2" :key="1"></t-option>
+          </t-select>
+        </t-form-item>
+        <template v-if="optType === 'reset'">
+          <t-form-item :label="lang.reset_other">
+            <t-switch size="medium" :custom-value="[1,0]" v-model="reinstallData.other_user">
+            </t-switch>
+          </t-form-item>
+          <t-form-item :label="lang.user" v-if="reinstallData.other_user" name="user">
+            <t-input v-model="reinstallData.user" :placeholder="`${lang.input}${lang.user}`"></t-input>
+          </t-form-item>
+        </template>
+        <t-tag theme="danger" variant="light" v-if="optType === 'rescue'">{{lang.password_tip}}</t-tag>
+        <t-tag theme="warning" variant="light" v-if="optType === 'reinstall'">{{lang.password_tip}}</t-tag>
+        <!-- 强制关机 -->
+        <div class="force-down" v-if="powerStatus=='off' && optType === 'reset'">
+          <div class="alert">
+            <div class="title">{{lang.force_tip}}</div>
+            <div class="row"><span class="dot"></span> {{lang.force_tip1}}</div>
+            <div class="row"><span class="dot"></span> {{lang.force_tip2}}</div>
+          </div>
+          <t-checkbox v-model="checked" v-show="powerStatus=='off'">{{lang.agree_force}}
+          </t-checkbox>
+        </div>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.sure}}</t-button>
+          <t-button theme="default" variant="base" @click="reinstallDialog=false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+<!-- =======页面独有======= -->
+
+<script src="/plugins/addon/manual_resource/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/manual_resource/template//admin/api/index.js"></script>
+<script src="/plugins/addon/manual_resource/template/admin/js/index.js"></script>

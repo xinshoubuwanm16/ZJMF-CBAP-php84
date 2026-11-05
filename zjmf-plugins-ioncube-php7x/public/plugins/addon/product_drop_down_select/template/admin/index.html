@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="/plugins/addon/product_drop_down_select/template/admin/css/product_drop_down_select.css" />
+<!-- =======内容区域======= -->
+
+<div id="content" class="product_drop_down_select" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <h3 class="tit">{{lang.product_select}}</h3>
+      <p class="s-tip">{{lang.product_select_tip}}</p>
+      <div class="item" v-for="(item,index) in list" :key="index" :class="{active: cur === index}">
+        <div class="check" @click="choose(item,index)"></div>
+        <div class="choose">
+          <t-select v-model="item.cur" v-if="item.value==='default'">
+            <t-option v-for="el in item.data" :value="el.value" :label="el.label" :key="el.value">
+            </t-option>
+          </t-select>
+          <t-tree-select :data="item.data" v-model="chooseArr[index]" :popup-props="popupProps" :tree-props="treeProps" filterable
+            clearable  :placeholder="lang.product_id_empty_tip" v-else>
+          </t-tree-select>
+        </div>
+      </div>
+      <div class="f-btn">
+        <t-button theme="primary" @click="sureOpt" :loading="submitLoading">
+          {{lang.product_hold}}
+        </t-button>
+      </div>
+    </t-card>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/product_drop_down_select/template/admin/js/lang.js"></script>
+
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/plugins/addon/product_drop_down_select/template/admin/api/product_drop_down_select.js"></script>
+<script src="/plugins/addon/product_drop_down_select/template/admin/js/product_drop_down_select.js"></script>

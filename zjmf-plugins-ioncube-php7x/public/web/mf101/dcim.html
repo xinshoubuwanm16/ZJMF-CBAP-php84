@@ -1,0 +1,360 @@
+{include file="header"}
+
+</head>
+
+<body class="dcim-page">
+    <header>{include file="conf/header"}</header>
+    <!-- banner -->
+    <section class="section banner-section ">
+        <div class="banner-content">
+            <div class="banner-title">
+                <h1>物理裸机</h1>
+                <p>满足用户资源独享、安全合规、性能稳定的使用需求，实现集高性能、高可靠性、高安全性和高易用性于一体的计算服务，为核心业务的快速成长保驾护航。</p>
+                <a href="/dcim-buy.html" class="btn btn-pri">立即选购</a>
+            </div>
+            <div class="banner-partners">
+                {if ( isset($data.partner) ) }
+                <div class="parteners-title">合作伙伴</div>
+                <div class="parteners-box">
+                    {foreach $data.partner as $key=>$value}
+                    <a href="{$value.url}" class="partener-item">
+                        <img src="{$value.img}" alt="">
+                    </a>
+                    {/foreach}
+                </div>
+                {else /}
+                <img class="default-img" src="/web/mf101/assets/img/banner-conpeny.svg" alt="">
+                {/if}
+            </div>
+        </div>
+        <div class="banner-img" data-aos="fade-up">
+            <img src="/web/mf101/assets/img/dcim-banner-right.svg" class="img-fluid" alt="">
+        </div>
+    </section>
+
+    <!-- 产品优势 -->
+    <section class="section introduce-section">
+        <h3 class="section-title">产品优势</h3>
+        <p class="section-des">为您精挑细选了热门产品和特别折扣产品，超划算！</p>
+        <div class="section-main ">
+            <div class="product-introduce">
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon1.svg" alt="自助式运维">
+                    <h4 class="product-introduce-title">自助式运维</h4>
+                    <p class="product-introduce-content">
+                        支持分钟级资源快速发放，按需申请，不受硬件资源约束，满足租户的资源弹性和快速部署需求
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon2.svg" alt="安全防护">
+                    <h4 class="product-introduce-title">安全防护</h4>
+                    <p class="product-introduce-content">
+                        免费提供DDoS防护、木马查杀、防暴力破解等服务，可轻松实现多用户对多服务器的访问控制
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon3.svg" alt="灵活和弹性">
+                    <h4 class="product-introduce-title">灵活和弹性</h4>
+                    <p class="product-introduce-content">
+                        根据业务的发展趋势您可随时对云资源进行横向和纵向的伸缩，杜绝资源浪费
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon4.svg" alt="技术领先">
+                    <h4 class="product-introduce-title">技术领先</h4>
+                    <p class="product-introduce-content">
+                        资源服务遍布全球，助力企业业务全球快速扩展，业界独家支持共享云存储，更好满足集群应用需求
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon5.svg" alt="费用低廉">
+                    <h4 class="product-introduce-title">费用低廉</h4>
+                    <p class="product-introduce-content">
+                        无需投入大量现金流购置基础设备。完善、快捷的监控、故障维修服务，极大降低了维护的人力和金钱成本
+                    </p>
+                </div>
+                <div class="product-introduce-item" data-aos="fade-up">
+                    <img src="/web/mf101/assets/img/dcim-pro-icon6.svg" alt="高可靠存储">
+                    <h4 class="product-introduce-title">高可靠存储</h4>
+                    <p class="product-introduce-content">
+                        采用云磁盘作为数据持久化，支持服务器重建，整体可用性、可靠性高于传统服务器
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 产品性能 -->
+    <section class="section product-section dcim-product-section">
+        <div class="section-title">产品性能</div>
+        <div class="section-des">集成行业前沿技术，助推企业数智发展</div>
+        <div class="section-main">
+            <div class="product-left" data-aos="fade-up">
+                <img src="/web/mf101/assets/img/dcim-product-img.svg" alt="">
+            </div>
+            <div class="product-right">
+                <ul class="product-list">
+                    <li class="product-item">
+                        <div class="product-title">可定制硬件</div>
+                        <div class="product-des">硬件配置可随时更换或扩容，免费定期硬件维保，安全放心。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">资源独享</div>
+                        <div class="product-des">完全独享CPU、内存、磁盘、网络等计算资源，拥有卓越计算性能。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">智能管理</div>
+                        <div class="product-des">一键式远程执行服务器的重启、开关机命令，敏捷高效。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">可视化监管</div>
+                        <div class="product-des">自动生成可视化流量统计图，实时监控带宽速率、流量消耗情况。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">高配硬件</div>
+                        <div class="product-des">所有组件均采用国际顶级品牌，满足高性能应用需求。</div>
+                    </li>
+                    <li class="product-item">
+                        <div class="product-title">快速响应</div>
+                        <div class="product-des">专业运维团队全天候监控，有效保障设备的高可用性。</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 热销特惠推荐 -->
+    <section class="section recommend-section">
+        <div class="section-title">热销特惠推荐</div>
+        <div class="section-des">为您精挑细选了热门产品和特别折扣产品，超划算！</div>
+        <div class="section-main">
+            <ul class="section-list">
+                {if ( isset($data.product) ) }
+                {foreach $data.product as $key=>$value}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">{$value.title}</div>
+                        <div class="goods-des">{$value.description}</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">{$value.cpu}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.memory)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.disk)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.ip_num)}</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">{:implode(' / ', $value.bandwidth)}</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            {$value.price}<span
+                                class="price-num-unit">{$data.currency_suffix}/{$value.price_unit}</span>
+                        </div>
+                        <a href="/dcim-buy.html?id={$value.product_id}" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/foreach}
+                {else /}
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">通用计算型</div>
+                        <div class="goods-des">适用于企业核心应用、中小型数据库、核心ERP系统、金融系统等大部分通用业务场景。</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            298<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/dcim-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">高性能型</div>
+                        <div class="goods-des">适用于深度学习、科学计算、影视渲染、多媒体编解码、无人驾驶等GPU计算负载极高的业务场景。</div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            399<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/dcim-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">存储IO型</div>
+                        <div class="goods-des">适用于高性能数据库、NoSQL数据库、群集化数据库、OLTP系统、Elastic Search 搜索等需要低时延的 I/O 密集型应用。
+                        </div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            459<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/dcim-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                <li class="section-list-item">
+                    <div class="goods-info">
+                        <div class="goods-name">大数据计算型</div>
+                        <div class="goods-des">适用于
+                            Hadoop/ MapReduce/ HDFS/ Hive/ HBase等分布式计算、Elasticsearch、日志处理和大型数据仓库等业务场景。
+                        </div>
+                    </div>
+                    <div class="goods-config">
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">处理器</div>
+                            <div class="goods-config-item-value">E5 2650</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">内存</div>
+                            <div class="goods-config-item-value">1G</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">硬盘</div>
+                            <div class="goods-config-item-value">1TB SSD</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">IP数</div>
+                            <div class="goods-config-item-value">5个</div>
+                        </div>
+                        <div class="goods-config-item">
+                            <div class="goods-config-item-name">带宽</div>
+                            <div class="goods-config-item-value">10M</div>
+                        </div>
+                    </div>
+                    <div class="goods-price">
+                        <div class="price-num">
+                            499<span class="price-num-unit">元/月</span>
+                        </div>
+                        <a href="/dcim-buy.html" class="btn btn-pri">选购</a>
+                    </div>
+                </li>
+                {/if}
+            </ul>
+        </div>
+
+    </section>
+
+    <!-- 立即启动您的项目 -->
+    <section class="section register-section">
+        <div class="register-box">
+            <h3>立即启动您的项目，享受专业服务</h3>
+            <a href="/regist.htm" class="btn btn-black">立即注册</a>
+        </div>
+    </section>
+
+    <!-- 文档 -->
+
+    <section class="section common-section ">
+        <div class="section-title">文档</div>
+        <div class="section-main doc-main" id="doc-main">
+            <!-- <ul class="doc-list">
+                <li class="doc-type">入门</li>
+                <li class="doc-item"><a href="javascript:;">弹性云服务器概述</a></li>
+                <li class="doc-item"><a href="javascript:;">登录Windows弹性云服务器</a></li>
+                <li class="doc-item"><a href="javascript:;">登录Linux弹性云服务器</a></li>
+                <li class="doc-item"><a href="javascript:;">使用脚本初始化Windows数据盘</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul>
+            <ul class="doc-list">
+                <li class="doc-type">最佳实践</li>
+                <li class="doc-item"><a href="javascript:;">ESC最佳实践</a></li>
+                <li class="doc-item"><a href="javascript:;">服务器迁移至云端</a></li>
+                <li class="doc-item"><a href="javascript:;">设置网站</a></li>
+                <li class="doc-item"><a href="javascript:;">跨账号跨地域迁移弹性云服务器</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul>
+            <ul class="doc-list">
+                <li class="doc-type">常见问答</li>
+                <li class="doc-item"><a href="javascript:;">如何解决连接问题？</a></li>
+                <li class="doc-item"><a href="javascript:;">如何知道我的带宽是否已经到达限制？</a></li>
+                <li class="doc-item"><a href="javascript:;">为什么我的ESC网站无法访问？</a></li>
+                <li class="doc-item"><a href="javascript:;">为什么我的Windows弹性云服务器无法登录？</a></li>
+                <li class="doc-more"><a href="javascript:;">更多></a></li>
+            </ul> -->
+        </div>
+    </section>
+
+
+
+    <script src="/web/mf101/js/document.js"></script>
+    {include file="footer"}

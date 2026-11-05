@@ -1,0 +1,99 @@
+<link rel="stylesheet" href="/plugins/addon/product_cashback/template/admin/css/index.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="cashback" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="material-box">
+        <div class="material-top">
+          <div class="left-title">
+            <h3>{{lang.product_cashback}}</h3>
+            <div>{{lang.product_cashback_tip}}</div>
+          </div>
+          <div class="right-btn" v-permission="'auth_product_cashback_create_product'">
+            <t-button @click="handADDmaterial">{{lang.order_new}}</t-button>
+          </div>
+        </div>
+        <t-table hover row-key="index" :loading="loading" :data="list" :columns="columns">
+          <template #status="{row}">
+            <t-switch size="large" :custom-value="[1,0]" v-model="row.status" @change="onChange(row)" :disabled="!$checkPermission('auth_product_cashback_on_off')"></t-switch>
+          </template>
+          <template #product_name="{row}">
+            <a :href="`${baseUrl}product_detail.htm?id=${row.product_id}`" class="aHover">{{row.product_name}}</a>
+          </template>
+          <template #type="{row}">
+            {{calcType(row.type)}}
+          </template>
+          <template #price="{row}">{{currency_prefix}}{{row.price | filterMoney}}</template>
+          <template #period="{row}">
+            <template v-if="row.period">{{lang.after_purchase}}{{row.period}}{{lang.within_days}}</template>
+            <template v-else>{{lang.permanent}}</template>
+          </template>
+          <template #op="{row}">
+            <t-tooltip :content="lang.edit" :show-arrow="false" theme="light">
+              <t-icon name="edit-1" class="common-look" @click="edit(row)" v-permission="'auth_product_cashback_update_product'">
+              </t-icon>
+            </t-tooltip>
+            <t-tooltip :content="lang.delete" :show-arrow="false" theme="light">
+              <t-icon name="delete" class="common-look" @click="deletes(row.id)" v-permission="'auth_product_cashback_delete_product'">
+              </t-icon>
+            </t-tooltip>
+          </template>
+        </t-table>
+        <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+          :page-size-options="pageSizeOptions" @change="changePage" />
+      </div>
+    </t-card>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.sureDelete" :close-btn="false" :visible.sync="delVisible" class="delDialog">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelUser" :loading="submitLoading">{{lang.sure}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.cancel}}</t-button>
+      </template>
+    </t-dialog>
+
+    <!-- 商品返现弹窗 -->
+    <t-dialog :header="editId ? `${lang.edit}${lang.product}` : `${lang.add}${lang.product}`"
+      :visible.sync="materialVisble" :footer="false" width="650" @closed="materialDiaClose">
+      <t-form :rules="rules" ref="userDialog" :data="formData" @submit="onSubmit" :label-width="120"
+        reset-type="initial" v-if="materialVisble">
+        <t-form-item :label="lang.product" name="product_id">
+          <com-tree-select @choosepro="choosePro" :value="formData.product_id" :disabled="editId !== null"></com-tree-select>
+        </t-form-item>
+        <t-form-item :label="lang.cashback_type" name="type">
+          <t-select v-model="formData.type" :placeholder="lang.cashback_type" disabled>
+            <t-option v-for="item in typeList" :value="item.value" :label="item.label" :key="item.value">
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="lang.cashback_money" name="price" class="price">
+          <t-input-number v-model="formData.price" :min="0" :decimal-places="2" :placeholder="lang.cashback_money"
+            theme="normal">
+          </t-input-number>
+          <div class="tip">
+            <span class="star">*</span>
+            <span>{{lang.product_cashback_tip2}}</span>
+          </div>
+        </t-form-item>
+        <t-form-item :label="lang.period" name="period">
+          <div class="input-box">
+            <span class="prev">{{lang.after_purchase}}</span>
+            <t-input-number style="width: 100%;" v-model="formData.period" :placeholder="lang.product_cashback_tip1"
+              theme="normal" :min="0" :step="1" :decimal-places="0">
+            </t-input-number>
+            <span class="next">{{lang.within_days}}</span>
+          </div>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.hold}}</t-button>
+          <t-button theme="default" variant="base" @click="materialVisble=false">{{lang.cancel}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/product_cashback/template/admin/js/lang.js"></script>
+<script src="/{$template_catalog}/template/{$themes}/components/comTreeSelect/comTreeSelect.js"></script>
+<script src="/plugins/addon/product_cashback/template/admin/api/index.js"></script>
+<script src="/plugins/addon/product_cashback/template/admin/js/index.js"></script>

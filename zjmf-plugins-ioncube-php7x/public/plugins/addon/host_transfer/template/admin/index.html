@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="/plugins/addon/host_transfer/template/admin/css/index.css" />
+<div id="content" class="admin" v-cloak>
+  <com-config>
+    <div class="main-box">
+      <t-card class="list-card-container">
+        <div class="page-box">
+          <div class="page-title">
+            <h3>{{lang.host_transfer_text1}}</h3>
+            <div>{{lang.host_transfer_text2}}</div>
+          </div>
+          <div class="abnormal-top">
+            <div class="searchbar com-search">
+              <t-input v-model="params.keywords" class="search-input" :placeholder="lang.host_transfer_text3"
+                clearable></t-input>
+              <t-icon size="20px" name="search" @click="seacrh" class="com-search-btn" />
+            </div>
+            <t-button @click="seacrh">{{lang.host_transfer_text20}}</t-button>
+          </div>
+          <t-table hover row-key="index" :loading="loading" :data="tableList" :columns="columns" class="table-box">
+            <template #host_id="{row}">
+              <span>{{row.host_id}}</span>
+            </template>
+            <template #product_name="{row}">
+              <span class="user-name" @click="goOrder(row)">{{row.product_name}}</span>
+            </template>
+            <template #name="{row}">
+              <span>{{row.name}}</span>
+            </template>
+            <template #old_username="{row}">
+              <div class="user-name" @click="goclient_detail(row.old_client_id)">
+                <span>{{row.old_username}}</span>
+              </div>
+            </template>
+            <template #new_username="{row}">
+              <div class="user-name" @click="goclient_detail(row.new_client_id)">
+                <span>{{row.new_username}}</span>
+              </div>
+            </template>
+            <template #create_time="{row}">
+              <span>
+                {{row.create_time ? moment(row.create_time *
+                1000).format('YYYY-MM-DD HH:mm') : '--'}}</span>
+            </template>
+            <template #user_name="{row}">
+              <span>{{row.user_name}}</span>
+            </template>
+          </t-table>
+          <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+            :page-size-options="pageSizeOptions" @change="changePage" />
+        </div>
+      </t-card>
+    </div>
+  </com-config>
+</div>
+
+<!-- =======页面独有======= -->
+<script src="/plugins/addon/host_transfer/template/admin/js/lang.js"></script>
+
+<script src="/plugins/addon/host_transfer/template/admin/api/index.js"></script>
+<script src="/plugins/addon/host_transfer/template/admin/js/index.js"></script>

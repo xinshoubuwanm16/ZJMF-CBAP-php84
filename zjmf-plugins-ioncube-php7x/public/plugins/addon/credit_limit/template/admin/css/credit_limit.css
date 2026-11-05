@@ -1,0 +1,97 @@
+/* credit_limit */
+.credit_limit .common-header {
+  display: flex;
+  justify-content: space-between;
+}
+.credit_limit .common-header .right-search {
+  display: flex;
+}
+.credit_limit .common-header .search-input,
+.credit_limit .common-header .t-select__wrap,
+.credit_limit .common-header .com-search {
+  width: 220px;
+  margin-right: 10px;
+}
+.credit_limit .common-header .t-date-range-picker {
+  width: 300px;
+  margin-right: 20px;
+}
+.credit_limit .t-date-range-picker,
+.credit_limit .t-input-number {
+  width: 100%;
+}
+.credit_limit .t-pagination .t-input-number {
+  width: 48px;
+}
+.credit_limit .residue {
+  width: 400px;
+  margin-left: 10px;
+  white-space: pre-wrap;
+  color: var(--td-error-color);
+}
+.credit_limit .opt-records {
+  border-top: 1px solid #aaa;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.credit_limit .opt-records .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.credit_limit .opt-records .top .tit {
+  color: #333;
+}
+.credit_limit .opt-records .opt {
+  display: flex;
+}
+.credit_limit .opt-records .opt .t-select__wrap {
+  width: 180px;
+  margin-left: 10px;
+}
+.credit_limit .t-table__tree-op-icon {
+  display: none;
+}
+.credit_limit .order-id {
+  cursor: pointer;
+}
+.credit_limit .date-range > .t-form__label::before {
+  color: var(--td-error-color);
+  content: "*";
+  display: inline-block;
+  line-height: 22px;
+  margin-right: 4px;
+}
+.credit_limit .date-range .t-form__item {
+  flex: 1;
+  margin-right: 10px;
+}
+.credit_limit .date-range .t-form__item .t-form__label {
+  display: none;
+}
+.credit_limit .date-range .t-form__item .t-date-picker {
+  width: 100%;
+}
+.credit_limit .date-range .t-form__controls-content {
+  display: flex;
+  justify-content: space-between;
+}
+/* credit_limit_setting */
+.credit_limit_setting .t-input__wrap {
+  width: 100px;
+  margin: 0 10px;
+}
+.credit_limit_setting .s-tip {
+  margin-top: -10px;
+  color: #999;
+}
+.t-popup__content {
+  white-space: pre-wrap;
+}
+.isEn .credit_limit_setting .t-form__label {
+  width: auto !important;
+}
+.choose-user {
+  flex: 1 !important;
+}

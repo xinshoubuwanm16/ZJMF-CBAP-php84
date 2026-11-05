@@ -1,0 +1,126 @@
+<link rel="stylesheet" href="/plugins/addon/client_custom_field/template/admin/css/index.css" />
+
+<!-- =======内容区域======= -->
+<div id="content" class="stock" v-cloak>
+  <com-config>
+    <t-card class="list-card-container">
+      <div class="material-box">
+        <div class="material-top">
+          <div class="left-title">
+            <h3>{{lang.client_custom_label1}}</h3>
+            <div>{{lang.client_custom_label2}}</div>
+          </div>
+          <div class="right-btn" v-permission="'auth_client_custom_field_create_field'">
+            <t-button @click="handADDmaterial">{{lang.client_custom_label3}}</t-button>
+          </div>
+        </div>
+        <t-table hover row-key="index" :loading="loading" :data="list" :columns="columns" drag-sort="row-handler"
+          @drag-sort="onDragSort">
+          <template #drag="{row}">
+            <t-icon name="move" style="cursor: move;"></t-icon>
+          </template>
+          <template #name="{row}">
+            <span>
+              <span class="error-text" v-if="row.required === 1">*</span>
+              {{row.name}}
+            </span>
+          </template>
+          <template #type="{row}">
+            <t-tooltip :content="row.options" v-if="row.type === 'dropdown' || row.type === 'dropdown_text'"
+              theme="light">
+              <span>{{calcTypeText(row)}}</span>
+            </t-tooltip>
+            <span v-else>{{calcTypeText(row)}}</span>
+          </template>
+          <template #description="{row}">
+            <span>{{row.description || '--'}}</span>
+          </template>
+          <template #regexpr="{row}">
+            <span>{{row.regexpr || '--'}}</span>
+          </template>
+          <template #before_settle="{row}">
+            <span>{{row.before_settle == 1 ? lang.client_custom_label38 : lang.client_custom_label39}}</span>
+          </template>
+          <template #status="{row}">
+            <t-switch size="large" :custom-value="[1,0]" v-model="row.status" @change="onChange(row)"
+              :disabled="!$checkPermission('auth_client_custom_field_on_off')"></t-switch>
+          </template>
+          <template #watch="{row}">
+            <span>
+              {{ calcWatch(row) || '--' }}
+            </span>
+          </template>
+          <template #op="slotProps">
+            <t-icon name="edit-1" color="#0052D9" style="margin-right: 10px;" @click="edit(slotProps.row)"
+              class="common-look" v-permission="'auth_client_custom_field_update_field'"></t-icon>
+            <t-icon name="delete" color="#0052D9" class="common-look" @click="deletes(slotProps.row.id)"
+              v-permission="'auth_client_custom_field_delete_field'"></t-icon>
+          </template>
+        </t-table>
+        <t-pagination show-jumper v-if="total" :total="total" :page-size="params.limit" :current="params.page"
+          :page-size-options="pageSizeOptions" @change="changePage" />
+      </div>
+    </t-card>
+    <!-- 删除提示框 -->
+    <t-dialog theme="warning" :header="lang.client_custom_label6" :close-btn="false" :visible.sync="delVisible"
+      class="delDialog">
+      <template slot="footer">
+        <t-button theme="primary" @click="sureDelUser"
+          :loading="submitLoading">{{lang.client_custom_label17}}</t-button>
+        <t-button theme="default" @click="delVisible=false">{{lang.client_custom_label18}}</t-button>
+      </template>
+    </t-dialog>
+
+
+    <!-- 创建字段弹窗 -->
+    <t-dialog :header="editId ? lang.client_custom_label7 : lang.client_custom_label8" :visible.sync="materialVisble"
+      :footer="false" width="650" @closed="materialDiaClose">
+      <t-form :rules="rules" ref="userDialog" label-align="top" :data="formData" @submit="onSubmit" :label-width="120"
+        reset-type="initial">
+        <t-form-item name="name">
+          <template slot="label">
+            <span class="form-flex-label">
+              <span>{{lang.client_custom_label9}}</span>
+              <div v-if="formData.type !=='tickbox'">
+                <t-checkbox v-model="formData.required">{{lang.client_custom_label19}}</t-checkbox>
+                <t-checkbox v-model="formData.before_settle">{{lang.client_custom_label37}}</t-checkbox>
+              </div>
+            </span>
+          </template>
+          <t-input v-model="formData.name" :placeholder="lang.client_custom_label9"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.client_custom_label10" name="type">
+          <t-select v-model="formData.type" :placeholder="lang.client_custom_label10" :disabled="editId !== null">
+            <t-option v-for="ele in typeList" :value="ele.value" :label="ele.label" :key="ele.value">
+            </t-option>
+          </t-select>
+        </t-form-item>
+        <t-form-item :label="lang.client_custom_label12" :help="lang.client_custom_label11" name="options"
+          v-if="formData.type === 'dropdown' || formData.type === 'dropdown_text'">
+          <t-input v-model="formData.options" :placeholder="lang.client_custom_label11"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.client_custom_label30">
+          <t-input v-model="formData.description" :placeholder="lang.client_custom_label30"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.client_custom_label28" :help="lang.client_custom_label29">
+          <t-input v-model="formData.regexpr" :placeholder="lang.client_custom_label31"></t-input>
+        </t-form-item>
+        <t-form-item :label="lang.client_custom_label32">
+          <div style="display: flex; flex-wrap: wrap; column-gap: 10px; row-gap: 10px;">
+            <t-checkbox v-model="formData.admin_only">{{lang.client_custom_label21}}</t-checkbox>
+            <t-checkbox v-model="formData.show_register">{{lang.client_custom_label22}}</t-checkbox>
+          </div>
+        </t-form-item>
+        <div class="com-f-btn">
+          <t-button theme="primary" type="submit" :loading="submitLoading">{{lang.client_custom_label13}}</t-button>
+          <t-button theme="default" variant="base"
+            @click="materialVisble=false">{{lang.client_custom_label14}}</t-button>
+        </div>
+      </t-form>
+    </t-dialog>
+  </com-config>
+</div>
+
+<script src="/plugins/addon/client_custom_field/template/admin/js/lang.js"></script>
+<script src="/plugins/addon/client_custom_field/template/admin/api/index.js"></script>
+<script src="/plugins/addon/client_custom_field/template/admin/js/index.js"></script>

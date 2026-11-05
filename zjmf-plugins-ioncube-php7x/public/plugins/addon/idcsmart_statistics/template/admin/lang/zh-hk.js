@@ -1,0 +1,40 @@
+const plugin_lang = {
+  /* 統計信息 */
+  year_income: "年度收入統計",
+  expect_income: "預計收入統計",
+  product_income: "產品收入統計",
+  month_income: "月度收入統計",
+  month_order_income: "年度訂單統計",
+  income_tip: "年度收入報告",
+  year: "年",
+  balance: "凈收入",
+  expect_total_income: "預計總收入",
+  month: "月",
+  statistics: "統計",
+  subtotal: "小計",
+  tip10: "未找到相關數據",
+  total_income: "總收入",
+  client_care_label44: "日期",
+  amount_in: "收入",
+  amount_out: "支出",
+  statistics_month: "月份",
+  new: "新訂單",
+  new_signup_user: "新註冊用戶",
+  renew_order: "續費訂單",
+  upgrade: "升降級訂單",
+  renew: "續費",
+  refund: "退款",
+  product_name: "商品名稱",
+  units_sold: "銷量",
+  income_tip1: "此報告同時展示近3年數據，按月細分收入。",
+  income_tip2: "收入報告",
+  income_tip3: "此報告顯示當前月份每日的收入",
+  income_tip4:
+    "該報告顯示了新客戶註冊、新訂單、續費訂單、升降級訂單的總數，並在圖表上將每壹項與上壹年進行了比較。",
+  income_tip5: "產品收入",
+  income_tip6: "此報告按商品分組顯示當前月份所有商品的收入",
+  income_tip7:
+    "該報告顯示，如果所有激活的產品都在對應周期內續費時，預計未來三年每個月的預計收入",
+};
+
+window.plugin_lang = plugin_lang;

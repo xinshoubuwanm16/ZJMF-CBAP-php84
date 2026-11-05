@@ -1,0 +1,263 @@
+<style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    div {
+      outline: none;
+    }
+
+
+    /* 火柴棍标题 */
+    .page-title {
+      display: inline-block;
+      width: 300px;
+      height: 28px;
+      line-height: 28px;
+      font-size: 22px;
+      border-left: 4px solid #007bfc;
+      margin: 29px 0 30px 0;
+      text-indent: 29px;
+    }
+
+    .tips {
+      border-radius: 4px;
+      box-sizing: border-box;
+      padding: 20px 30px;
+      background-color: #e6f2ff;
+      border: 1px solid #cce5fe;
+      font-size: 14px;
+      color: #606266;
+    }
+
+    .table-main {
+      display: inline-table;
+      border-spacing: 0;
+      border-collapse: separate;
+      border: 1px solid #ebeef5;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    table,
+    td,
+    th {
+      box-sizing: border-box;
+      padding: 12px 5px;
+      font-size: 14px;
+      transition: all 0.2s;
+      border-radius: 5px;
+    }
+
+    th {
+      text-align: left;
+      border-bottom: 1px solid #ebeef5;
+      color: #7c7c7c;
+      overflow: hidden;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    
+ @media screen and (max-width: 600px) {
+
+    table {
+      border: 0;
+    }
+
+    table thead {
+      display: none;
+    }
+
+    
+
+    table td {
+      display: block;
+      font-size: 13px;
+      border-bottom: 1px dotted #ccc;
+    }
+    
+    .right{
+              text-align: right;
+    }
+    table td:last-child {
+      border-bottom: 0;
+    }
+
+    table td:before {
+      content: attr(data-label);
+      float: left;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+  }
+  
+    td {
+      color: #333;
+    }
+   
+    tr:hover td {
+      background-color: #f5f7fa;
+    }
+
+    .mount,
+    .uninstall {
+      float: left;
+      padding: 5px 10px;
+      background-color: #ace;
+      margin-right: 10px;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .mount:hover {
+      background-color: #46a0ff;
+    }
+
+    .mount {
+      background-color: #007bfc;
+    }
+
+    .uninstall:hover {
+      background-color: #ff8484;
+    }
+
+    .uninstall {
+      background-color: #F55151;
+    }
+
+    .create {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 30px;
+      border: 1px solid #dcdfe4;
+      color: #333;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+      width: 150px;
+      height: 40px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .create:hover {
+      border: 1px solid #007bfc;
+    }
+
+    .top {
+      display: flex;
+      justify-content: center;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .swal2-popup {
+      position: absolute !important;
+      top: 0;
+      border: 1px solid #ccc !important;
+      box-shadow: 0 4px 24px #ccc !important;
+    }
+
+    .swal2-backdrop-show {
+      background: rgba(0, 0, 0, 0) !important;
+    }
+
+    .page-title {
+      visibility: hidden;
+      margin: 0;
+    }
+
+
+    .table-main {
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    
+    .table-main:hover {
+      border: 1px solid #007bfc;
+    }
+
+
+
+  </style>
+</head>
+
+<body>
+  <div class="top">
+    <form action="http://{$b.server_host}/api/vhost/host_login" method="post" target="_blank">
+        <input type="hidden" name="id" value="{$idd}" />
+    <input type="hidden" name="account" value="{$b.username}" />
+    <input type="hidden" name="password" value="{$b.password}" />
+				<button type="submit" class="btn btn-primary">登录面板
+				</button>
+		</form></div>
+		{if $d1 neq null}
+		<br>
+		
+		<div class="alert alert-primary" role="alert">
+  温馨提示：{$d1}
+</div>
+{/if}
+		<div class="right">
+  <table class="table-main">
+      <thead>
+    <tr>
+     <th>状态</th>
+      <th>面板账号</th>
+      <th>面板密码</th>
+      <th>数据库账号</th>
+      <th>数据库密码</th>
+    </tr>
+    </thead>
+    <tbody>
+        
+    <tr>
+        
+      <td data-label="状态">{$t.status|raw}</td>
+      <td data-label="面板账号">{$user}</td>
+      <td data-label="面板密码">{$pass}</td>
+      <td data-label="数据库账号">{$t.sql.0.username}</td>
+      <td data-label="数据库密码">{$t.sql.0.password}</td>
+    </tr>
+    </tbody>
+    
+  </table>
+  </div>
+  <div class="right">
+  <table class="table-main">
+      <thead>
+    <tr>
+      <th>已使用空间/总容量</th>
+      <th>已使用数据库/总数据库容量</th>
+      <th>已使用流量/每月流量</th>
+      <th>绑定域名数</th>
+      <th>IP地址</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td data-label="已使用容量/总容量">{$t.site_size}M/{$t.site_max}M<div class="progress">
+  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{$sitebfb}" aria-valuemin="0" aria-valuemax="100" style="width: {$sitebfb}%"></div>
+</div></td>
+      <td data-label="已使用数据库容量/总数据库容量">{$t.sql_size}M/{$t.sql_max}M<div class="progress">
+  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{$dbbfb}" aria-valuemin="0" aria-valuemax="100" style="width: {$dbbfb}%"></div>
+</div></td>
+      <td data-label="已使用流量/单月总流量">{$t.flow_size}M/{$t.flow_max}M<div class="progress">
+  <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="{$bdbfb}" aria-valuemin="0" aria-valuemax="100" style="width: {$bdbfb}%"></div>
+</div></td>
+<td data-label="绑定域名数">{$t.domain_max}个</td>
+<td data-label="IP地址">{$ip}</td>
+    </tr>
+    </tbody>
+    
+  </table>
+  </div>
+  

@@ -1,0 +1,172 @@
+
+<svg style="position:absolute; width:0; height:0; visibility:hidden" xmlns="http://www.w3.org/2000/svg"
+xmlns:xlink="http://www.w3.org/1999/xlink">
+
+<symbol id="cus-fiber" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <path d="M4.79425 9.58875H13.2055C13.6681 9.58875 14.0466 9.96725 14.0466 10.4299V17.1588C14.0466 17.6215 13.6681 18 13.2055 18H4.79425C4.33163 18 3.95313 17.6215 3.95312 17.1588V10.4299C3.95312 9.96725 4.33163 9.58875 4.79425 9.58875Z" fill="currentColor"/>
+    <path d="M8.95795 2.64954H9.42056C9.6729 2.64954 9.84113 2.81776 9.84113 3.02804V9.46262C9.84113 9.6729 9.6729 9.84113 9.42056 9.84113H8.95795C8.70561 9.84113 8.53739 9.6729 8.53739 9.46262V3.02804C8.53739 2.81776 8.74767 2.64954 8.95795 2.64954ZM3.53271 3.91122H4.83645C4.83645 3.91122 6.14019 5.50935 6.98131 12.2383H5.67757C5.67757 12.1963 5.71963 8.6215 3.53271 3.91122Z" fill="currentColor"/>
+    <path d="M3.95324 1.26168C3.02801 1.26168 2.271 2.01869 2.271 2.94393C2.271 3.86916 3.02801 4.62617 3.95324 4.62617C4.87847 4.62617 5.63548 3.86916 5.63548 2.94393C5.63548 2.01869 4.87847 1.26168 3.95324 1.26168ZM3.95324 3.78505C3.49062 3.78505 3.11212 3.40654 3.11212 2.94393C3.11212 2.48131 3.49062 2.1028 3.95324 2.1028C4.41586 2.1028 4.79436 2.48131 4.79436 2.94393C4.79436 3.40654 4.41586 3.78505 3.95324 3.78505ZM9.21025 0C8.28502 0 7.52801 0.757009 7.52801 1.68224C7.52801 2.60748 8.28502 3.36449 9.21025 3.36449C10.1355 3.36449 10.8925 2.60748 10.8925 1.68224C10.8925 0.757009 10.1355 0 9.21025 0ZM9.21025 2.52336C8.74763 2.52336 8.36913 2.14486 8.36913 1.68224C8.36913 1.21963 8.74763 0.841121 9.21025 0.841121C9.67287 0.841121 10.0514 1.21963 10.0514 1.68224C10.0514 2.14486 9.67287 2.52336 9.21025 2.52336ZM14.0467 1.26168C13.1215 1.26168 12.3645 2.01869 12.3645 2.94393C12.3645 3.86916 13.1215 4.62617 14.0467 4.62617C14.9719 4.62617 15.7289 3.86916 15.7289 2.94393C15.7289 2.01869 14.9719 1.26168 14.0467 1.26168ZM14.0467 3.78505C13.5841 3.78505 13.2056 3.40654 13.2056 2.94393C13.2056 2.48131 13.5841 2.1028 14.0467 2.1028C14.5093 2.1028 14.8878 2.48131 14.8878 2.94393C14.8878 3.40654 14.5093 3.78505 14.0467 3.78505Z" fill="currentColor"/>
+    <path d="M14.4675 3.91125H13.2058C13.2058 3.91125 11.9021 5.50939 11.103 12.2384H12.3647C12.3647 12.1963 12.3647 8.62154 14.4675 3.91125Z" fill="currentColor"/>
+  </svg>
+</symbol>
+
+  <symbol id="cus-add" width="16" height="16" viewBox="0 0 18 18">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><g transform="translate(-208 -107.5)">
+<rect class="a" fill="none"  width="18" height="18" transform="translate(208 107.5)"/>
+<path class="b" fill="currentColor" d="M8.224,15.083a1.147,1.147,0,0,1-.816-.337L.337,7.675A1.149,1.149,0,0,1,0,6.859V0H6.859a1.141,1.141,0,0,1,.815.338l7.071,7.071a1.152,1.152,0,0,1,0,1.63L9.039,14.746A1.147,1.147,0,0,1,8.224,15.083ZM1.153,1.153V6.859l7.071,7.071,5.707-5.707L6.859,1.153ZM5.1,7.407a2.305,2.305,0,1,1,1.631-.675A2.292,2.292,0,0,1,5.1,7.407Zm0-3.458a1.153,1.153,0,1,0,.815.338A1.145,1.145,0,0,0,5.1,3.949Z" transform="translate(210 109.5)"/>
+<path class="c" fill="none" stroke="currentColor" d="M208,107.5l16.116,16.207" transform="translate(0.6 0.496)"/></g>
+</svg>
+
+  </symbol>
+
+   <symbol id="cus-copy" width="18" height="18" viewBox="0 0 18 18">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+      <g class="a">
+      <rect class="b" width="18" height="18" fill="none"/>
+      <rect class="c" width="18" height="18" fill="none"/>
+      <path class="d" fill="currentColor" d="M11.423,13.5H.952A1.05,1.05,0,0,1,0,12.375V1.125A1.05,1.05,0,0,1,.952,0H11.423a1.05,1.05,0,0,1,.952,1.125v11.25A1.05,1.05,0,0,1,11.423,13.5ZM.952,1.125v11.25H11.423V1.125ZM8.091,6.75H2.38V5.625H8.091V6.749ZM10,3.938H2.38V2.813H10V3.936Z" transform="translate(1.688 3.375)"/>
+      <path class="d" fill="currentColor" d="M14.893,13.646h-1V2.348H6.525v-1h7.867a.5.5,0,0,1,.5.5Z" transform="translate(1.605)"/></g></svg>
+  </symbol>
+
+  <symbol id="cus-install" width="18" height="18" viewBox="0 0 18 18">
+   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:#df3737;opacity:0.52;}.b{clip-path:url(#a);}.c{fill:currentColor;}</style><clipPath id="a"><rect class="a" width="18" height="18" transform="translate(5969 -8509)"/></clipPath></defs><g class="b" transform="translate(-5969 8509)"><g transform="translate(5970.04 -8506.62)">
+   <path class="c" fill="currentColor" d="M-.5-.5H16.123V8.768a1,1,0,0,1-1,1H.5a1,1,0,0,1-1-1ZM15.123.5H.5V8.768H15.123Z" transform="translate(0.153 3.972)"/>
+   <path class="c" fill="currentColor" d="M.288,16.3l-.577-.817L3.224,13V2.926L-.291.406.291-.406,4.224,2.412V13.52Z" transform="translate(0 3.724) rotate(-90)"/></g>
+   <path class="c" fill="currentColor" d="M.5,4.427h-1V0h1Z" transform="translate(5977.984 -8500.435)"/>
+   <path class="c" fill="currentColor" d="M3.893,3.893H0v-1H2.893V0h1Z" transform="translate(5977.984 -8500.394) rotate(45)"/></g></svg>
+  </symbol>
+
+  <symbol id="cus-uninstall" width="16" height="16" viewBox="0 0 18 18">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><defs>
+    <style>.a{fill:none;}.b,.c{fill:currentColor;}.b{stroke:rgba(0,0,0,0);stroke-miterlimit:10;}</style></defs><g transform="translate(-1878 -299.5)">
+    <rect class="a" fill="none" width="18" height="18" transform="translate(1878 299.5)"/>
+    <path class="b" fill="currentColor" d="M-3947.75,8737.749h-9a1.126,1.126,0,0,1-1.125-1.125v-11.249H-3959v-1.125h3.938V8722.9a.9.9,0,0,1,.9-.9h3.826a.9.9,0,0,1,.9.9v1.352h3.936v1.125h-1.125v11.249A1.127,1.127,0,0,1-3947.75,8737.749Zm-9-12.374v11.249h9v-11.249Zm2.813-2.25v1.125h3.375v-1.125Z" transform="translate(5839.25 -8421.375)"/>
+    <path class="c" fill="currentColor" d="M.5-2h-1V4.428h1Z" transform="translate(1887 309.619)"/>
+    <path class="c" fill="currentColor" d="M3.893,0H0V1H2.893V3.893h1Z" transform="translate(1884.247 309.253) rotate(-45)"/></g>
+    </svg>
+  </symbol>
+
+  <!-- icons.svg -->
+<symbol id="cus-enable" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><g transform="translate(-1775 -501)">
+  <rect class="a" fill="none" width="18" height="18" transform="translate(1775 501)"/>
+  <path class="b" fill="currentColor" d="M8,16A8,8,0,0,1,8,0a8,8,0,0,1,3.061,15.392A7.967,7.967,0,0,1,8,16ZM8,1.142H8a6.861,6.861,0,1,0,2.625.522A6.873,6.873,0,0,0,8,1.143ZM6.859,11.094h0L4,8.236l.807-.807,2.05,2.049,4.334-4.334L12,5.951,6.859,11.093Z" transform="translate(1775.999 502)"/></g></svg>
+</symbol>
+<symbol id="cus-copy" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <g class="a">
+  <rect class="b" width="18" height="18" fill="none"/>
+  <rect class="c" width="18" height="18" fill="none"/>
+  <path class="d" fill="currentColor" d="M11.423,13.5H.952A1.05,1.05,0,0,1,0,12.375V1.125A1.05,1.05,0,0,1,.952,0H11.423a1.05,1.05,0,0,1,.952,1.125v11.25A1.05,1.05,0,0,1,11.423,13.5ZM.952,1.125v11.25H11.423V1.125ZM8.091,6.75H2.38V5.625H8.091V6.749ZM10,3.938H2.38V2.813H10V3.936Z" transform="translate(1.688 3.375)"/>
+  <path class="d" fill="currentColor" d="M14.893,13.646h-1V2.348H6.525v-1h7.867a.5.5,0,0,1,.5.5Z" transform="translate(1.605)"/></g></svg>
+</symbol>
+<symbol id="cus-adopt" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs>
+  <clipPath id="a">
+  <rect class="a" width="18" height="18" transform="translate(505 118.875)"/></clipPath></defs>
+  <g class="b" transform="translate(-505 -118.875)"><g transform="translate(-20 21.375)">
+  <path class="c" fill="currentColor" d="M7.032,14.06A7.019,7.019,0,0,1,.039,7.03H1.122a5.93,5.93,0,0,0,1.733,4.2,5.851,5.851,0,0,0,4.177,1.744,5.934,5.934,0,0,0,5.073-2.9H10.028V9H13.5a.564.564,0,0,1,.563.563v3.494H12.984V10.719A6.947,6.947,0,0,1,7.032,14.06Zm6.991-7.03H12.942a5.93,5.93,0,0,0-1.733-4.2A5.851,5.851,0,0,0,7.032,1.081a5.938,5.938,0,0,0-5.074,2.9H4.035V5.061H.563A.564.564,0,0,1,0,4.5V1H1.078V3.341A6.949,6.949,0,0,1,7.032,0a7.019,7.019,0,0,1,6.991,7.029Z" transform="translate(526.969 99.469)"/>
+  <path class="c" fill="currentColor" d="M5.587,8.846,9.342,5.091,8.752,4.5,5.587,7.666l-1.5-1.5-.59.59Z" transform="translate(527.579 100.32)"/></g></g></svg>
+ </symbol>
+ <symbol id="cus-paid" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs>
+  <clipPath id="a">
+    <rect class="a" fill="none" width="18" height="18" transform="translate(1047.463 57.93)"/></clipPath></defs>
+    <g class="b" transform="translate(-1047.463 -57.93)"><g transform="translate(-9.428 5.916)">
+    <path class="c" fill="none" stroke="currentColor" stroke-width="1.2px" d="M123.419,42.724a6.39,6.39,0,0,1-6.391-6.39q0-3.333,5.7-9.446a.947.947,0,0,1,1.385,0q5.7,6.114,5.7,9.446A6.39,6.39,0,0,1,123.419,42.724Z" transform="translate(942.471 26.359)"/>
+    <path class="c" fill="currentColor" stroke="currentColor" stroke-width="1.2px" d="M-20807.537-21394.789l-2.059,3.836h3.2l-2.174,3.453" transform="translate(21873.91 21453.566)"/></g></g>
+  </svg>
+  </symbol>
+
+<symbol id="cus-modify" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:#dc5454;opacity:0.46;}.b{clip-path:url(#a);}.c{fill:currentColor;}</style><clipPath id="a">
+    <rect class="a" width="18" height="18" transform="translate(1018.463 57.75)"/></clipPath></defs><g class="b" transform="translate(-1018.463 -57.75)">
+    <path class="c" fill="currentColor" d="M108.85.04a1.084,1.084,0,0,1,.764.323,7.481,7.481,0,0,0,5.2,1.931,1.152,1.152,0,0,1,1.12,1l.006.042V9.526a6.516,6.516,0,0,1-2.976,5.392l-3.509,2.326-.033.016a1.352,1.352,0,0,1-.551.144,1.164,1.164,0,0,1-.551-.144l-.033-.016-3.5-2.323a6.558,6.558,0,0,1-2.189-2.341,6.35,6.35,0,0,1-.792-3.054V3.38a1.061,1.061,0,0,1,1.085-1.085,7.481,7.481,0,0,0,5.2-1.931A1.084,1.084,0,0,1,108.85.04Zm5.89,3.454a8.7,8.7,0,0,1-5.89-2.2,8.691,8.691,0,0,1-5.85,2.2V9.526a5.284,5.284,0,0,0,2.434,4.388l.007,0,3.429,2.273,3.429-2.273a5.319,5.319,0,0,0,2.441-4.393Z" transform="translate(918.592 58.027)"/><g transform="translate(-25.586 0.361)">
+    <path class="c" fill="currentColor" d="M6.232.6H0V-.6H6.232Z" transform="translate(1049.932 65.139)"/>
+    <path class="c" fill="currentColor" d="M6.232.6H0V-.6H6.232Z" transform="translate(1049.932 67.504)"/>
+    <path class="c" fill="currentColor" d="M.6,6.273H-.6V0H.6Z" transform="translate(1053.047 64.865)"/>
+    <path class="c" fill="currentColor" d="M.424,2.789l-.849-.849L1.941-.424l.849.849Z" transform="translate(1053.048 62.5)"/>
+    <path class="c" fill="currentColor" d="M1.941,2.789-.424.424.424-.424,2.789,1.941Z" transform="translate(1050.683 62.5)"/></g></g>
+  </svg>
+</symbol>
+
+<symbol id="cus-putaway" width="16" height="16" viewBox="0 0 18 18">
+
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:#eed0d0;opacity:0.51;}.b{clip-path:url(#a);}.c{fill:currentColor;}</style><clipPath id="a">
+    <rect class="a" width="18" height="18" transform="translate(298.52 121.533)"/></clipPath></defs><g class="b" transform="translate(-298.52 -121.533)"><g transform="translate(278.656 101.699)">
+    <path class="c" fill="currentColor" d="M25.3,35.358a.486.486,0,1,1-.486.486.484.484,0,0,1,.486-.486m0-1.118a1.6,1.6,0,1,0,1.6,1.6A1.6,1.6,0,0,0,25.3,34.241Zm8.914-10.248-.007,1.118h1.628L34.308,31.52H26.264L23.4,21.83c-.014-.056-.031-.112-.049-.168a1.482,1.482,0,0,0-1.394-.978h-.052a1.479,1.479,0,0,0-1.086,2.421l.922-.653a.364.364,0,0,1,.22-.653.369.369,0,0,1,.349.251l.007.021.066.227.332,1.135,2.71,9.2h9.759l2.061-8.645Zm.2,11.366a.486.486,0,1,1-.486.486.484.484,0,0,1,.486-.486m0-1.118a1.6,1.6,0,1,0,1.6,1.6A1.6,1.6,0,0,0,34.413,34.241Z" transform="translate(0 -0.229)"/><g transform="translate(26.121 20.451)">
+    <path class="c" fill="currentColor" d="M519.447,20.451v5.771h1.118V20.451Z" transform="translate(-516.578 -19.071)"/>
+    <path class="c" fill="currentColor" d="M519.483,193l3.2,3.2.79-.79-3.2-3.2Z" transform="translate(-516.613 -191.979)"/>
+    <path class="c" fill="currentColor" d="M354.66,192.342l-3.428,3.428.79.79,3.428-3.428Z" transform="translate(-351.232 -192.342)"/></g></g></g>
+  </svg>
+
+</symbol>
+
+<symbol id="cus-delist" width="16" height="16" viewBox="0 0 18 18">
+
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:#eed0d0;opacity:0.51;}.b{clip-path:url(#a);}.c{fill:currentColor;}</style><clipPath id="a">
+    <rect class="a" width="18" height="18" transform="translate(298.52 121.533)"/></clipPath></defs><g class="b" transform="translate(-298.52 -121.533)"><g transform="translate(278.656 101.699)">
+    <path class="c" fill="currentColor" d="M25.3,35.358a.486.486,0,1,1-.486.486.484.484,0,0,1,.486-.486m0-1.118a1.6,1.6,0,1,0,1.6,1.6A1.6,1.6,0,0,0,25.3,34.241Zm8.914-10.248-.007,1.118h1.628L34.308,31.52H26.264L23.4,21.83c-.014-.056-.031-.112-.049-.168a1.482,1.482,0,0,0-1.394-.978h-.052a1.479,1.479,0,0,0-1.086,2.421l.922-.653a.364.364,0,0,1,.22-.653.369.369,0,0,1,.349.251l.007.021.066.227.332,1.135,2.71,9.2h9.759l2.061-8.645Zm.2,11.366a.486.486,0,1,1-.486.486.484.484,0,0,1,.486-.486m0-1.118a1.6,1.6,0,1,0,1.6,1.6A1.6,1.6,0,0,0,34.413,34.241Z" transform="translate(0 -0.229)"/>
+    <path class="c" fill="currentColor" d="M519.447,26.222v-5.77h1.118v5.77Z" transform="translate(-490.457)"/>
+    <path class="c" fill="currentColor" d="M519.483,195.409l3.2-3.2.79.79-3.2,3.2Z" transform="translate(-490.492 -168.83)"/>
+    <path class="c" fill="currentColor" d="M354.66,196.56l-3.428-3.428.79-.79,3.428,3.428Z" transform="translate(-325.111 -168.959)"/></g></g>
+  </svg>
+</symbol>
+<symbol id="cus-accept" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:#d54343;opacity:0.45;}.b{clip-path:url(#a);}.c{fill:rgba(0,82,217,0.9);}</style><clipPath id="a">
+    <rect class="a" width="18" height="18" transform="translate(355.792 129.792)"/></clipPath></defs><g class="b" transform="translate(-355.792 -129.792)"><g transform="translate(357.388 133.127)">
+    <path class="c" fill="currentColor" d="M.373,13.155a.381.381,0,0,1-.258-.1A.364.364,0,0,1,0,12.784V1.234A1.235,1.235,0,0,1,1.234,0h12.34a1.235,1.235,0,0,1,1.234,1.234V9.255a1.235,1.235,0,0,1-1.234,1.234H3.7L.607,13.068A.363.363,0,0,1,.373,13.155ZM1.234,1.234v9.706L3.255,9.255H13.574V1.234Z" transform="translate(0 0)"/>
+    <path class="c" fill="currentColor" d="M7.734,7.794H6.5V4H7.734Z" transform="translate(0.287 -2.031)"/>
+    <path class="c" fill="currentColor" d="M6.394,9.5v1.481H7.875V9.5Z" transform="translate(0.269 -2.713)"/></g></g>
+  </svg>
+</symbol>
+<symbol id="cus-complete" width="16" height="16" viewBox="0 0 18 18">
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18.002" viewBox="0 0 18 18.002"><defs><style>.a,.d{fill:none;}.b,.c{fill:currentColor;}.c{stroke:rgba(0,0,0,0);stroke-miterlimit:10;}.d{stroke:currentColor;}.e{stroke:none;}</style></defs><g transform="translate(-916 -441.998)">
+  <rect class="a" fill="none" width="18" height="18" transform="translate(916 442)"/><g transform="translate(0.996 -1.539)">
+  <path class="b" fill="currentColor" d="M320,321m.588,0h4.7a.52.52,0,0,1,.588.588h0a.52.52,0,0,1-.588.588h-4.7a.52.52,0,0,1-.588-.588h0A.52.52,0,0,1,320.588,321Z" transform="translate(599.49 127.488)"/>
+  <path class="b" fill="currentColor" d="M320,513m.588,0h2.352a.52.52,0,0,1,.588.588h0a.52.52,0,0,1-.588.588h-2.352a.52.52,0,0,1-.588-.588h0A.52.52,0,0,1,320.588,513Z" transform="translate(599.49 -60.982)"/>
+  <path class="c" fill="currentColor" d="M10682.5,21471.188h-5.373a1.125,1.125,0,0,1-1.121-1.125v-13.943a1.123,1.123,0,0,1,1.121-1.121H10688a1.123,1.123,0,0,1,1.121,1.121v5.342H10688v-5.342h-10.876v13.943h5.373v1.125Z" transform="translate(-9759.996 -21010.961)"/>
+  <path class="d" fill="currentColor" d="M-9751.23-20998.492l1.564,1.564,2.693-2.693" transform="translate(10676.602 21454.773)"/>
+  <g class="d" transform="translate(923 452)">
+  <circle class="e" fill="none" cx="4.5" cy="4.5" r="4.5"/>
+  <circle class="a" fill="none"  stroke="currentColor" cx="4.5" cy="4.5" r="4"/></g></g></g>
+  </svg>
+
+  </symbol>
+
+  <symbol id="cus-refund" width="16" height="16" viewBox="0 0 18 18">
+
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18"><defs>
+    <clipPath id="a">
+    <rect class="a" fill="none" width="18" height="18" transform="translate(1834 498)"/></clipPath></defs><g class="b" transform="translate(-1834 -498)">
+    <rect class="c" fill="none" width="16.414" height="17.18" transform="translate(1834.452 497.621)"/>
+    <path class="d" fill="currentColor" d="M7.667,6.685V7.74H9.779V8.8H7.667v2.639H6.611V8.8H4.5V7.74H6.611V6.685H4.5V5.629H6.041L4.616,3.847l.824-.66,1.7,2.124,1.7-2.124.824.66L8.238,5.629H9.779V6.685Z" transform="translate(1835.468 499.754)"/>
+    <path class="d" fill="currentColor" d="M.424,4.6l-.848-.849L1.238,2.086-.424.424.424-.424l2.511,2.51Z" transform="matrix(-0.07, 0.998, -0.998, -0.07, 1851.606, 506.357)"/>
+    <path class="d" fill="currentColor" d="M7.556,15.424H7.486A8.04,8.04,0,0,1-.44,7.381L.637,7.355a6.975,6.975,0,0,0,6.86,6.9,6.654,6.654,0,0,0,6.716-6.762,6.716,6.716,0,0,0-.4-2.278l0-.007a6.723,6.723,0,0,0-1.952-2.869A7.017,7.017,0,0,0,7.353.593L7.364-.576a8.311,8.311,0,0,1,5.281,2.023,7.845,7.845,0,0,1,2.3,3.344,7.887,7.887,0,0,1,.479,2.691,7.844,7.844,0,0,1-7.868,7.941Z" transform="translate(1852.67 508.189) rotate(145)"/>
+    <path class="d" fill="currentColor" d="M7.532,15.257c-.024,0-.068.018-.092.018A8,8,0,0,1-.575,7.365l1.212-.01a6.975,6.975,0,0,0,6.86,6.9C9.253,14.271,9.59,15.257,7.532,15.257Z" transform="matrix(-0.982, -0.191, 0.191, -0.982, 1848.201, 515.07)"/></g>
+    </svg>
+
+</symbol>
+
+<symbol id="cus-on" width="16" height="16" viewBox="0 0 18 18">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18"><defs><style>.a{fill:none;}.b{fill:currentColor;}</style></defs>
+  <rect class="a" fill="none" width="18" height="18"/>
+  <path class="b" fill="currentColor" d="M11.813,14.073H.563A.564.564,0,0,1,0,13.51V5.636a.564.564,0,0,1,.563-.563H2.25V3.938a3.938,3.938,0,0,1,7.875,0V5.073h1.688a.563.563,0,0,1,.562.563V13.51A.563.563,0,0,1,11.813,14.073ZM1.125,6.2v6.75H11.25V6.2ZM6.187,1.125A2.816,2.816,0,0,0,3.375,3.938V5.073H9V3.938A2.816,2.816,0,0,0,6.187,1.125ZM8.437,10.7h-4.5V9.573h4.5V10.7Z" transform="translate(2.813 1.677)"/>
+  </svg>
+</symbol>
+<symbol id="cus-off" width="16" height="16" viewBox="0 0 18 18">
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="18.5" height="18" viewBox="0 0 18.5 18"><defs><style>.a{fill:none;}.b{fill:currentColor;stroke:rgba(0,0,0,0);stroke-miterlimit:10;}</style></defs><g transform="translate(-800.5 -117)">
+  <rect class="a" fill="none" width="18" height="18" transform="translate(801 117)"/><g transform="translate(-48.5 0.3)">
+  <path class="b" fill="currentColor" d="M1.125,0H0V1.074a3.938,3.938,0,1,0,7.875,0H6.75a2.809,2.809,0,0,1-.825,1.989,2.8,2.8,0,0,1-1.989.825A2.816,2.816,0,0,1,1.125,1.074V0Z" transform="translate(857.375 123.713) rotate(180)"/>
+  <path class="b" fill="currentColor" d="M1040.375,6900.063a.564.564,0,0,1-.563-.563v-7.873a.563.563,0,0,1,.563-.563h1.688v-.05h1.125v.05h8.438a.561.561,0,0,1,.561.563v7.873a.563.563,0,0,1-.561.563Zm.563-1.125h10.124v-6.75h-10.124Zm7.31-2.251h-4.5v-1.125h4.5v1.125Z" transform="translate(-185.813 -6767.313)"/></g></g>
+  </svg>
+  </symbol>
+
+
+
+
+</svg>
